@@ -114,7 +114,7 @@ PFNGLISBUFFERPROC ptr_glIsBuffer = nullptr; GLboolean  glIsBuffer(GLuint buffer)
 PFNGLBUFFERDATAPROC ptr_glBufferData = nullptr; void  glBufferData(GLenum target, GLsizeiptr size, const void *data, GLenum usage) { ptr_glBufferData(target, size, data, usage); }
 PFNGLBUFFERSUBDATAPROC ptr_glBufferSubData = nullptr; void  glBufferSubData(GLenum target, GLintptr offset, GLsizeiptr size, const void *data) { ptr_glBufferSubData(target, offset, size, data); }
 PFNGLGETBUFFERSUBDATAPROC ptr_glGetBufferSubData = nullptr; void  glGetBufferSubData(GLenum target, GLintptr offset, GLsizeiptr size, void *data) { ptr_glGetBufferSubData(target, offset, size, data); }
-PFNGLMAPBUFFERPROC ptr_glMapBuffer = nullptr; void * glMapBuffer(GLenum target, GLenum access) { ptr_glMapBuffer(target, access); }
+PFNGLMAPBUFFERPROC ptr_glMapBuffer = nullptr; void * glMapBuffer(GLenum target, GLenum access) { return ptr_glMapBuffer(target, access); }
 PFNGLUNMAPBUFFERPROC ptr_glUnmapBuffer = nullptr; GLboolean  glUnmapBuffer(GLenum target) { return ptr_glUnmapBuffer(target); }
 PFNGLGETBUFFERPARAMETERIVPROC ptr_glGetBufferParameteriv = nullptr; void  glGetBufferParameteriv(GLenum target, GLenum pname, GLint *params) { ptr_glGetBufferParameteriv(target, pname, params); }
 PFNGLGETBUFFERPOINTERVPROC ptr_glGetBufferPointerv = nullptr; void  glGetBufferPointerv(GLenum target, GLenum pname, void **params) { ptr_glGetBufferPointerv(target, pname, params); }
@@ -295,7 +295,7 @@ PFNGLGENERATEMIPMAPPROC ptr_glGenerateMipmap = nullptr; void  glGenerateMipmap(G
 PFNGLBLITFRAMEBUFFERPROC ptr_glBlitFramebuffer = nullptr; void  glBlitFramebuffer(GLint srcX0, GLint srcY0, GLint srcX1, GLint srcY1, GLint dstX0, GLint dstY0, GLint dstX1, GLint dstY1, GLbitfield mask, GLenum filter) { ptr_glBlitFramebuffer(srcX0, srcY0, srcX1, srcY1, dstX0, dstY0, dstX1, dstY1, mask, filter); }
 PFNGLRENDERBUFFERSTORAGEMULTISAMPLEPROC ptr_glRenderbufferStorageMultisample = nullptr; void  glRenderbufferStorageMultisample(GLenum target, GLsizei samples, GLenum internalformat, GLsizei width, GLsizei height) { ptr_glRenderbufferStorageMultisample(target, samples, internalformat, width, height); }
 PFNGLFRAMEBUFFERTEXTURELAYERPROC ptr_glFramebufferTextureLayer = nullptr; void  glFramebufferTextureLayer(GLenum target, GLenum attachment, GLuint texture, GLint level, GLint layer) { ptr_glFramebufferTextureLayer(target, attachment, texture, level, layer); }
-PFNGLMAPBUFFERRANGEPROC ptr_glMapBufferRange = nullptr; void * glMapBufferRange(GLenum target, GLintptr offset, GLsizeiptr length, GLbitfield access) { ptr_glMapBufferRange(target, offset, length, access); }
+PFNGLMAPBUFFERRANGEPROC ptr_glMapBufferRange = nullptr; void * glMapBufferRange(GLenum target, GLintptr offset, GLsizeiptr length, GLbitfield access) { return ptr_glMapBufferRange(target, offset, length, access); }
 PFNGLFLUSHMAPPEDBUFFERRANGEPROC ptr_glFlushMappedBufferRange = nullptr; void  glFlushMappedBufferRange(GLenum target, GLintptr offset, GLsizeiptr length) { ptr_glFlushMappedBufferRange(target, offset, length); }
 PFNGLBINDVERTEXARRAYPROC ptr_glBindVertexArray = nullptr; void  glBindVertexArray(GLuint array) { ptr_glBindVertexArray(array); }
 PFNGLDELETEVERTEXARRAYSPROC ptr_glDeleteVertexArrays = nullptr; void  glDeleteVertexArrays(GLsizei n, const GLuint *arrays) { ptr_glDeleteVertexArrays(n, arrays); }
@@ -602,8 +602,8 @@ PFNGLNAMEDBUFFERSUBDATAPROC ptr_glNamedBufferSubData = nullptr; void  glNamedBuf
 PFNGLCOPYNAMEDBUFFERSUBDATAPROC ptr_glCopyNamedBufferSubData = nullptr; void  glCopyNamedBufferSubData(GLuint readBuffer, GLuint writeBuffer, GLintptr readOffset, GLintptr writeOffset, GLsizeiptr size) { ptr_glCopyNamedBufferSubData(readBuffer, writeBuffer, readOffset, writeOffset, size); }
 PFNGLCLEARNAMEDBUFFERDATAPROC ptr_glClearNamedBufferData = nullptr; void  glClearNamedBufferData(GLuint buffer, GLenum internalformat, GLenum format, GLenum type, const void *data) { ptr_glClearNamedBufferData(buffer, internalformat, format, type, data); }
 PFNGLCLEARNAMEDBUFFERSUBDATAPROC ptr_glClearNamedBufferSubData = nullptr; void  glClearNamedBufferSubData(GLuint buffer, GLenum internalformat, GLintptr offset, GLsizeiptr size, GLenum format, GLenum type, const void *data) { ptr_glClearNamedBufferSubData(buffer, internalformat, offset, size, format, type, data); }
-PFNGLMAPNAMEDBUFFERPROC ptr_glMapNamedBuffer = nullptr; void * glMapNamedBuffer(GLuint buffer, GLenum access) { ptr_glMapNamedBuffer(buffer, access); }
-PFNGLMAPNAMEDBUFFERRANGEPROC ptr_glMapNamedBufferRange = nullptr; void * glMapNamedBufferRange(GLuint buffer, GLintptr offset, GLsizeiptr length, GLbitfield access) { ptr_glMapNamedBufferRange(buffer, offset, length, access); }
+PFNGLMAPNAMEDBUFFERPROC ptr_glMapNamedBuffer = nullptr; void * glMapNamedBuffer(GLuint buffer, GLenum access) { return ptr_glMapNamedBuffer(buffer, access); }
+PFNGLMAPNAMEDBUFFERRANGEPROC ptr_glMapNamedBufferRange = nullptr; void * glMapNamedBufferRange(GLuint buffer, GLintptr offset, GLsizeiptr length, GLbitfield access) { return ptr_glMapNamedBufferRange(buffer, offset, length, access); }
 PFNGLUNMAPNAMEDBUFFERPROC ptr_glUnmapNamedBuffer = nullptr; GLboolean  glUnmapNamedBuffer(GLuint buffer) { return ptr_glUnmapNamedBuffer(buffer); }
 PFNGLFLUSHMAPPEDNAMEDBUFFERRANGEPROC ptr_glFlushMappedNamedBufferRange = nullptr; void  glFlushMappedNamedBufferRange(GLuint buffer, GLintptr offset, GLsizeiptr length) { ptr_glFlushMappedNamedBufferRange(buffer, offset, length); }
 PFNGLGETNAMEDBUFFERPARAMETERIVPROC ptr_glGetNamedBufferParameteriv = nullptr; void  glGetNamedBufferParameteriv(GLuint buffer, GLenum pname, GLint *params) { ptr_glGetNamedBufferParameteriv(buffer, pname, params); }
@@ -733,2188 +733,2188 @@ PFNGLGETVERTEXATTRIBLUI64VARBPROC ptr_glGetVertexAttribLui64v = nullptr; void  g
 int loadgl() {
 	int result = 0;
 	ptr_glDrawRangeElements = (PFNGLDRAWRANGEELEMENTSPROC)wglGetProcAddress("glDrawRangeElements");
-	if(!ptr_glDrawRangeElements) { MessageBox(0, "Couldn't load OpenGL core version 1.2, function \"glDrawRangeElements\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glDrawRangeElements) { MessageBox(0, TEXT("Couldn't load OpenGL core version 1.2, function \"glDrawRangeElements\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glTexImage3D = (PFNGLTEXIMAGE3DPROC)wglGetProcAddress("glTexImage3D");
-	if(!ptr_glTexImage3D) { MessageBox(0, "Couldn't load OpenGL core version 1.2, function \"glTexImage3D\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glTexImage3D) { MessageBox(0, TEXT("Couldn't load OpenGL core version 1.2, function \"glTexImage3D\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glTexSubImage3D = (PFNGLTEXSUBIMAGE3DPROC)wglGetProcAddress("glTexSubImage3D");
-	if(!ptr_glTexSubImage3D) { MessageBox(0, "Couldn't load OpenGL core version 1.2, function \"glTexSubImage3D\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glTexSubImage3D) { MessageBox(0, TEXT("Couldn't load OpenGL core version 1.2, function \"glTexSubImage3D\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glCopyTexSubImage3D = (PFNGLCOPYTEXSUBIMAGE3DPROC)wglGetProcAddress("glCopyTexSubImage3D");
-	if(!ptr_glCopyTexSubImage3D) { MessageBox(0, "Couldn't load OpenGL core version 1.2, function \"glCopyTexSubImage3D\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glCopyTexSubImage3D) { MessageBox(0, TEXT("Couldn't load OpenGL core version 1.2, function \"glCopyTexSubImage3D\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glActiveTexture = (PFNGLACTIVETEXTUREPROC)wglGetProcAddress("glActiveTexture");
-	if(!ptr_glActiveTexture) { MessageBox(0, "Couldn't load OpenGL core version 1.3, function \"glActiveTexture\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glActiveTexture) { MessageBox(0, TEXT("Couldn't load OpenGL core version 1.3, function \"glActiveTexture\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glSampleCoverage = (PFNGLSAMPLECOVERAGEPROC)wglGetProcAddress("glSampleCoverage");
-	if(!ptr_glSampleCoverage) { MessageBox(0, "Couldn't load OpenGL core version 1.3, function \"glSampleCoverage\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glSampleCoverage) { MessageBox(0, TEXT("Couldn't load OpenGL core version 1.3, function \"glSampleCoverage\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glCompressedTexImage3D = (PFNGLCOMPRESSEDTEXIMAGE3DPROC)wglGetProcAddress("glCompressedTexImage3D");
-	if(!ptr_glCompressedTexImage3D) { MessageBox(0, "Couldn't load OpenGL core version 1.3, function \"glCompressedTexImage3D\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glCompressedTexImage3D) { MessageBox(0, TEXT("Couldn't load OpenGL core version 1.3, function \"glCompressedTexImage3D\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glCompressedTexImage2D = (PFNGLCOMPRESSEDTEXIMAGE2DPROC)wglGetProcAddress("glCompressedTexImage2D");
-	if(!ptr_glCompressedTexImage2D) { MessageBox(0, "Couldn't load OpenGL core version 1.3, function \"glCompressedTexImage2D\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glCompressedTexImage2D) { MessageBox(0, TEXT("Couldn't load OpenGL core version 1.3, function \"glCompressedTexImage2D\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glCompressedTexImage1D = (PFNGLCOMPRESSEDTEXIMAGE1DPROC)wglGetProcAddress("glCompressedTexImage1D");
-	if(!ptr_glCompressedTexImage1D) { MessageBox(0, "Couldn't load OpenGL core version 1.3, function \"glCompressedTexImage1D\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glCompressedTexImage1D) { MessageBox(0, TEXT("Couldn't load OpenGL core version 1.3, function \"glCompressedTexImage1D\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glCompressedTexSubImage3D = (PFNGLCOMPRESSEDTEXSUBIMAGE3DPROC)wglGetProcAddress("glCompressedTexSubImage3D");
-	if(!ptr_glCompressedTexSubImage3D) { MessageBox(0, "Couldn't load OpenGL core version 1.3, function \"glCompressedTexSubImage3D\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glCompressedTexSubImage3D) { MessageBox(0, TEXT("Couldn't load OpenGL core version 1.3, function \"glCompressedTexSubImage3D\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glCompressedTexSubImage2D = (PFNGLCOMPRESSEDTEXSUBIMAGE2DPROC)wglGetProcAddress("glCompressedTexSubImage2D");
-	if(!ptr_glCompressedTexSubImage2D) { MessageBox(0, "Couldn't load OpenGL core version 1.3, function \"glCompressedTexSubImage2D\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glCompressedTexSubImage2D) { MessageBox(0, TEXT("Couldn't load OpenGL core version 1.3, function \"glCompressedTexSubImage2D\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glCompressedTexSubImage1D = (PFNGLCOMPRESSEDTEXSUBIMAGE1DPROC)wglGetProcAddress("glCompressedTexSubImage1D");
-	if(!ptr_glCompressedTexSubImage1D) { MessageBox(0, "Couldn't load OpenGL core version 1.3, function \"glCompressedTexSubImage1D\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glCompressedTexSubImage1D) { MessageBox(0, TEXT("Couldn't load OpenGL core version 1.3, function \"glCompressedTexSubImage1D\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glGetCompressedTexImage = (PFNGLGETCOMPRESSEDTEXIMAGEPROC)wglGetProcAddress("glGetCompressedTexImage");
-	if(!ptr_glGetCompressedTexImage) { MessageBox(0, "Couldn't load OpenGL core version 1.3, function \"glGetCompressedTexImage\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glGetCompressedTexImage) { MessageBox(0, TEXT("Couldn't load OpenGL core version 1.3, function \"glGetCompressedTexImage\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glClientActiveTexture = (PFNGLCLIENTACTIVETEXTUREPROC)wglGetProcAddress("glClientActiveTexture");
-	if(!ptr_glClientActiveTexture) { MessageBox(0, "Couldn't load OpenGL core version 1.3, function \"glClientActiveTexture\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glClientActiveTexture) { MessageBox(0, TEXT("Couldn't load OpenGL core version 1.3, function \"glClientActiveTexture\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glMultiTexCoord1d = (PFNGLMULTITEXCOORD1DPROC)wglGetProcAddress("glMultiTexCoord1d");
-	if(!ptr_glMultiTexCoord1d) { MessageBox(0, "Couldn't load OpenGL core version 1.3, function \"glMultiTexCoord1d\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glMultiTexCoord1d) { MessageBox(0, TEXT("Couldn't load OpenGL core version 1.3, function \"glMultiTexCoord1d\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glMultiTexCoord1dv = (PFNGLMULTITEXCOORD1DVPROC)wglGetProcAddress("glMultiTexCoord1dv");
-	if(!ptr_glMultiTexCoord1dv) { MessageBox(0, "Couldn't load OpenGL core version 1.3, function \"glMultiTexCoord1dv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glMultiTexCoord1dv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 1.3, function \"glMultiTexCoord1dv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glMultiTexCoord1f = (PFNGLMULTITEXCOORD1FPROC)wglGetProcAddress("glMultiTexCoord1f");
-	if(!ptr_glMultiTexCoord1f) { MessageBox(0, "Couldn't load OpenGL core version 1.3, function \"glMultiTexCoord1f\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glMultiTexCoord1f) { MessageBox(0, TEXT("Couldn't load OpenGL core version 1.3, function \"glMultiTexCoord1f\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glMultiTexCoord1fv = (PFNGLMULTITEXCOORD1FVPROC)wglGetProcAddress("glMultiTexCoord1fv");
-	if(!ptr_glMultiTexCoord1fv) { MessageBox(0, "Couldn't load OpenGL core version 1.3, function \"glMultiTexCoord1fv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glMultiTexCoord1fv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 1.3, function \"glMultiTexCoord1fv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glMultiTexCoord1i = (PFNGLMULTITEXCOORD1IPROC)wglGetProcAddress("glMultiTexCoord1i");
-	if(!ptr_glMultiTexCoord1i) { MessageBox(0, "Couldn't load OpenGL core version 1.3, function \"glMultiTexCoord1i\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glMultiTexCoord1i) { MessageBox(0, TEXT("Couldn't load OpenGL core version 1.3, function \"glMultiTexCoord1i\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glMultiTexCoord1iv = (PFNGLMULTITEXCOORD1IVPROC)wglGetProcAddress("glMultiTexCoord1iv");
-	if(!ptr_glMultiTexCoord1iv) { MessageBox(0, "Couldn't load OpenGL core version 1.3, function \"glMultiTexCoord1iv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glMultiTexCoord1iv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 1.3, function \"glMultiTexCoord1iv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glMultiTexCoord1s = (PFNGLMULTITEXCOORD1SPROC)wglGetProcAddress("glMultiTexCoord1s");
-	if(!ptr_glMultiTexCoord1s) { MessageBox(0, "Couldn't load OpenGL core version 1.3, function \"glMultiTexCoord1s\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glMultiTexCoord1s) { MessageBox(0, TEXT("Couldn't load OpenGL core version 1.3, function \"glMultiTexCoord1s\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glMultiTexCoord1sv = (PFNGLMULTITEXCOORD1SVPROC)wglGetProcAddress("glMultiTexCoord1sv");
-	if(!ptr_glMultiTexCoord1sv) { MessageBox(0, "Couldn't load OpenGL core version 1.3, function \"glMultiTexCoord1sv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glMultiTexCoord1sv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 1.3, function \"glMultiTexCoord1sv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glMultiTexCoord2d = (PFNGLMULTITEXCOORD2DPROC)wglGetProcAddress("glMultiTexCoord2d");
-	if(!ptr_glMultiTexCoord2d) { MessageBox(0, "Couldn't load OpenGL core version 1.3, function \"glMultiTexCoord2d\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glMultiTexCoord2d) { MessageBox(0, TEXT("Couldn't load OpenGL core version 1.3, function \"glMultiTexCoord2d\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glMultiTexCoord2dv = (PFNGLMULTITEXCOORD2DVPROC)wglGetProcAddress("glMultiTexCoord2dv");
-	if(!ptr_glMultiTexCoord2dv) { MessageBox(0, "Couldn't load OpenGL core version 1.3, function \"glMultiTexCoord2dv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glMultiTexCoord2dv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 1.3, function \"glMultiTexCoord2dv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glMultiTexCoord2f = (PFNGLMULTITEXCOORD2FPROC)wglGetProcAddress("glMultiTexCoord2f");
-	if(!ptr_glMultiTexCoord2f) { MessageBox(0, "Couldn't load OpenGL core version 1.3, function \"glMultiTexCoord2f\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glMultiTexCoord2f) { MessageBox(0, TEXT("Couldn't load OpenGL core version 1.3, function \"glMultiTexCoord2f\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glMultiTexCoord2fv = (PFNGLMULTITEXCOORD2FVPROC)wglGetProcAddress("glMultiTexCoord2fv");
-	if(!ptr_glMultiTexCoord2fv) { MessageBox(0, "Couldn't load OpenGL core version 1.3, function \"glMultiTexCoord2fv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glMultiTexCoord2fv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 1.3, function \"glMultiTexCoord2fv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glMultiTexCoord2i = (PFNGLMULTITEXCOORD2IPROC)wglGetProcAddress("glMultiTexCoord2i");
-	if(!ptr_glMultiTexCoord2i) { MessageBox(0, "Couldn't load OpenGL core version 1.3, function \"glMultiTexCoord2i\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glMultiTexCoord2i) { MessageBox(0, TEXT("Couldn't load OpenGL core version 1.3, function \"glMultiTexCoord2i\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glMultiTexCoord2iv = (PFNGLMULTITEXCOORD2IVPROC)wglGetProcAddress("glMultiTexCoord2iv");
-	if(!ptr_glMultiTexCoord2iv) { MessageBox(0, "Couldn't load OpenGL core version 1.3, function \"glMultiTexCoord2iv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glMultiTexCoord2iv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 1.3, function \"glMultiTexCoord2iv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glMultiTexCoord2s = (PFNGLMULTITEXCOORD2SPROC)wglGetProcAddress("glMultiTexCoord2s");
-	if(!ptr_glMultiTexCoord2s) { MessageBox(0, "Couldn't load OpenGL core version 1.3, function \"glMultiTexCoord2s\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glMultiTexCoord2s) { MessageBox(0, TEXT("Couldn't load OpenGL core version 1.3, function \"glMultiTexCoord2s\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glMultiTexCoord2sv = (PFNGLMULTITEXCOORD2SVPROC)wglGetProcAddress("glMultiTexCoord2sv");
-	if(!ptr_glMultiTexCoord2sv) { MessageBox(0, "Couldn't load OpenGL core version 1.3, function \"glMultiTexCoord2sv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glMultiTexCoord2sv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 1.3, function \"glMultiTexCoord2sv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glMultiTexCoord3d = (PFNGLMULTITEXCOORD3DPROC)wglGetProcAddress("glMultiTexCoord3d");
-	if(!ptr_glMultiTexCoord3d) { MessageBox(0, "Couldn't load OpenGL core version 1.3, function \"glMultiTexCoord3d\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glMultiTexCoord3d) { MessageBox(0, TEXT("Couldn't load OpenGL core version 1.3, function \"glMultiTexCoord3d\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glMultiTexCoord3dv = (PFNGLMULTITEXCOORD3DVPROC)wglGetProcAddress("glMultiTexCoord3dv");
-	if(!ptr_glMultiTexCoord3dv) { MessageBox(0, "Couldn't load OpenGL core version 1.3, function \"glMultiTexCoord3dv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glMultiTexCoord3dv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 1.3, function \"glMultiTexCoord3dv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glMultiTexCoord3f = (PFNGLMULTITEXCOORD3FPROC)wglGetProcAddress("glMultiTexCoord3f");
-	if(!ptr_glMultiTexCoord3f) { MessageBox(0, "Couldn't load OpenGL core version 1.3, function \"glMultiTexCoord3f\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glMultiTexCoord3f) { MessageBox(0, TEXT("Couldn't load OpenGL core version 1.3, function \"glMultiTexCoord3f\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glMultiTexCoord3fv = (PFNGLMULTITEXCOORD3FVPROC)wglGetProcAddress("glMultiTexCoord3fv");
-	if(!ptr_glMultiTexCoord3fv) { MessageBox(0, "Couldn't load OpenGL core version 1.3, function \"glMultiTexCoord3fv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glMultiTexCoord3fv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 1.3, function \"glMultiTexCoord3fv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glMultiTexCoord3i = (PFNGLMULTITEXCOORD3IPROC)wglGetProcAddress("glMultiTexCoord3i");
-	if(!ptr_glMultiTexCoord3i) { MessageBox(0, "Couldn't load OpenGL core version 1.3, function \"glMultiTexCoord3i\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glMultiTexCoord3i) { MessageBox(0, TEXT("Couldn't load OpenGL core version 1.3, function \"glMultiTexCoord3i\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glMultiTexCoord3iv = (PFNGLMULTITEXCOORD3IVPROC)wglGetProcAddress("glMultiTexCoord3iv");
-	if(!ptr_glMultiTexCoord3iv) { MessageBox(0, "Couldn't load OpenGL core version 1.3, function \"glMultiTexCoord3iv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glMultiTexCoord3iv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 1.3, function \"glMultiTexCoord3iv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glMultiTexCoord3s = (PFNGLMULTITEXCOORD3SPROC)wglGetProcAddress("glMultiTexCoord3s");
-	if(!ptr_glMultiTexCoord3s) { MessageBox(0, "Couldn't load OpenGL core version 1.3, function \"glMultiTexCoord3s\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glMultiTexCoord3s) { MessageBox(0, TEXT("Couldn't load OpenGL core version 1.3, function \"glMultiTexCoord3s\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glMultiTexCoord3sv = (PFNGLMULTITEXCOORD3SVPROC)wglGetProcAddress("glMultiTexCoord3sv");
-	if(!ptr_glMultiTexCoord3sv) { MessageBox(0, "Couldn't load OpenGL core version 1.3, function \"glMultiTexCoord3sv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glMultiTexCoord3sv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 1.3, function \"glMultiTexCoord3sv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glMultiTexCoord4d = (PFNGLMULTITEXCOORD4DPROC)wglGetProcAddress("glMultiTexCoord4d");
-	if(!ptr_glMultiTexCoord4d) { MessageBox(0, "Couldn't load OpenGL core version 1.3, function \"glMultiTexCoord4d\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glMultiTexCoord4d) { MessageBox(0, TEXT("Couldn't load OpenGL core version 1.3, function \"glMultiTexCoord4d\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glMultiTexCoord4dv = (PFNGLMULTITEXCOORD4DVPROC)wglGetProcAddress("glMultiTexCoord4dv");
-	if(!ptr_glMultiTexCoord4dv) { MessageBox(0, "Couldn't load OpenGL core version 1.3, function \"glMultiTexCoord4dv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glMultiTexCoord4dv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 1.3, function \"glMultiTexCoord4dv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glMultiTexCoord4f = (PFNGLMULTITEXCOORD4FPROC)wglGetProcAddress("glMultiTexCoord4f");
-	if(!ptr_glMultiTexCoord4f) { MessageBox(0, "Couldn't load OpenGL core version 1.3, function \"glMultiTexCoord4f\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glMultiTexCoord4f) { MessageBox(0, TEXT("Couldn't load OpenGL core version 1.3, function \"glMultiTexCoord4f\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glMultiTexCoord4fv = (PFNGLMULTITEXCOORD4FVPROC)wglGetProcAddress("glMultiTexCoord4fv");
-	if(!ptr_glMultiTexCoord4fv) { MessageBox(0, "Couldn't load OpenGL core version 1.3, function \"glMultiTexCoord4fv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glMultiTexCoord4fv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 1.3, function \"glMultiTexCoord4fv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glMultiTexCoord4i = (PFNGLMULTITEXCOORD4IPROC)wglGetProcAddress("glMultiTexCoord4i");
-	if(!ptr_glMultiTexCoord4i) { MessageBox(0, "Couldn't load OpenGL core version 1.3, function \"glMultiTexCoord4i\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glMultiTexCoord4i) { MessageBox(0, TEXT("Couldn't load OpenGL core version 1.3, function \"glMultiTexCoord4i\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glMultiTexCoord4iv = (PFNGLMULTITEXCOORD4IVPROC)wglGetProcAddress("glMultiTexCoord4iv");
-	if(!ptr_glMultiTexCoord4iv) { MessageBox(0, "Couldn't load OpenGL core version 1.3, function \"glMultiTexCoord4iv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glMultiTexCoord4iv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 1.3, function \"glMultiTexCoord4iv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glMultiTexCoord4s = (PFNGLMULTITEXCOORD4SPROC)wglGetProcAddress("glMultiTexCoord4s");
-	if(!ptr_glMultiTexCoord4s) { MessageBox(0, "Couldn't load OpenGL core version 1.3, function \"glMultiTexCoord4s\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glMultiTexCoord4s) { MessageBox(0, TEXT("Couldn't load OpenGL core version 1.3, function \"glMultiTexCoord4s\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glMultiTexCoord4sv = (PFNGLMULTITEXCOORD4SVPROC)wglGetProcAddress("glMultiTexCoord4sv");
-	if(!ptr_glMultiTexCoord4sv) { MessageBox(0, "Couldn't load OpenGL core version 1.3, function \"glMultiTexCoord4sv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glMultiTexCoord4sv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 1.3, function \"glMultiTexCoord4sv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glLoadTransposeMatrixf = (PFNGLLOADTRANSPOSEMATRIXFPROC)wglGetProcAddress("glLoadTransposeMatrixf");
-	if(!ptr_glLoadTransposeMatrixf) { MessageBox(0, "Couldn't load OpenGL core version 1.3, function \"glLoadTransposeMatrixf\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glLoadTransposeMatrixf) { MessageBox(0, TEXT("Couldn't load OpenGL core version 1.3, function \"glLoadTransposeMatrixf\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glLoadTransposeMatrixd = (PFNGLLOADTRANSPOSEMATRIXDPROC)wglGetProcAddress("glLoadTransposeMatrixd");
-	if(!ptr_glLoadTransposeMatrixd) { MessageBox(0, "Couldn't load OpenGL core version 1.3, function \"glLoadTransposeMatrixd\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glLoadTransposeMatrixd) { MessageBox(0, TEXT("Couldn't load OpenGL core version 1.3, function \"glLoadTransposeMatrixd\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glMultTransposeMatrixf = (PFNGLMULTTRANSPOSEMATRIXFPROC)wglGetProcAddress("glMultTransposeMatrixf");
-	if(!ptr_glMultTransposeMatrixf) { MessageBox(0, "Couldn't load OpenGL core version 1.3, function \"glMultTransposeMatrixf\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glMultTransposeMatrixf) { MessageBox(0, TEXT("Couldn't load OpenGL core version 1.3, function \"glMultTransposeMatrixf\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glMultTransposeMatrixd = (PFNGLMULTTRANSPOSEMATRIXDPROC)wglGetProcAddress("glMultTransposeMatrixd");
-	if(!ptr_glMultTransposeMatrixd) { MessageBox(0, "Couldn't load OpenGL core version 1.3, function \"glMultTransposeMatrixd\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glMultTransposeMatrixd) { MessageBox(0, TEXT("Couldn't load OpenGL core version 1.3, function \"glMultTransposeMatrixd\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glBlendFuncSeparate = (PFNGLBLENDFUNCSEPARATEPROC)wglGetProcAddress("glBlendFuncSeparate");
-	if(!ptr_glBlendFuncSeparate) { MessageBox(0, "Couldn't load OpenGL core version 1.4, function \"glBlendFuncSeparate\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glBlendFuncSeparate) { MessageBox(0, TEXT("Couldn't load OpenGL core version 1.4, function \"glBlendFuncSeparate\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glMultiDrawArrays = (PFNGLMULTIDRAWARRAYSPROC)wglGetProcAddress("glMultiDrawArrays");
-	if(!ptr_glMultiDrawArrays) { MessageBox(0, "Couldn't load OpenGL core version 1.4, function \"glMultiDrawArrays\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glMultiDrawArrays) { MessageBox(0, TEXT("Couldn't load OpenGL core version 1.4, function \"glMultiDrawArrays\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glMultiDrawElements = (PFNGLMULTIDRAWELEMENTSPROC)wglGetProcAddress("glMultiDrawElements");
-	if(!ptr_glMultiDrawElements) { MessageBox(0, "Couldn't load OpenGL core version 1.4, function \"glMultiDrawElements\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glMultiDrawElements) { MessageBox(0, TEXT("Couldn't load OpenGL core version 1.4, function \"glMultiDrawElements\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glPointParameterf = (PFNGLPOINTPARAMETERFPROC)wglGetProcAddress("glPointParameterf");
-	if(!ptr_glPointParameterf) { MessageBox(0, "Couldn't load OpenGL core version 1.4, function \"glPointParameterf\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glPointParameterf) { MessageBox(0, TEXT("Couldn't load OpenGL core version 1.4, function \"glPointParameterf\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glPointParameterfv = (PFNGLPOINTPARAMETERFVPROC)wglGetProcAddress("glPointParameterfv");
-	if(!ptr_glPointParameterfv) { MessageBox(0, "Couldn't load OpenGL core version 1.4, function \"glPointParameterfv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glPointParameterfv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 1.4, function \"glPointParameterfv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glPointParameteri = (PFNGLPOINTPARAMETERIPROC)wglGetProcAddress("glPointParameteri");
-	if(!ptr_glPointParameteri) { MessageBox(0, "Couldn't load OpenGL core version 1.4, function \"glPointParameteri\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glPointParameteri) { MessageBox(0, TEXT("Couldn't load OpenGL core version 1.4, function \"glPointParameteri\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glPointParameteriv = (PFNGLPOINTPARAMETERIVPROC)wglGetProcAddress("glPointParameteriv");
-	if(!ptr_glPointParameteriv) { MessageBox(0, "Couldn't load OpenGL core version 1.4, function \"glPointParameteriv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glPointParameteriv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 1.4, function \"glPointParameteriv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glFogCoordf = (PFNGLFOGCOORDFPROC)wglGetProcAddress("glFogCoordf");
-	if(!ptr_glFogCoordf) { MessageBox(0, "Couldn't load OpenGL core version 1.4, function \"glFogCoordf\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glFogCoordf) { MessageBox(0, TEXT("Couldn't load OpenGL core version 1.4, function \"glFogCoordf\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glFogCoordfv = (PFNGLFOGCOORDFVPROC)wglGetProcAddress("glFogCoordfv");
-	if(!ptr_glFogCoordfv) { MessageBox(0, "Couldn't load OpenGL core version 1.4, function \"glFogCoordfv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glFogCoordfv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 1.4, function \"glFogCoordfv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glFogCoordd = (PFNGLFOGCOORDDPROC)wglGetProcAddress("glFogCoordd");
-	if(!ptr_glFogCoordd) { MessageBox(0, "Couldn't load OpenGL core version 1.4, function \"glFogCoordd\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glFogCoordd) { MessageBox(0, TEXT("Couldn't load OpenGL core version 1.4, function \"glFogCoordd\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glFogCoorddv = (PFNGLFOGCOORDDVPROC)wglGetProcAddress("glFogCoorddv");
-	if(!ptr_glFogCoorddv) { MessageBox(0, "Couldn't load OpenGL core version 1.4, function \"glFogCoorddv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glFogCoorddv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 1.4, function \"glFogCoorddv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glFogCoordPointer = (PFNGLFOGCOORDPOINTERPROC)wglGetProcAddress("glFogCoordPointer");
-	if(!ptr_glFogCoordPointer) { MessageBox(0, "Couldn't load OpenGL core version 1.4, function \"glFogCoordPointer\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glFogCoordPointer) { MessageBox(0, TEXT("Couldn't load OpenGL core version 1.4, function \"glFogCoordPointer\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glSecondaryColor3b = (PFNGLSECONDARYCOLOR3BPROC)wglGetProcAddress("glSecondaryColor3b");
-	if(!ptr_glSecondaryColor3b) { MessageBox(0, "Couldn't load OpenGL core version 1.4, function \"glSecondaryColor3b\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glSecondaryColor3b) { MessageBox(0, TEXT("Couldn't load OpenGL core version 1.4, function \"glSecondaryColor3b\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glSecondaryColor3bv = (PFNGLSECONDARYCOLOR3BVPROC)wglGetProcAddress("glSecondaryColor3bv");
-	if(!ptr_glSecondaryColor3bv) { MessageBox(0, "Couldn't load OpenGL core version 1.4, function \"glSecondaryColor3bv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glSecondaryColor3bv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 1.4, function \"glSecondaryColor3bv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glSecondaryColor3d = (PFNGLSECONDARYCOLOR3DPROC)wglGetProcAddress("glSecondaryColor3d");
-	if(!ptr_glSecondaryColor3d) { MessageBox(0, "Couldn't load OpenGL core version 1.4, function \"glSecondaryColor3d\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glSecondaryColor3d) { MessageBox(0, TEXT("Couldn't load OpenGL core version 1.4, function \"glSecondaryColor3d\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glSecondaryColor3dv = (PFNGLSECONDARYCOLOR3DVPROC)wglGetProcAddress("glSecondaryColor3dv");
-	if(!ptr_glSecondaryColor3dv) { MessageBox(0, "Couldn't load OpenGL core version 1.4, function \"glSecondaryColor3dv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glSecondaryColor3dv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 1.4, function \"glSecondaryColor3dv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glSecondaryColor3f = (PFNGLSECONDARYCOLOR3FPROC)wglGetProcAddress("glSecondaryColor3f");
-	if(!ptr_glSecondaryColor3f) { MessageBox(0, "Couldn't load OpenGL core version 1.4, function \"glSecondaryColor3f\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glSecondaryColor3f) { MessageBox(0, TEXT("Couldn't load OpenGL core version 1.4, function \"glSecondaryColor3f\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glSecondaryColor3fv = (PFNGLSECONDARYCOLOR3FVPROC)wglGetProcAddress("glSecondaryColor3fv");
-	if(!ptr_glSecondaryColor3fv) { MessageBox(0, "Couldn't load OpenGL core version 1.4, function \"glSecondaryColor3fv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glSecondaryColor3fv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 1.4, function \"glSecondaryColor3fv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glSecondaryColor3i = (PFNGLSECONDARYCOLOR3IPROC)wglGetProcAddress("glSecondaryColor3i");
-	if(!ptr_glSecondaryColor3i) { MessageBox(0, "Couldn't load OpenGL core version 1.4, function \"glSecondaryColor3i\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glSecondaryColor3i) { MessageBox(0, TEXT("Couldn't load OpenGL core version 1.4, function \"glSecondaryColor3i\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glSecondaryColor3iv = (PFNGLSECONDARYCOLOR3IVPROC)wglGetProcAddress("glSecondaryColor3iv");
-	if(!ptr_glSecondaryColor3iv) { MessageBox(0, "Couldn't load OpenGL core version 1.4, function \"glSecondaryColor3iv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glSecondaryColor3iv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 1.4, function \"glSecondaryColor3iv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glSecondaryColor3s = (PFNGLSECONDARYCOLOR3SPROC)wglGetProcAddress("glSecondaryColor3s");
-	if(!ptr_glSecondaryColor3s) { MessageBox(0, "Couldn't load OpenGL core version 1.4, function \"glSecondaryColor3s\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glSecondaryColor3s) { MessageBox(0, TEXT("Couldn't load OpenGL core version 1.4, function \"glSecondaryColor3s\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glSecondaryColor3sv = (PFNGLSECONDARYCOLOR3SVPROC)wglGetProcAddress("glSecondaryColor3sv");
-	if(!ptr_glSecondaryColor3sv) { MessageBox(0, "Couldn't load OpenGL core version 1.4, function \"glSecondaryColor3sv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glSecondaryColor3sv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 1.4, function \"glSecondaryColor3sv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glSecondaryColor3ub = (PFNGLSECONDARYCOLOR3UBPROC)wglGetProcAddress("glSecondaryColor3ub");
-	if(!ptr_glSecondaryColor3ub) { MessageBox(0, "Couldn't load OpenGL core version 1.4, function \"glSecondaryColor3ub\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glSecondaryColor3ub) { MessageBox(0, TEXT("Couldn't load OpenGL core version 1.4, function \"glSecondaryColor3ub\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glSecondaryColor3ubv = (PFNGLSECONDARYCOLOR3UBVPROC)wglGetProcAddress("glSecondaryColor3ubv");
-	if(!ptr_glSecondaryColor3ubv) { MessageBox(0, "Couldn't load OpenGL core version 1.4, function \"glSecondaryColor3ubv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glSecondaryColor3ubv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 1.4, function \"glSecondaryColor3ubv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glSecondaryColor3ui = (PFNGLSECONDARYCOLOR3UIPROC)wglGetProcAddress("glSecondaryColor3ui");
-	if(!ptr_glSecondaryColor3ui) { MessageBox(0, "Couldn't load OpenGL core version 1.4, function \"glSecondaryColor3ui\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glSecondaryColor3ui) { MessageBox(0, TEXT("Couldn't load OpenGL core version 1.4, function \"glSecondaryColor3ui\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glSecondaryColor3uiv = (PFNGLSECONDARYCOLOR3UIVPROC)wglGetProcAddress("glSecondaryColor3uiv");
-	if(!ptr_glSecondaryColor3uiv) { MessageBox(0, "Couldn't load OpenGL core version 1.4, function \"glSecondaryColor3uiv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glSecondaryColor3uiv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 1.4, function \"glSecondaryColor3uiv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glSecondaryColor3us = (PFNGLSECONDARYCOLOR3USPROC)wglGetProcAddress("glSecondaryColor3us");
-	if(!ptr_glSecondaryColor3us) { MessageBox(0, "Couldn't load OpenGL core version 1.4, function \"glSecondaryColor3us\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glSecondaryColor3us) { MessageBox(0, TEXT("Couldn't load OpenGL core version 1.4, function \"glSecondaryColor3us\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glSecondaryColor3usv = (PFNGLSECONDARYCOLOR3USVPROC)wglGetProcAddress("glSecondaryColor3usv");
-	if(!ptr_glSecondaryColor3usv) { MessageBox(0, "Couldn't load OpenGL core version 1.4, function \"glSecondaryColor3usv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glSecondaryColor3usv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 1.4, function \"glSecondaryColor3usv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glSecondaryColorPointer = (PFNGLSECONDARYCOLORPOINTERPROC)wglGetProcAddress("glSecondaryColorPointer");
-	if(!ptr_glSecondaryColorPointer) { MessageBox(0, "Couldn't load OpenGL core version 1.4, function \"glSecondaryColorPointer\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glSecondaryColorPointer) { MessageBox(0, TEXT("Couldn't load OpenGL core version 1.4, function \"glSecondaryColorPointer\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glWindowPos2d = (PFNGLWINDOWPOS2DPROC)wglGetProcAddress("glWindowPos2d");
-	if(!ptr_glWindowPos2d) { MessageBox(0, "Couldn't load OpenGL core version 1.4, function \"glWindowPos2d\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glWindowPos2d) { MessageBox(0, TEXT("Couldn't load OpenGL core version 1.4, function \"glWindowPos2d\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glWindowPos2dv = (PFNGLWINDOWPOS2DVPROC)wglGetProcAddress("glWindowPos2dv");
-	if(!ptr_glWindowPos2dv) { MessageBox(0, "Couldn't load OpenGL core version 1.4, function \"glWindowPos2dv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glWindowPos2dv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 1.4, function \"glWindowPos2dv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glWindowPos2f = (PFNGLWINDOWPOS2FPROC)wglGetProcAddress("glWindowPos2f");
-	if(!ptr_glWindowPos2f) { MessageBox(0, "Couldn't load OpenGL core version 1.4, function \"glWindowPos2f\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glWindowPos2f) { MessageBox(0, TEXT("Couldn't load OpenGL core version 1.4, function \"glWindowPos2f\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glWindowPos2fv = (PFNGLWINDOWPOS2FVPROC)wglGetProcAddress("glWindowPos2fv");
-	if(!ptr_glWindowPos2fv) { MessageBox(0, "Couldn't load OpenGL core version 1.4, function \"glWindowPos2fv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glWindowPos2fv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 1.4, function \"glWindowPos2fv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glWindowPos2i = (PFNGLWINDOWPOS2IPROC)wglGetProcAddress("glWindowPos2i");
-	if(!ptr_glWindowPos2i) { MessageBox(0, "Couldn't load OpenGL core version 1.4, function \"glWindowPos2i\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glWindowPos2i) { MessageBox(0, TEXT("Couldn't load OpenGL core version 1.4, function \"glWindowPos2i\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glWindowPos2iv = (PFNGLWINDOWPOS2IVPROC)wglGetProcAddress("glWindowPos2iv");
-	if(!ptr_glWindowPos2iv) { MessageBox(0, "Couldn't load OpenGL core version 1.4, function \"glWindowPos2iv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glWindowPos2iv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 1.4, function \"glWindowPos2iv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glWindowPos2s = (PFNGLWINDOWPOS2SPROC)wglGetProcAddress("glWindowPos2s");
-	if(!ptr_glWindowPos2s) { MessageBox(0, "Couldn't load OpenGL core version 1.4, function \"glWindowPos2s\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glWindowPos2s) { MessageBox(0, TEXT("Couldn't load OpenGL core version 1.4, function \"glWindowPos2s\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glWindowPos2sv = (PFNGLWINDOWPOS2SVPROC)wglGetProcAddress("glWindowPos2sv");
-	if(!ptr_glWindowPos2sv) { MessageBox(0, "Couldn't load OpenGL core version 1.4, function \"glWindowPos2sv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glWindowPos2sv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 1.4, function \"glWindowPos2sv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glWindowPos3d = (PFNGLWINDOWPOS3DPROC)wglGetProcAddress("glWindowPos3d");
-	if(!ptr_glWindowPos3d) { MessageBox(0, "Couldn't load OpenGL core version 1.4, function \"glWindowPos3d\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glWindowPos3d) { MessageBox(0, TEXT("Couldn't load OpenGL core version 1.4, function \"glWindowPos3d\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glWindowPos3dv = (PFNGLWINDOWPOS3DVPROC)wglGetProcAddress("glWindowPos3dv");
-	if(!ptr_glWindowPos3dv) { MessageBox(0, "Couldn't load OpenGL core version 1.4, function \"glWindowPos3dv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glWindowPos3dv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 1.4, function \"glWindowPos3dv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glWindowPos3f = (PFNGLWINDOWPOS3FPROC)wglGetProcAddress("glWindowPos3f");
-	if(!ptr_glWindowPos3f) { MessageBox(0, "Couldn't load OpenGL core version 1.4, function \"glWindowPos3f\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glWindowPos3f) { MessageBox(0, TEXT("Couldn't load OpenGL core version 1.4, function \"glWindowPos3f\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glWindowPos3fv = (PFNGLWINDOWPOS3FVPROC)wglGetProcAddress("glWindowPos3fv");
-	if(!ptr_glWindowPos3fv) { MessageBox(0, "Couldn't load OpenGL core version 1.4, function \"glWindowPos3fv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glWindowPos3fv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 1.4, function \"glWindowPos3fv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glWindowPos3i = (PFNGLWINDOWPOS3IPROC)wglGetProcAddress("glWindowPos3i");
-	if(!ptr_glWindowPos3i) { MessageBox(0, "Couldn't load OpenGL core version 1.4, function \"glWindowPos3i\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glWindowPos3i) { MessageBox(0, TEXT("Couldn't load OpenGL core version 1.4, function \"glWindowPos3i\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glWindowPos3iv = (PFNGLWINDOWPOS3IVPROC)wglGetProcAddress("glWindowPos3iv");
-	if(!ptr_glWindowPos3iv) { MessageBox(0, "Couldn't load OpenGL core version 1.4, function \"glWindowPos3iv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glWindowPos3iv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 1.4, function \"glWindowPos3iv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glWindowPos3s = (PFNGLWINDOWPOS3SPROC)wglGetProcAddress("glWindowPos3s");
-	if(!ptr_glWindowPos3s) { MessageBox(0, "Couldn't load OpenGL core version 1.4, function \"glWindowPos3s\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glWindowPos3s) { MessageBox(0, TEXT("Couldn't load OpenGL core version 1.4, function \"glWindowPos3s\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glWindowPos3sv = (PFNGLWINDOWPOS3SVPROC)wglGetProcAddress("glWindowPos3sv");
-	if(!ptr_glWindowPos3sv) { MessageBox(0, "Couldn't load OpenGL core version 1.4, function \"glWindowPos3sv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glWindowPos3sv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 1.4, function \"glWindowPos3sv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glBlendColor = (PFNGLBLENDCOLORPROC)wglGetProcAddress("glBlendColor");
-	if(!ptr_glBlendColor) { MessageBox(0, "Couldn't load OpenGL core version 1.4, function \"glBlendColor\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glBlendColor) { MessageBox(0, TEXT("Couldn't load OpenGL core version 1.4, function \"glBlendColor\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glBlendEquation = (PFNGLBLENDEQUATIONPROC)wglGetProcAddress("glBlendEquation");
-	if(!ptr_glBlendEquation) { MessageBox(0, "Couldn't load OpenGL core version 1.4, function \"glBlendEquation\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glBlendEquation) { MessageBox(0, TEXT("Couldn't load OpenGL core version 1.4, function \"glBlendEquation\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glGenQueries = (PFNGLGENQUERIESPROC)wglGetProcAddress("glGenQueries");
-	if(!ptr_glGenQueries) { MessageBox(0, "Couldn't load OpenGL core version 1.5, function \"glGenQueries\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glGenQueries) { MessageBox(0, TEXT("Couldn't load OpenGL core version 1.5, function \"glGenQueries\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glDeleteQueries = (PFNGLDELETEQUERIESPROC)wglGetProcAddress("glDeleteQueries");
-	if(!ptr_glDeleteQueries) { MessageBox(0, "Couldn't load OpenGL core version 1.5, function \"glDeleteQueries\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glDeleteQueries) { MessageBox(0, TEXT("Couldn't load OpenGL core version 1.5, function \"glDeleteQueries\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glIsQuery = (PFNGLISQUERYPROC)wglGetProcAddress("glIsQuery");
-	if(!ptr_glIsQuery) { MessageBox(0, "Couldn't load OpenGL core version 1.5, function \"glIsQuery\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glIsQuery) { MessageBox(0, TEXT("Couldn't load OpenGL core version 1.5, function \"glIsQuery\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glBeginQuery = (PFNGLBEGINQUERYPROC)wglGetProcAddress("glBeginQuery");
-	if(!ptr_glBeginQuery) { MessageBox(0, "Couldn't load OpenGL core version 1.5, function \"glBeginQuery\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glBeginQuery) { MessageBox(0, TEXT("Couldn't load OpenGL core version 1.5, function \"glBeginQuery\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glEndQuery = (PFNGLENDQUERYPROC)wglGetProcAddress("glEndQuery");
-	if(!ptr_glEndQuery) { MessageBox(0, "Couldn't load OpenGL core version 1.5, function \"glEndQuery\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glEndQuery) { MessageBox(0, TEXT("Couldn't load OpenGL core version 1.5, function \"glEndQuery\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glGetQueryiv = (PFNGLGETQUERYIVPROC)wglGetProcAddress("glGetQueryiv");
-	if(!ptr_glGetQueryiv) { MessageBox(0, "Couldn't load OpenGL core version 1.5, function \"glGetQueryiv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glGetQueryiv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 1.5, function \"glGetQueryiv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glGetQueryObjectiv = (PFNGLGETQUERYOBJECTIVPROC)wglGetProcAddress("glGetQueryObjectiv");
-	if(!ptr_glGetQueryObjectiv) { MessageBox(0, "Couldn't load OpenGL core version 1.5, function \"glGetQueryObjectiv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glGetQueryObjectiv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 1.5, function \"glGetQueryObjectiv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glGetQueryObjectuiv = (PFNGLGETQUERYOBJECTUIVPROC)wglGetProcAddress("glGetQueryObjectuiv");
-	if(!ptr_glGetQueryObjectuiv) { MessageBox(0, "Couldn't load OpenGL core version 1.5, function \"glGetQueryObjectuiv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glGetQueryObjectuiv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 1.5, function \"glGetQueryObjectuiv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glBindBuffer = (PFNGLBINDBUFFERPROC)wglGetProcAddress("glBindBuffer");
-	if(!ptr_glBindBuffer) { MessageBox(0, "Couldn't load OpenGL core version 1.5, function \"glBindBuffer\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glBindBuffer) { MessageBox(0, TEXT("Couldn't load OpenGL core version 1.5, function \"glBindBuffer\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glDeleteBuffers = (PFNGLDELETEBUFFERSPROC)wglGetProcAddress("glDeleteBuffers");
-	if(!ptr_glDeleteBuffers) { MessageBox(0, "Couldn't load OpenGL core version 1.5, function \"glDeleteBuffers\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glDeleteBuffers) { MessageBox(0, TEXT("Couldn't load OpenGL core version 1.5, function \"glDeleteBuffers\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glGenBuffers = (PFNGLGENBUFFERSPROC)wglGetProcAddress("glGenBuffers");
-	if(!ptr_glGenBuffers) { MessageBox(0, "Couldn't load OpenGL core version 1.5, function \"glGenBuffers\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glGenBuffers) { MessageBox(0, TEXT("Couldn't load OpenGL core version 1.5, function \"glGenBuffers\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glIsBuffer = (PFNGLISBUFFERPROC)wglGetProcAddress("glIsBuffer");
-	if(!ptr_glIsBuffer) { MessageBox(0, "Couldn't load OpenGL core version 1.5, function \"glIsBuffer\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glIsBuffer) { MessageBox(0, TEXT("Couldn't load OpenGL core version 1.5, function \"glIsBuffer\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glBufferData = (PFNGLBUFFERDATAPROC)wglGetProcAddress("glBufferData");
-	if(!ptr_glBufferData) { MessageBox(0, "Couldn't load OpenGL core version 1.5, function \"glBufferData\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glBufferData) { MessageBox(0, TEXT("Couldn't load OpenGL core version 1.5, function \"glBufferData\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glBufferSubData = (PFNGLBUFFERSUBDATAPROC)wglGetProcAddress("glBufferSubData");
-	if(!ptr_glBufferSubData) { MessageBox(0, "Couldn't load OpenGL core version 1.5, function \"glBufferSubData\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glBufferSubData) { MessageBox(0, TEXT("Couldn't load OpenGL core version 1.5, function \"glBufferSubData\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glGetBufferSubData = (PFNGLGETBUFFERSUBDATAPROC)wglGetProcAddress("glGetBufferSubData");
-	if(!ptr_glGetBufferSubData) { MessageBox(0, "Couldn't load OpenGL core version 1.5, function \"glGetBufferSubData\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glGetBufferSubData) { MessageBox(0, TEXT("Couldn't load OpenGL core version 1.5, function \"glGetBufferSubData\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glMapBuffer = (PFNGLMAPBUFFERPROC)wglGetProcAddress("glMapBuffer");
-	if(!ptr_glMapBuffer) { MessageBox(0, "Couldn't load OpenGL core version 1.5, function \"glMapBuffer\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glMapBuffer) { MessageBox(0, TEXT("Couldn't load OpenGL core version 1.5, function \"glMapBuffer\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glUnmapBuffer = (PFNGLUNMAPBUFFERPROC)wglGetProcAddress("glUnmapBuffer");
-	if(!ptr_glUnmapBuffer) { MessageBox(0, "Couldn't load OpenGL core version 1.5, function \"glUnmapBuffer\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glUnmapBuffer) { MessageBox(0, TEXT("Couldn't load OpenGL core version 1.5, function \"glUnmapBuffer\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glGetBufferParameteriv = (PFNGLGETBUFFERPARAMETERIVPROC)wglGetProcAddress("glGetBufferParameteriv");
-	if(!ptr_glGetBufferParameteriv) { MessageBox(0, "Couldn't load OpenGL core version 1.5, function \"glGetBufferParameteriv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glGetBufferParameteriv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 1.5, function \"glGetBufferParameteriv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glGetBufferPointerv = (PFNGLGETBUFFERPOINTERVPROC)wglGetProcAddress("glGetBufferPointerv");
-	if(!ptr_glGetBufferPointerv) { MessageBox(0, "Couldn't load OpenGL core version 1.5, function \"glGetBufferPointerv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glGetBufferPointerv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 1.5, function \"glGetBufferPointerv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glBlendEquationSeparate = (PFNGLBLENDEQUATIONSEPARATEPROC)wglGetProcAddress("glBlendEquationSeparate");
-	if(!ptr_glBlendEquationSeparate) { MessageBox(0, "Couldn't load OpenGL core version 2.0, function \"glBlendEquationSeparate\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glBlendEquationSeparate) { MessageBox(0, TEXT("Couldn't load OpenGL core version 2.0, function \"glBlendEquationSeparate\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glDrawBuffers = (PFNGLDRAWBUFFERSPROC)wglGetProcAddress("glDrawBuffers");
-	if(!ptr_glDrawBuffers) { MessageBox(0, "Couldn't load OpenGL core version 2.0, function \"glDrawBuffers\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glDrawBuffers) { MessageBox(0, TEXT("Couldn't load OpenGL core version 2.0, function \"glDrawBuffers\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glStencilOpSeparate = (PFNGLSTENCILOPSEPARATEPROC)wglGetProcAddress("glStencilOpSeparate");
-	if(!ptr_glStencilOpSeparate) { MessageBox(0, "Couldn't load OpenGL core version 2.0, function \"glStencilOpSeparate\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glStencilOpSeparate) { MessageBox(0, TEXT("Couldn't load OpenGL core version 2.0, function \"glStencilOpSeparate\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glStencilFuncSeparate = (PFNGLSTENCILFUNCSEPARATEPROC)wglGetProcAddress("glStencilFuncSeparate");
-	if(!ptr_glStencilFuncSeparate) { MessageBox(0, "Couldn't load OpenGL core version 2.0, function \"glStencilFuncSeparate\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glStencilFuncSeparate) { MessageBox(0, TEXT("Couldn't load OpenGL core version 2.0, function \"glStencilFuncSeparate\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glStencilMaskSeparate = (PFNGLSTENCILMASKSEPARATEPROC)wglGetProcAddress("glStencilMaskSeparate");
-	if(!ptr_glStencilMaskSeparate) { MessageBox(0, "Couldn't load OpenGL core version 2.0, function \"glStencilMaskSeparate\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glStencilMaskSeparate) { MessageBox(0, TEXT("Couldn't load OpenGL core version 2.0, function \"glStencilMaskSeparate\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glAttachShader = (PFNGLATTACHSHADERPROC)wglGetProcAddress("glAttachShader");
-	if(!ptr_glAttachShader) { MessageBox(0, "Couldn't load OpenGL core version 2.0, function \"glAttachShader\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glAttachShader) { MessageBox(0, TEXT("Couldn't load OpenGL core version 2.0, function \"glAttachShader\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glBindAttribLocation = (PFNGLBINDATTRIBLOCATIONPROC)wglGetProcAddress("glBindAttribLocation");
-	if(!ptr_glBindAttribLocation) { MessageBox(0, "Couldn't load OpenGL core version 2.0, function \"glBindAttribLocation\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glBindAttribLocation) { MessageBox(0, TEXT("Couldn't load OpenGL core version 2.0, function \"glBindAttribLocation\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glCompileShader = (PFNGLCOMPILESHADERPROC)wglGetProcAddress("glCompileShader");
-	if(!ptr_glCompileShader) { MessageBox(0, "Couldn't load OpenGL core version 2.0, function \"glCompileShader\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glCompileShader) { MessageBox(0, TEXT("Couldn't load OpenGL core version 2.0, function \"glCompileShader\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glCreateProgram = (PFNGLCREATEPROGRAMPROC)wglGetProcAddress("glCreateProgram");
-	if(!ptr_glCreateProgram) { MessageBox(0, "Couldn't load OpenGL core version 2.0, function \"glCreateProgram\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glCreateProgram) { MessageBox(0, TEXT("Couldn't load OpenGL core version 2.0, function \"glCreateProgram\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glCreateShader = (PFNGLCREATESHADERPROC)wglGetProcAddress("glCreateShader");
-	if(!ptr_glCreateShader) { MessageBox(0, "Couldn't load OpenGL core version 2.0, function \"glCreateShader\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glCreateShader) { MessageBox(0, TEXT("Couldn't load OpenGL core version 2.0, function \"glCreateShader\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glDeleteProgram = (PFNGLDELETEPROGRAMPROC)wglGetProcAddress("glDeleteProgram");
-	if(!ptr_glDeleteProgram) { MessageBox(0, "Couldn't load OpenGL core version 2.0, function \"glDeleteProgram\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glDeleteProgram) { MessageBox(0, TEXT("Couldn't load OpenGL core version 2.0, function \"glDeleteProgram\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glDeleteShader = (PFNGLDELETESHADERPROC)wglGetProcAddress("glDeleteShader");
-	if(!ptr_glDeleteShader) { MessageBox(0, "Couldn't load OpenGL core version 2.0, function \"glDeleteShader\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glDeleteShader) { MessageBox(0, TEXT("Couldn't load OpenGL core version 2.0, function \"glDeleteShader\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glDetachShader = (PFNGLDETACHSHADERPROC)wglGetProcAddress("glDetachShader");
-	if(!ptr_glDetachShader) { MessageBox(0, "Couldn't load OpenGL core version 2.0, function \"glDetachShader\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glDetachShader) { MessageBox(0, TEXT("Couldn't load OpenGL core version 2.0, function \"glDetachShader\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glDisableVertexAttribArray = (PFNGLDISABLEVERTEXATTRIBARRAYPROC)wglGetProcAddress("glDisableVertexAttribArray");
-	if(!ptr_glDisableVertexAttribArray) { MessageBox(0, "Couldn't load OpenGL core version 2.0, function \"glDisableVertexAttribArray\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glDisableVertexAttribArray) { MessageBox(0, TEXT("Couldn't load OpenGL core version 2.0, function \"glDisableVertexAttribArray\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glEnableVertexAttribArray = (PFNGLENABLEVERTEXATTRIBARRAYPROC)wglGetProcAddress("glEnableVertexAttribArray");
-	if(!ptr_glEnableVertexAttribArray) { MessageBox(0, "Couldn't load OpenGL core version 2.0, function \"glEnableVertexAttribArray\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glEnableVertexAttribArray) { MessageBox(0, TEXT("Couldn't load OpenGL core version 2.0, function \"glEnableVertexAttribArray\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glGetActiveAttrib = (PFNGLGETACTIVEATTRIBPROC)wglGetProcAddress("glGetActiveAttrib");
-	if(!ptr_glGetActiveAttrib) { MessageBox(0, "Couldn't load OpenGL core version 2.0, function \"glGetActiveAttrib\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glGetActiveAttrib) { MessageBox(0, TEXT("Couldn't load OpenGL core version 2.0, function \"glGetActiveAttrib\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glGetActiveUniform = (PFNGLGETACTIVEUNIFORMPROC)wglGetProcAddress("glGetActiveUniform");
-	if(!ptr_glGetActiveUniform) { MessageBox(0, "Couldn't load OpenGL core version 2.0, function \"glGetActiveUniform\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glGetActiveUniform) { MessageBox(0, TEXT("Couldn't load OpenGL core version 2.0, function \"glGetActiveUniform\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glGetAttachedShaders = (PFNGLGETATTACHEDSHADERSPROC)wglGetProcAddress("glGetAttachedShaders");
-	if(!ptr_glGetAttachedShaders) { MessageBox(0, "Couldn't load OpenGL core version 2.0, function \"glGetAttachedShaders\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glGetAttachedShaders) { MessageBox(0, TEXT("Couldn't load OpenGL core version 2.0, function \"glGetAttachedShaders\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glGetAttribLocation = (PFNGLGETATTRIBLOCATIONPROC)wglGetProcAddress("glGetAttribLocation");
-	if(!ptr_glGetAttribLocation) { MessageBox(0, "Couldn't load OpenGL core version 2.0, function \"glGetAttribLocation\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glGetAttribLocation) { MessageBox(0, TEXT("Couldn't load OpenGL core version 2.0, function \"glGetAttribLocation\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glGetProgramiv = (PFNGLGETPROGRAMIVPROC)wglGetProcAddress("glGetProgramiv");
-	if(!ptr_glGetProgramiv) { MessageBox(0, "Couldn't load OpenGL core version 2.0, function \"glGetProgramiv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glGetProgramiv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 2.0, function \"glGetProgramiv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glGetProgramInfoLog = (PFNGLGETPROGRAMINFOLOGPROC)wglGetProcAddress("glGetProgramInfoLog");
-	if(!ptr_glGetProgramInfoLog) { MessageBox(0, "Couldn't load OpenGL core version 2.0, function \"glGetProgramInfoLog\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glGetProgramInfoLog) { MessageBox(0, TEXT("Couldn't load OpenGL core version 2.0, function \"glGetProgramInfoLog\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glGetShaderiv = (PFNGLGETSHADERIVPROC)wglGetProcAddress("glGetShaderiv");
-	if(!ptr_glGetShaderiv) { MessageBox(0, "Couldn't load OpenGL core version 2.0, function \"glGetShaderiv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glGetShaderiv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 2.0, function \"glGetShaderiv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glGetShaderInfoLog = (PFNGLGETSHADERINFOLOGPROC)wglGetProcAddress("glGetShaderInfoLog");
-	if(!ptr_glGetShaderInfoLog) { MessageBox(0, "Couldn't load OpenGL core version 2.0, function \"glGetShaderInfoLog\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glGetShaderInfoLog) { MessageBox(0, TEXT("Couldn't load OpenGL core version 2.0, function \"glGetShaderInfoLog\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glGetShaderSource = (PFNGLGETSHADERSOURCEPROC)wglGetProcAddress("glGetShaderSource");
-	if(!ptr_glGetShaderSource) { MessageBox(0, "Couldn't load OpenGL core version 2.0, function \"glGetShaderSource\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glGetShaderSource) { MessageBox(0, TEXT("Couldn't load OpenGL core version 2.0, function \"glGetShaderSource\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glGetUniformLocation = (PFNGLGETUNIFORMLOCATIONPROC)wglGetProcAddress("glGetUniformLocation");
-	if(!ptr_glGetUniformLocation) { MessageBox(0, "Couldn't load OpenGL core version 2.0, function \"glGetUniformLocation\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glGetUniformLocation) { MessageBox(0, TEXT("Couldn't load OpenGL core version 2.0, function \"glGetUniformLocation\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glGetUniformfv = (PFNGLGETUNIFORMFVPROC)wglGetProcAddress("glGetUniformfv");
-	if(!ptr_glGetUniformfv) { MessageBox(0, "Couldn't load OpenGL core version 2.0, function \"glGetUniformfv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glGetUniformfv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 2.0, function \"glGetUniformfv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glGetUniformiv = (PFNGLGETUNIFORMIVPROC)wglGetProcAddress("glGetUniformiv");
-	if(!ptr_glGetUniformiv) { MessageBox(0, "Couldn't load OpenGL core version 2.0, function \"glGetUniformiv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glGetUniformiv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 2.0, function \"glGetUniformiv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glGetVertexAttribdv = (PFNGLGETVERTEXATTRIBDVPROC)wglGetProcAddress("glGetVertexAttribdv");
-	if(!ptr_glGetVertexAttribdv) { MessageBox(0, "Couldn't load OpenGL core version 2.0, function \"glGetVertexAttribdv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glGetVertexAttribdv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 2.0, function \"glGetVertexAttribdv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glGetVertexAttribfv = (PFNGLGETVERTEXATTRIBFVPROC)wglGetProcAddress("glGetVertexAttribfv");
-	if(!ptr_glGetVertexAttribfv) { MessageBox(0, "Couldn't load OpenGL core version 2.0, function \"glGetVertexAttribfv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glGetVertexAttribfv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 2.0, function \"glGetVertexAttribfv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glGetVertexAttribiv = (PFNGLGETVERTEXATTRIBIVPROC)wglGetProcAddress("glGetVertexAttribiv");
-	if(!ptr_glGetVertexAttribiv) { MessageBox(0, "Couldn't load OpenGL core version 2.0, function \"glGetVertexAttribiv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glGetVertexAttribiv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 2.0, function \"glGetVertexAttribiv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glGetVertexAttribPointerv = (PFNGLGETVERTEXATTRIBPOINTERVPROC)wglGetProcAddress("glGetVertexAttribPointerv");
-	if(!ptr_glGetVertexAttribPointerv) { MessageBox(0, "Couldn't load OpenGL core version 2.0, function \"glGetVertexAttribPointerv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glGetVertexAttribPointerv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 2.0, function \"glGetVertexAttribPointerv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glIsProgram = (PFNGLISPROGRAMPROC)wglGetProcAddress("glIsProgram");
-	if(!ptr_glIsProgram) { MessageBox(0, "Couldn't load OpenGL core version 2.0, function \"glIsProgram\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glIsProgram) { MessageBox(0, TEXT("Couldn't load OpenGL core version 2.0, function \"glIsProgram\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glIsShader = (PFNGLISSHADERPROC)wglGetProcAddress("glIsShader");
-	if(!ptr_glIsShader) { MessageBox(0, "Couldn't load OpenGL core version 2.0, function \"glIsShader\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glIsShader) { MessageBox(0, TEXT("Couldn't load OpenGL core version 2.0, function \"glIsShader\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glLinkProgram = (PFNGLLINKPROGRAMPROC)wglGetProcAddress("glLinkProgram");
-	if(!ptr_glLinkProgram) { MessageBox(0, "Couldn't load OpenGL core version 2.0, function \"glLinkProgram\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glLinkProgram) { MessageBox(0, TEXT("Couldn't load OpenGL core version 2.0, function \"glLinkProgram\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glShaderSource = (PFNGLSHADERSOURCEPROC)wglGetProcAddress("glShaderSource");
-	if(!ptr_glShaderSource) { MessageBox(0, "Couldn't load OpenGL core version 2.0, function \"glShaderSource\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glShaderSource) { MessageBox(0, TEXT("Couldn't load OpenGL core version 2.0, function \"glShaderSource\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glUseProgram = (PFNGLUSEPROGRAMPROC)wglGetProcAddress("glUseProgram");
-	if(!ptr_glUseProgram) { MessageBox(0, "Couldn't load OpenGL core version 2.0, function \"glUseProgram\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glUseProgram) { MessageBox(0, TEXT("Couldn't load OpenGL core version 2.0, function \"glUseProgram\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glUniform1f = (PFNGLUNIFORM1FPROC)wglGetProcAddress("glUniform1f");
-	if(!ptr_glUniform1f) { MessageBox(0, "Couldn't load OpenGL core version 2.0, function \"glUniform1f\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glUniform1f) { MessageBox(0, TEXT("Couldn't load OpenGL core version 2.0, function \"glUniform1f\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glUniform2f = (PFNGLUNIFORM2FPROC)wglGetProcAddress("glUniform2f");
-	if(!ptr_glUniform2f) { MessageBox(0, "Couldn't load OpenGL core version 2.0, function \"glUniform2f\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glUniform2f) { MessageBox(0, TEXT("Couldn't load OpenGL core version 2.0, function \"glUniform2f\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glUniform3f = (PFNGLUNIFORM3FPROC)wglGetProcAddress("glUniform3f");
-	if(!ptr_glUniform3f) { MessageBox(0, "Couldn't load OpenGL core version 2.0, function \"glUniform3f\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glUniform3f) { MessageBox(0, TEXT("Couldn't load OpenGL core version 2.0, function \"glUniform3f\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glUniform4f = (PFNGLUNIFORM4FPROC)wglGetProcAddress("glUniform4f");
-	if(!ptr_glUniform4f) { MessageBox(0, "Couldn't load OpenGL core version 2.0, function \"glUniform4f\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glUniform4f) { MessageBox(0, TEXT("Couldn't load OpenGL core version 2.0, function \"glUniform4f\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glUniform1i = (PFNGLUNIFORM1IPROC)wglGetProcAddress("glUniform1i");
-	if(!ptr_glUniform1i) { MessageBox(0, "Couldn't load OpenGL core version 2.0, function \"glUniform1i\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glUniform1i) { MessageBox(0, TEXT("Couldn't load OpenGL core version 2.0, function \"glUniform1i\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glUniform2i = (PFNGLUNIFORM2IPROC)wglGetProcAddress("glUniform2i");
-	if(!ptr_glUniform2i) { MessageBox(0, "Couldn't load OpenGL core version 2.0, function \"glUniform2i\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glUniform2i) { MessageBox(0, TEXT("Couldn't load OpenGL core version 2.0, function \"glUniform2i\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glUniform3i = (PFNGLUNIFORM3IPROC)wglGetProcAddress("glUniform3i");
-	if(!ptr_glUniform3i) { MessageBox(0, "Couldn't load OpenGL core version 2.0, function \"glUniform3i\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glUniform3i) { MessageBox(0, TEXT("Couldn't load OpenGL core version 2.0, function \"glUniform3i\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glUniform4i = (PFNGLUNIFORM4IPROC)wglGetProcAddress("glUniform4i");
-	if(!ptr_glUniform4i) { MessageBox(0, "Couldn't load OpenGL core version 2.0, function \"glUniform4i\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glUniform4i) { MessageBox(0, TEXT("Couldn't load OpenGL core version 2.0, function \"glUniform4i\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glUniform1fv = (PFNGLUNIFORM1FVPROC)wglGetProcAddress("glUniform1fv");
-	if(!ptr_glUniform1fv) { MessageBox(0, "Couldn't load OpenGL core version 2.0, function \"glUniform1fv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glUniform1fv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 2.0, function \"glUniform1fv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glUniform2fv = (PFNGLUNIFORM2FVPROC)wglGetProcAddress("glUniform2fv");
-	if(!ptr_glUniform2fv) { MessageBox(0, "Couldn't load OpenGL core version 2.0, function \"glUniform2fv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glUniform2fv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 2.0, function \"glUniform2fv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glUniform3fv = (PFNGLUNIFORM3FVPROC)wglGetProcAddress("glUniform3fv");
-	if(!ptr_glUniform3fv) { MessageBox(0, "Couldn't load OpenGL core version 2.0, function \"glUniform3fv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glUniform3fv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 2.0, function \"glUniform3fv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glUniform4fv = (PFNGLUNIFORM4FVPROC)wglGetProcAddress("glUniform4fv");
-	if(!ptr_glUniform4fv) { MessageBox(0, "Couldn't load OpenGL core version 2.0, function \"glUniform4fv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glUniform4fv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 2.0, function \"glUniform4fv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glUniform1iv = (PFNGLUNIFORM1IVPROC)wglGetProcAddress("glUniform1iv");
-	if(!ptr_glUniform1iv) { MessageBox(0, "Couldn't load OpenGL core version 2.0, function \"glUniform1iv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glUniform1iv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 2.0, function \"glUniform1iv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glUniform2iv = (PFNGLUNIFORM2IVPROC)wglGetProcAddress("glUniform2iv");
-	if(!ptr_glUniform2iv) { MessageBox(0, "Couldn't load OpenGL core version 2.0, function \"glUniform2iv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glUniform2iv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 2.0, function \"glUniform2iv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glUniform3iv = (PFNGLUNIFORM3IVPROC)wglGetProcAddress("glUniform3iv");
-	if(!ptr_glUniform3iv) { MessageBox(0, "Couldn't load OpenGL core version 2.0, function \"glUniform3iv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glUniform3iv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 2.0, function \"glUniform3iv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glUniform4iv = (PFNGLUNIFORM4IVPROC)wglGetProcAddress("glUniform4iv");
-	if(!ptr_glUniform4iv) { MessageBox(0, "Couldn't load OpenGL core version 2.0, function \"glUniform4iv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glUniform4iv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 2.0, function \"glUniform4iv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glUniformMatrix2fv = (PFNGLUNIFORMMATRIX2FVPROC)wglGetProcAddress("glUniformMatrix2fv");
-	if(!ptr_glUniformMatrix2fv) { MessageBox(0, "Couldn't load OpenGL core version 2.0, function \"glUniformMatrix2fv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glUniformMatrix2fv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 2.0, function \"glUniformMatrix2fv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glUniformMatrix3fv = (PFNGLUNIFORMMATRIX3FVPROC)wglGetProcAddress("glUniformMatrix3fv");
-	if(!ptr_glUniformMatrix3fv) { MessageBox(0, "Couldn't load OpenGL core version 2.0, function \"glUniformMatrix3fv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glUniformMatrix3fv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 2.0, function \"glUniformMatrix3fv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glUniformMatrix4fv = (PFNGLUNIFORMMATRIX4FVPROC)wglGetProcAddress("glUniformMatrix4fv");
-	if(!ptr_glUniformMatrix4fv) { MessageBox(0, "Couldn't load OpenGL core version 2.0, function \"glUniformMatrix4fv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glUniformMatrix4fv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 2.0, function \"glUniformMatrix4fv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glValidateProgram = (PFNGLVALIDATEPROGRAMPROC)wglGetProcAddress("glValidateProgram");
-	if(!ptr_glValidateProgram) { MessageBox(0, "Couldn't load OpenGL core version 2.0, function \"glValidateProgram\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glValidateProgram) { MessageBox(0, TEXT("Couldn't load OpenGL core version 2.0, function \"glValidateProgram\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glVertexAttrib1d = (PFNGLVERTEXATTRIB1DPROC)wglGetProcAddress("glVertexAttrib1d");
-	if(!ptr_glVertexAttrib1d) { MessageBox(0, "Couldn't load OpenGL core version 2.0, function \"glVertexAttrib1d\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glVertexAttrib1d) { MessageBox(0, TEXT("Couldn't load OpenGL core version 2.0, function \"glVertexAttrib1d\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glVertexAttrib1dv = (PFNGLVERTEXATTRIB1DVPROC)wglGetProcAddress("glVertexAttrib1dv");
-	if(!ptr_glVertexAttrib1dv) { MessageBox(0, "Couldn't load OpenGL core version 2.0, function \"glVertexAttrib1dv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glVertexAttrib1dv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 2.0, function \"glVertexAttrib1dv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glVertexAttrib1f = (PFNGLVERTEXATTRIB1FPROC)wglGetProcAddress("glVertexAttrib1f");
-	if(!ptr_glVertexAttrib1f) { MessageBox(0, "Couldn't load OpenGL core version 2.0, function \"glVertexAttrib1f\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glVertexAttrib1f) { MessageBox(0, TEXT("Couldn't load OpenGL core version 2.0, function \"glVertexAttrib1f\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glVertexAttrib1fv = (PFNGLVERTEXATTRIB1FVPROC)wglGetProcAddress("glVertexAttrib1fv");
-	if(!ptr_glVertexAttrib1fv) { MessageBox(0, "Couldn't load OpenGL core version 2.0, function \"glVertexAttrib1fv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glVertexAttrib1fv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 2.0, function \"glVertexAttrib1fv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glVertexAttrib1s = (PFNGLVERTEXATTRIB1SPROC)wglGetProcAddress("glVertexAttrib1s");
-	if(!ptr_glVertexAttrib1s) { MessageBox(0, "Couldn't load OpenGL core version 2.0, function \"glVertexAttrib1s\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glVertexAttrib1s) { MessageBox(0, TEXT("Couldn't load OpenGL core version 2.0, function \"glVertexAttrib1s\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glVertexAttrib1sv = (PFNGLVERTEXATTRIB1SVPROC)wglGetProcAddress("glVertexAttrib1sv");
-	if(!ptr_glVertexAttrib1sv) { MessageBox(0, "Couldn't load OpenGL core version 2.0, function \"glVertexAttrib1sv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glVertexAttrib1sv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 2.0, function \"glVertexAttrib1sv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glVertexAttrib2d = (PFNGLVERTEXATTRIB2DPROC)wglGetProcAddress("glVertexAttrib2d");
-	if(!ptr_glVertexAttrib2d) { MessageBox(0, "Couldn't load OpenGL core version 2.0, function \"glVertexAttrib2d\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glVertexAttrib2d) { MessageBox(0, TEXT("Couldn't load OpenGL core version 2.0, function \"glVertexAttrib2d\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glVertexAttrib2dv = (PFNGLVERTEXATTRIB2DVPROC)wglGetProcAddress("glVertexAttrib2dv");
-	if(!ptr_glVertexAttrib2dv) { MessageBox(0, "Couldn't load OpenGL core version 2.0, function \"glVertexAttrib2dv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glVertexAttrib2dv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 2.0, function \"glVertexAttrib2dv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glVertexAttrib2f = (PFNGLVERTEXATTRIB2FPROC)wglGetProcAddress("glVertexAttrib2f");
-	if(!ptr_glVertexAttrib2f) { MessageBox(0, "Couldn't load OpenGL core version 2.0, function \"glVertexAttrib2f\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glVertexAttrib2f) { MessageBox(0, TEXT("Couldn't load OpenGL core version 2.0, function \"glVertexAttrib2f\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glVertexAttrib2fv = (PFNGLVERTEXATTRIB2FVPROC)wglGetProcAddress("glVertexAttrib2fv");
-	if(!ptr_glVertexAttrib2fv) { MessageBox(0, "Couldn't load OpenGL core version 2.0, function \"glVertexAttrib2fv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glVertexAttrib2fv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 2.0, function \"glVertexAttrib2fv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glVertexAttrib2s = (PFNGLVERTEXATTRIB2SPROC)wglGetProcAddress("glVertexAttrib2s");
-	if(!ptr_glVertexAttrib2s) { MessageBox(0, "Couldn't load OpenGL core version 2.0, function \"glVertexAttrib2s\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glVertexAttrib2s) { MessageBox(0, TEXT("Couldn't load OpenGL core version 2.0, function \"glVertexAttrib2s\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glVertexAttrib2sv = (PFNGLVERTEXATTRIB2SVPROC)wglGetProcAddress("glVertexAttrib2sv");
-	if(!ptr_glVertexAttrib2sv) { MessageBox(0, "Couldn't load OpenGL core version 2.0, function \"glVertexAttrib2sv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glVertexAttrib2sv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 2.0, function \"glVertexAttrib2sv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glVertexAttrib3d = (PFNGLVERTEXATTRIB3DPROC)wglGetProcAddress("glVertexAttrib3d");
-	if(!ptr_glVertexAttrib3d) { MessageBox(0, "Couldn't load OpenGL core version 2.0, function \"glVertexAttrib3d\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glVertexAttrib3d) { MessageBox(0, TEXT("Couldn't load OpenGL core version 2.0, function \"glVertexAttrib3d\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glVertexAttrib3dv = (PFNGLVERTEXATTRIB3DVPROC)wglGetProcAddress("glVertexAttrib3dv");
-	if(!ptr_glVertexAttrib3dv) { MessageBox(0, "Couldn't load OpenGL core version 2.0, function \"glVertexAttrib3dv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glVertexAttrib3dv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 2.0, function \"glVertexAttrib3dv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glVertexAttrib3f = (PFNGLVERTEXATTRIB3FPROC)wglGetProcAddress("glVertexAttrib3f");
-	if(!ptr_glVertexAttrib3f) { MessageBox(0, "Couldn't load OpenGL core version 2.0, function \"glVertexAttrib3f\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glVertexAttrib3f) { MessageBox(0, TEXT("Couldn't load OpenGL core version 2.0, function \"glVertexAttrib3f\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glVertexAttrib3fv = (PFNGLVERTEXATTRIB3FVPROC)wglGetProcAddress("glVertexAttrib3fv");
-	if(!ptr_glVertexAttrib3fv) { MessageBox(0, "Couldn't load OpenGL core version 2.0, function \"glVertexAttrib3fv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glVertexAttrib3fv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 2.0, function \"glVertexAttrib3fv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glVertexAttrib3s = (PFNGLVERTEXATTRIB3SPROC)wglGetProcAddress("glVertexAttrib3s");
-	if(!ptr_glVertexAttrib3s) { MessageBox(0, "Couldn't load OpenGL core version 2.0, function \"glVertexAttrib3s\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glVertexAttrib3s) { MessageBox(0, TEXT("Couldn't load OpenGL core version 2.0, function \"glVertexAttrib3s\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glVertexAttrib3sv = (PFNGLVERTEXATTRIB3SVPROC)wglGetProcAddress("glVertexAttrib3sv");
-	if(!ptr_glVertexAttrib3sv) { MessageBox(0, "Couldn't load OpenGL core version 2.0, function \"glVertexAttrib3sv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glVertexAttrib3sv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 2.0, function \"glVertexAttrib3sv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glVertexAttrib4Nbv = (PFNGLVERTEXATTRIB4NBVPROC)wglGetProcAddress("glVertexAttrib4Nbv");
-	if(!ptr_glVertexAttrib4Nbv) { MessageBox(0, "Couldn't load OpenGL core version 2.0, function \"glVertexAttrib4Nbv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glVertexAttrib4Nbv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 2.0, function \"glVertexAttrib4Nbv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glVertexAttrib4Niv = (PFNGLVERTEXATTRIB4NIVPROC)wglGetProcAddress("glVertexAttrib4Niv");
-	if(!ptr_glVertexAttrib4Niv) { MessageBox(0, "Couldn't load OpenGL core version 2.0, function \"glVertexAttrib4Niv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glVertexAttrib4Niv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 2.0, function \"glVertexAttrib4Niv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glVertexAttrib4Nsv = (PFNGLVERTEXATTRIB4NSVPROC)wglGetProcAddress("glVertexAttrib4Nsv");
-	if(!ptr_glVertexAttrib4Nsv) { MessageBox(0, "Couldn't load OpenGL core version 2.0, function \"glVertexAttrib4Nsv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glVertexAttrib4Nsv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 2.0, function \"glVertexAttrib4Nsv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glVertexAttrib4Nub = (PFNGLVERTEXATTRIB4NUBPROC)wglGetProcAddress("glVertexAttrib4Nub");
-	if(!ptr_glVertexAttrib4Nub) { MessageBox(0, "Couldn't load OpenGL core version 2.0, function \"glVertexAttrib4Nub\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glVertexAttrib4Nub) { MessageBox(0, TEXT("Couldn't load OpenGL core version 2.0, function \"glVertexAttrib4Nub\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glVertexAttrib4Nubv = (PFNGLVERTEXATTRIB4NUBVPROC)wglGetProcAddress("glVertexAttrib4Nubv");
-	if(!ptr_glVertexAttrib4Nubv) { MessageBox(0, "Couldn't load OpenGL core version 2.0, function \"glVertexAttrib4Nubv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glVertexAttrib4Nubv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 2.0, function \"glVertexAttrib4Nubv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glVertexAttrib4Nuiv = (PFNGLVERTEXATTRIB4NUIVPROC)wglGetProcAddress("glVertexAttrib4Nuiv");
-	if(!ptr_glVertexAttrib4Nuiv) { MessageBox(0, "Couldn't load OpenGL core version 2.0, function \"glVertexAttrib4Nuiv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glVertexAttrib4Nuiv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 2.0, function \"glVertexAttrib4Nuiv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glVertexAttrib4Nusv = (PFNGLVERTEXATTRIB4NUSVPROC)wglGetProcAddress("glVertexAttrib4Nusv");
-	if(!ptr_glVertexAttrib4Nusv) { MessageBox(0, "Couldn't load OpenGL core version 2.0, function \"glVertexAttrib4Nusv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glVertexAttrib4Nusv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 2.0, function \"glVertexAttrib4Nusv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glVertexAttrib4bv = (PFNGLVERTEXATTRIB4BVPROC)wglGetProcAddress("glVertexAttrib4bv");
-	if(!ptr_glVertexAttrib4bv) { MessageBox(0, "Couldn't load OpenGL core version 2.0, function \"glVertexAttrib4bv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glVertexAttrib4bv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 2.0, function \"glVertexAttrib4bv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glVertexAttrib4d = (PFNGLVERTEXATTRIB4DPROC)wglGetProcAddress("glVertexAttrib4d");
-	if(!ptr_glVertexAttrib4d) { MessageBox(0, "Couldn't load OpenGL core version 2.0, function \"glVertexAttrib4d\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glVertexAttrib4d) { MessageBox(0, TEXT("Couldn't load OpenGL core version 2.0, function \"glVertexAttrib4d\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glVertexAttrib4dv = (PFNGLVERTEXATTRIB4DVPROC)wglGetProcAddress("glVertexAttrib4dv");
-	if(!ptr_glVertexAttrib4dv) { MessageBox(0, "Couldn't load OpenGL core version 2.0, function \"glVertexAttrib4dv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glVertexAttrib4dv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 2.0, function \"glVertexAttrib4dv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glVertexAttrib4f = (PFNGLVERTEXATTRIB4FPROC)wglGetProcAddress("glVertexAttrib4f");
-	if(!ptr_glVertexAttrib4f) { MessageBox(0, "Couldn't load OpenGL core version 2.0, function \"glVertexAttrib4f\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glVertexAttrib4f) { MessageBox(0, TEXT("Couldn't load OpenGL core version 2.0, function \"glVertexAttrib4f\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glVertexAttrib4fv = (PFNGLVERTEXATTRIB4FVPROC)wglGetProcAddress("glVertexAttrib4fv");
-	if(!ptr_glVertexAttrib4fv) { MessageBox(0, "Couldn't load OpenGL core version 2.0, function \"glVertexAttrib4fv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glVertexAttrib4fv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 2.0, function \"glVertexAttrib4fv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glVertexAttrib4iv = (PFNGLVERTEXATTRIB4IVPROC)wglGetProcAddress("glVertexAttrib4iv");
-	if(!ptr_glVertexAttrib4iv) { MessageBox(0, "Couldn't load OpenGL core version 2.0, function \"glVertexAttrib4iv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glVertexAttrib4iv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 2.0, function \"glVertexAttrib4iv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glVertexAttrib4s = (PFNGLVERTEXATTRIB4SPROC)wglGetProcAddress("glVertexAttrib4s");
-	if(!ptr_glVertexAttrib4s) { MessageBox(0, "Couldn't load OpenGL core version 2.0, function \"glVertexAttrib4s\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glVertexAttrib4s) { MessageBox(0, TEXT("Couldn't load OpenGL core version 2.0, function \"glVertexAttrib4s\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glVertexAttrib4sv = (PFNGLVERTEXATTRIB4SVPROC)wglGetProcAddress("glVertexAttrib4sv");
-	if(!ptr_glVertexAttrib4sv) { MessageBox(0, "Couldn't load OpenGL core version 2.0, function \"glVertexAttrib4sv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glVertexAttrib4sv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 2.0, function \"glVertexAttrib4sv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glVertexAttrib4ubv = (PFNGLVERTEXATTRIB4UBVPROC)wglGetProcAddress("glVertexAttrib4ubv");
-	if(!ptr_glVertexAttrib4ubv) { MessageBox(0, "Couldn't load OpenGL core version 2.0, function \"glVertexAttrib4ubv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glVertexAttrib4ubv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 2.0, function \"glVertexAttrib4ubv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glVertexAttrib4uiv = (PFNGLVERTEXATTRIB4UIVPROC)wglGetProcAddress("glVertexAttrib4uiv");
-	if(!ptr_glVertexAttrib4uiv) { MessageBox(0, "Couldn't load OpenGL core version 2.0, function \"glVertexAttrib4uiv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glVertexAttrib4uiv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 2.0, function \"glVertexAttrib4uiv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glVertexAttrib4usv = (PFNGLVERTEXATTRIB4USVPROC)wglGetProcAddress("glVertexAttrib4usv");
-	if(!ptr_glVertexAttrib4usv) { MessageBox(0, "Couldn't load OpenGL core version 2.0, function \"glVertexAttrib4usv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glVertexAttrib4usv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 2.0, function \"glVertexAttrib4usv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glVertexAttribPointer = (PFNGLVERTEXATTRIBPOINTERPROC)wglGetProcAddress("glVertexAttribPointer");
-	if(!ptr_glVertexAttribPointer) { MessageBox(0, "Couldn't load OpenGL core version 2.0, function \"glVertexAttribPointer\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glVertexAttribPointer) { MessageBox(0, TEXT("Couldn't load OpenGL core version 2.0, function \"glVertexAttribPointer\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glUniformMatrix2x3fv = (PFNGLUNIFORMMATRIX2X3FVPROC)wglGetProcAddress("glUniformMatrix2x3fv");
-	if(!ptr_glUniformMatrix2x3fv) { MessageBox(0, "Couldn't load OpenGL core version 2.1, function \"glUniformMatrix2x3fv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glUniformMatrix2x3fv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 2.1, function \"glUniformMatrix2x3fv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glUniformMatrix3x2fv = (PFNGLUNIFORMMATRIX3X2FVPROC)wglGetProcAddress("glUniformMatrix3x2fv");
-	if(!ptr_glUniformMatrix3x2fv) { MessageBox(0, "Couldn't load OpenGL core version 2.1, function \"glUniformMatrix3x2fv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glUniformMatrix3x2fv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 2.1, function \"glUniformMatrix3x2fv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glUniformMatrix2x4fv = (PFNGLUNIFORMMATRIX2X4FVPROC)wglGetProcAddress("glUniformMatrix2x4fv");
-	if(!ptr_glUniformMatrix2x4fv) { MessageBox(0, "Couldn't load OpenGL core version 2.1, function \"glUniformMatrix2x4fv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glUniformMatrix2x4fv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 2.1, function \"glUniformMatrix2x4fv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glUniformMatrix4x2fv = (PFNGLUNIFORMMATRIX4X2FVPROC)wglGetProcAddress("glUniformMatrix4x2fv");
-	if(!ptr_glUniformMatrix4x2fv) { MessageBox(0, "Couldn't load OpenGL core version 2.1, function \"glUniformMatrix4x2fv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glUniformMatrix4x2fv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 2.1, function \"glUniformMatrix4x2fv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glUniformMatrix3x4fv = (PFNGLUNIFORMMATRIX3X4FVPROC)wglGetProcAddress("glUniformMatrix3x4fv");
-	if(!ptr_glUniformMatrix3x4fv) { MessageBox(0, "Couldn't load OpenGL core version 2.1, function \"glUniformMatrix3x4fv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glUniformMatrix3x4fv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 2.1, function \"glUniformMatrix3x4fv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glUniformMatrix4x3fv = (PFNGLUNIFORMMATRIX4X3FVPROC)wglGetProcAddress("glUniformMatrix4x3fv");
-	if(!ptr_glUniformMatrix4x3fv) { MessageBox(0, "Couldn't load OpenGL core version 2.1, function \"glUniformMatrix4x3fv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glUniformMatrix4x3fv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 2.1, function \"glUniformMatrix4x3fv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glColorMaski = (PFNGLCOLORMASKIPROC)wglGetProcAddress("glColorMaski");
-	if(!ptr_glColorMaski) { MessageBox(0, "Couldn't load OpenGL core version 3.0, function \"glColorMaski\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glColorMaski) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.0, function \"glColorMaski\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glGetBooleani_v = (PFNGLGETBOOLEANI_VPROC)wglGetProcAddress("glGetBooleani_v");
-	if(!ptr_glGetBooleani_v) { MessageBox(0, "Couldn't load OpenGL core version 3.0, function \"glGetBooleani_v\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glGetBooleani_v) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.0, function \"glGetBooleani_v\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glGetIntegeri_v = (PFNGLGETINTEGERI_VPROC)wglGetProcAddress("glGetIntegeri_v");
-	if(!ptr_glGetIntegeri_v) { MessageBox(0, "Couldn't load OpenGL core version 3.0, function \"glGetIntegeri_v\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glGetIntegeri_v) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.0, function \"glGetIntegeri_v\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glEnablei = (PFNGLENABLEIPROC)wglGetProcAddress("glEnablei");
-	if(!ptr_glEnablei) { MessageBox(0, "Couldn't load OpenGL core version 3.0, function \"glEnablei\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glEnablei) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.0, function \"glEnablei\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glDisablei = (PFNGLDISABLEIPROC)wglGetProcAddress("glDisablei");
-	if(!ptr_glDisablei) { MessageBox(0, "Couldn't load OpenGL core version 3.0, function \"glDisablei\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glDisablei) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.0, function \"glDisablei\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glIsEnabledi = (PFNGLISENABLEDIPROC)wglGetProcAddress("glIsEnabledi");
-	if(!ptr_glIsEnabledi) { MessageBox(0, "Couldn't load OpenGL core version 3.0, function \"glIsEnabledi\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glIsEnabledi) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.0, function \"glIsEnabledi\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glBeginTransformFeedback = (PFNGLBEGINTRANSFORMFEEDBACKPROC)wglGetProcAddress("glBeginTransformFeedback");
-	if(!ptr_glBeginTransformFeedback) { MessageBox(0, "Couldn't load OpenGL core version 3.0, function \"glBeginTransformFeedback\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glBeginTransformFeedback) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.0, function \"glBeginTransformFeedback\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glEndTransformFeedback = (PFNGLENDTRANSFORMFEEDBACKPROC)wglGetProcAddress("glEndTransformFeedback");
-	if(!ptr_glEndTransformFeedback) { MessageBox(0, "Couldn't load OpenGL core version 3.0, function \"glEndTransformFeedback\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glEndTransformFeedback) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.0, function \"glEndTransformFeedback\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glBindBufferRange = (PFNGLBINDBUFFERRANGEPROC)wglGetProcAddress("glBindBufferRange");
-	if(!ptr_glBindBufferRange) { MessageBox(0, "Couldn't load OpenGL core version 3.0, function \"glBindBufferRange\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glBindBufferRange) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.0, function \"glBindBufferRange\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glBindBufferBase = (PFNGLBINDBUFFERBASEPROC)wglGetProcAddress("glBindBufferBase");
-	if(!ptr_glBindBufferBase) { MessageBox(0, "Couldn't load OpenGL core version 3.0, function \"glBindBufferBase\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glBindBufferBase) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.0, function \"glBindBufferBase\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glTransformFeedbackVaryings = (PFNGLTRANSFORMFEEDBACKVARYINGSPROC)wglGetProcAddress("glTransformFeedbackVaryings");
-	if(!ptr_glTransformFeedbackVaryings) { MessageBox(0, "Couldn't load OpenGL core version 3.0, function \"glTransformFeedbackVaryings\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glTransformFeedbackVaryings) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.0, function \"glTransformFeedbackVaryings\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glGetTransformFeedbackVarying = (PFNGLGETTRANSFORMFEEDBACKVARYINGPROC)wglGetProcAddress("glGetTransformFeedbackVarying");
-	if(!ptr_glGetTransformFeedbackVarying) { MessageBox(0, "Couldn't load OpenGL core version 3.0, function \"glGetTransformFeedbackVarying\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glGetTransformFeedbackVarying) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.0, function \"glGetTransformFeedbackVarying\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glClampColor = (PFNGLCLAMPCOLORPROC)wglGetProcAddress("glClampColor");
-	if(!ptr_glClampColor) { MessageBox(0, "Couldn't load OpenGL core version 3.0, function \"glClampColor\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glClampColor) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.0, function \"glClampColor\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glBeginConditionalRender = (PFNGLBEGINCONDITIONALRENDERPROC)wglGetProcAddress("glBeginConditionalRender");
-	if(!ptr_glBeginConditionalRender) { MessageBox(0, "Couldn't load OpenGL core version 3.0, function \"glBeginConditionalRender\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glBeginConditionalRender) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.0, function \"glBeginConditionalRender\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glEndConditionalRender = (PFNGLENDCONDITIONALRENDERPROC)wglGetProcAddress("glEndConditionalRender");
-	if(!ptr_glEndConditionalRender) { MessageBox(0, "Couldn't load OpenGL core version 3.0, function \"glEndConditionalRender\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glEndConditionalRender) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.0, function \"glEndConditionalRender\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glVertexAttribIPointer = (PFNGLVERTEXATTRIBIPOINTERPROC)wglGetProcAddress("glVertexAttribIPointer");
-	if(!ptr_glVertexAttribIPointer) { MessageBox(0, "Couldn't load OpenGL core version 3.0, function \"glVertexAttribIPointer\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glVertexAttribIPointer) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.0, function \"glVertexAttribIPointer\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glGetVertexAttribIiv = (PFNGLGETVERTEXATTRIBIIVPROC)wglGetProcAddress("glGetVertexAttribIiv");
-	if(!ptr_glGetVertexAttribIiv) { MessageBox(0, "Couldn't load OpenGL core version 3.0, function \"glGetVertexAttribIiv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glGetVertexAttribIiv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.0, function \"glGetVertexAttribIiv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glGetVertexAttribIuiv = (PFNGLGETVERTEXATTRIBIUIVPROC)wglGetProcAddress("glGetVertexAttribIuiv");
-	if(!ptr_glGetVertexAttribIuiv) { MessageBox(0, "Couldn't load OpenGL core version 3.0, function \"glGetVertexAttribIuiv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glGetVertexAttribIuiv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.0, function \"glGetVertexAttribIuiv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glVertexAttribI1i = (PFNGLVERTEXATTRIBI1IPROC)wglGetProcAddress("glVertexAttribI1i");
-	if(!ptr_glVertexAttribI1i) { MessageBox(0, "Couldn't load OpenGL core version 3.0, function \"glVertexAttribI1i\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glVertexAttribI1i) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.0, function \"glVertexAttribI1i\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glVertexAttribI2i = (PFNGLVERTEXATTRIBI2IPROC)wglGetProcAddress("glVertexAttribI2i");
-	if(!ptr_glVertexAttribI2i) { MessageBox(0, "Couldn't load OpenGL core version 3.0, function \"glVertexAttribI2i\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glVertexAttribI2i) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.0, function \"glVertexAttribI2i\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glVertexAttribI3i = (PFNGLVERTEXATTRIBI3IPROC)wglGetProcAddress("glVertexAttribI3i");
-	if(!ptr_glVertexAttribI3i) { MessageBox(0, "Couldn't load OpenGL core version 3.0, function \"glVertexAttribI3i\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glVertexAttribI3i) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.0, function \"glVertexAttribI3i\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glVertexAttribI4i = (PFNGLVERTEXATTRIBI4IPROC)wglGetProcAddress("glVertexAttribI4i");
-	if(!ptr_glVertexAttribI4i) { MessageBox(0, "Couldn't load OpenGL core version 3.0, function \"glVertexAttribI4i\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glVertexAttribI4i) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.0, function \"glVertexAttribI4i\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glVertexAttribI1ui = (PFNGLVERTEXATTRIBI1UIPROC)wglGetProcAddress("glVertexAttribI1ui");
-	if(!ptr_glVertexAttribI1ui) { MessageBox(0, "Couldn't load OpenGL core version 3.0, function \"glVertexAttribI1ui\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glVertexAttribI1ui) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.0, function \"glVertexAttribI1ui\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glVertexAttribI2ui = (PFNGLVERTEXATTRIBI2UIPROC)wglGetProcAddress("glVertexAttribI2ui");
-	if(!ptr_glVertexAttribI2ui) { MessageBox(0, "Couldn't load OpenGL core version 3.0, function \"glVertexAttribI2ui\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glVertexAttribI2ui) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.0, function \"glVertexAttribI2ui\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glVertexAttribI3ui = (PFNGLVERTEXATTRIBI3UIPROC)wglGetProcAddress("glVertexAttribI3ui");
-	if(!ptr_glVertexAttribI3ui) { MessageBox(0, "Couldn't load OpenGL core version 3.0, function \"glVertexAttribI3ui\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glVertexAttribI3ui) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.0, function \"glVertexAttribI3ui\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glVertexAttribI4ui = (PFNGLVERTEXATTRIBI4UIPROC)wglGetProcAddress("glVertexAttribI4ui");
-	if(!ptr_glVertexAttribI4ui) { MessageBox(0, "Couldn't load OpenGL core version 3.0, function \"glVertexAttribI4ui\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glVertexAttribI4ui) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.0, function \"glVertexAttribI4ui\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glVertexAttribI1iv = (PFNGLVERTEXATTRIBI1IVPROC)wglGetProcAddress("glVertexAttribI1iv");
-	if(!ptr_glVertexAttribI1iv) { MessageBox(0, "Couldn't load OpenGL core version 3.0, function \"glVertexAttribI1iv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glVertexAttribI1iv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.0, function \"glVertexAttribI1iv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glVertexAttribI2iv = (PFNGLVERTEXATTRIBI2IVPROC)wglGetProcAddress("glVertexAttribI2iv");
-	if(!ptr_glVertexAttribI2iv) { MessageBox(0, "Couldn't load OpenGL core version 3.0, function \"glVertexAttribI2iv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glVertexAttribI2iv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.0, function \"glVertexAttribI2iv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glVertexAttribI3iv = (PFNGLVERTEXATTRIBI3IVPROC)wglGetProcAddress("glVertexAttribI3iv");
-	if(!ptr_glVertexAttribI3iv) { MessageBox(0, "Couldn't load OpenGL core version 3.0, function \"glVertexAttribI3iv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glVertexAttribI3iv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.0, function \"glVertexAttribI3iv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glVertexAttribI4iv = (PFNGLVERTEXATTRIBI4IVPROC)wglGetProcAddress("glVertexAttribI4iv");
-	if(!ptr_glVertexAttribI4iv) { MessageBox(0, "Couldn't load OpenGL core version 3.0, function \"glVertexAttribI4iv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glVertexAttribI4iv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.0, function \"glVertexAttribI4iv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glVertexAttribI1uiv = (PFNGLVERTEXATTRIBI1UIVPROC)wglGetProcAddress("glVertexAttribI1uiv");
-	if(!ptr_glVertexAttribI1uiv) { MessageBox(0, "Couldn't load OpenGL core version 3.0, function \"glVertexAttribI1uiv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glVertexAttribI1uiv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.0, function \"glVertexAttribI1uiv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glVertexAttribI2uiv = (PFNGLVERTEXATTRIBI2UIVPROC)wglGetProcAddress("glVertexAttribI2uiv");
-	if(!ptr_glVertexAttribI2uiv) { MessageBox(0, "Couldn't load OpenGL core version 3.0, function \"glVertexAttribI2uiv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glVertexAttribI2uiv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.0, function \"glVertexAttribI2uiv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glVertexAttribI3uiv = (PFNGLVERTEXATTRIBI3UIVPROC)wglGetProcAddress("glVertexAttribI3uiv");
-	if(!ptr_glVertexAttribI3uiv) { MessageBox(0, "Couldn't load OpenGL core version 3.0, function \"glVertexAttribI3uiv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glVertexAttribI3uiv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.0, function \"glVertexAttribI3uiv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glVertexAttribI4uiv = (PFNGLVERTEXATTRIBI4UIVPROC)wglGetProcAddress("glVertexAttribI4uiv");
-	if(!ptr_glVertexAttribI4uiv) { MessageBox(0, "Couldn't load OpenGL core version 3.0, function \"glVertexAttribI4uiv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glVertexAttribI4uiv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.0, function \"glVertexAttribI4uiv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glVertexAttribI4bv = (PFNGLVERTEXATTRIBI4BVPROC)wglGetProcAddress("glVertexAttribI4bv");
-	if(!ptr_glVertexAttribI4bv) { MessageBox(0, "Couldn't load OpenGL core version 3.0, function \"glVertexAttribI4bv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glVertexAttribI4bv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.0, function \"glVertexAttribI4bv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glVertexAttribI4sv = (PFNGLVERTEXATTRIBI4SVPROC)wglGetProcAddress("glVertexAttribI4sv");
-	if(!ptr_glVertexAttribI4sv) { MessageBox(0, "Couldn't load OpenGL core version 3.0, function \"glVertexAttribI4sv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glVertexAttribI4sv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.0, function \"glVertexAttribI4sv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glVertexAttribI4ubv = (PFNGLVERTEXATTRIBI4UBVPROC)wglGetProcAddress("glVertexAttribI4ubv");
-	if(!ptr_glVertexAttribI4ubv) { MessageBox(0, "Couldn't load OpenGL core version 3.0, function \"glVertexAttribI4ubv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glVertexAttribI4ubv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.0, function \"glVertexAttribI4ubv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glVertexAttribI4usv = (PFNGLVERTEXATTRIBI4USVPROC)wglGetProcAddress("glVertexAttribI4usv");
-	if(!ptr_glVertexAttribI4usv) { MessageBox(0, "Couldn't load OpenGL core version 3.0, function \"glVertexAttribI4usv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glVertexAttribI4usv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.0, function \"glVertexAttribI4usv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glGetUniformuiv = (PFNGLGETUNIFORMUIVPROC)wglGetProcAddress("glGetUniformuiv");
-	if(!ptr_glGetUniformuiv) { MessageBox(0, "Couldn't load OpenGL core version 3.0, function \"glGetUniformuiv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glGetUniformuiv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.0, function \"glGetUniformuiv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glBindFragDataLocation = (PFNGLBINDFRAGDATALOCATIONPROC)wglGetProcAddress("glBindFragDataLocation");
-	if(!ptr_glBindFragDataLocation) { MessageBox(0, "Couldn't load OpenGL core version 3.0, function \"glBindFragDataLocation\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glBindFragDataLocation) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.0, function \"glBindFragDataLocation\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glGetFragDataLocation = (PFNGLGETFRAGDATALOCATIONPROC)wglGetProcAddress("glGetFragDataLocation");
-	if(!ptr_glGetFragDataLocation) { MessageBox(0, "Couldn't load OpenGL core version 3.0, function \"glGetFragDataLocation\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glGetFragDataLocation) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.0, function \"glGetFragDataLocation\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glUniform1ui = (PFNGLUNIFORM1UIPROC)wglGetProcAddress("glUniform1ui");
-	if(!ptr_glUniform1ui) { MessageBox(0, "Couldn't load OpenGL core version 3.0, function \"glUniform1ui\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glUniform1ui) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.0, function \"glUniform1ui\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glUniform2ui = (PFNGLUNIFORM2UIPROC)wglGetProcAddress("glUniform2ui");
-	if(!ptr_glUniform2ui) { MessageBox(0, "Couldn't load OpenGL core version 3.0, function \"glUniform2ui\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glUniform2ui) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.0, function \"glUniform2ui\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glUniform3ui = (PFNGLUNIFORM3UIPROC)wglGetProcAddress("glUniform3ui");
-	if(!ptr_glUniform3ui) { MessageBox(0, "Couldn't load OpenGL core version 3.0, function \"glUniform3ui\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glUniform3ui) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.0, function \"glUniform3ui\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glUniform4ui = (PFNGLUNIFORM4UIPROC)wglGetProcAddress("glUniform4ui");
-	if(!ptr_glUniform4ui) { MessageBox(0, "Couldn't load OpenGL core version 3.0, function \"glUniform4ui\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glUniform4ui) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.0, function \"glUniform4ui\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glUniform1uiv = (PFNGLUNIFORM1UIVPROC)wglGetProcAddress("glUniform1uiv");
-	if(!ptr_glUniform1uiv) { MessageBox(0, "Couldn't load OpenGL core version 3.0, function \"glUniform1uiv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glUniform1uiv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.0, function \"glUniform1uiv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glUniform2uiv = (PFNGLUNIFORM2UIVPROC)wglGetProcAddress("glUniform2uiv");
-	if(!ptr_glUniform2uiv) { MessageBox(0, "Couldn't load OpenGL core version 3.0, function \"glUniform2uiv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glUniform2uiv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.0, function \"glUniform2uiv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glUniform3uiv = (PFNGLUNIFORM3UIVPROC)wglGetProcAddress("glUniform3uiv");
-	if(!ptr_glUniform3uiv) { MessageBox(0, "Couldn't load OpenGL core version 3.0, function \"glUniform3uiv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glUniform3uiv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.0, function \"glUniform3uiv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glUniform4uiv = (PFNGLUNIFORM4UIVPROC)wglGetProcAddress("glUniform4uiv");
-	if(!ptr_glUniform4uiv) { MessageBox(0, "Couldn't load OpenGL core version 3.0, function \"glUniform4uiv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glUniform4uiv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.0, function \"glUniform4uiv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glTexParameterIiv = (PFNGLTEXPARAMETERIIVPROC)wglGetProcAddress("glTexParameterIiv");
-	if(!ptr_glTexParameterIiv) { MessageBox(0, "Couldn't load OpenGL core version 3.0, function \"glTexParameterIiv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glTexParameterIiv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.0, function \"glTexParameterIiv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glTexParameterIuiv = (PFNGLTEXPARAMETERIUIVPROC)wglGetProcAddress("glTexParameterIuiv");
-	if(!ptr_glTexParameterIuiv) { MessageBox(0, "Couldn't load OpenGL core version 3.0, function \"glTexParameterIuiv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glTexParameterIuiv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.0, function \"glTexParameterIuiv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glGetTexParameterIiv = (PFNGLGETTEXPARAMETERIIVPROC)wglGetProcAddress("glGetTexParameterIiv");
-	if(!ptr_glGetTexParameterIiv) { MessageBox(0, "Couldn't load OpenGL core version 3.0, function \"glGetTexParameterIiv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glGetTexParameterIiv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.0, function \"glGetTexParameterIiv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glGetTexParameterIuiv = (PFNGLGETTEXPARAMETERIUIVPROC)wglGetProcAddress("glGetTexParameterIuiv");
-	if(!ptr_glGetTexParameterIuiv) { MessageBox(0, "Couldn't load OpenGL core version 3.0, function \"glGetTexParameterIuiv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glGetTexParameterIuiv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.0, function \"glGetTexParameterIuiv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glClearBufferiv = (PFNGLCLEARBUFFERIVPROC)wglGetProcAddress("glClearBufferiv");
-	if(!ptr_glClearBufferiv) { MessageBox(0, "Couldn't load OpenGL core version 3.0, function \"glClearBufferiv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glClearBufferiv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.0, function \"glClearBufferiv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glClearBufferuiv = (PFNGLCLEARBUFFERUIVPROC)wglGetProcAddress("glClearBufferuiv");
-	if(!ptr_glClearBufferuiv) { MessageBox(0, "Couldn't load OpenGL core version 3.0, function \"glClearBufferuiv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glClearBufferuiv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.0, function \"glClearBufferuiv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glClearBufferfv = (PFNGLCLEARBUFFERFVPROC)wglGetProcAddress("glClearBufferfv");
-	if(!ptr_glClearBufferfv) { MessageBox(0, "Couldn't load OpenGL core version 3.0, function \"glClearBufferfv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glClearBufferfv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.0, function \"glClearBufferfv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glClearBufferfi = (PFNGLCLEARBUFFERFIPROC)wglGetProcAddress("glClearBufferfi");
-	if(!ptr_glClearBufferfi) { MessageBox(0, "Couldn't load OpenGL core version 3.0, function \"glClearBufferfi\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glClearBufferfi) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.0, function \"glClearBufferfi\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glGetStringi = (PFNGLGETSTRINGIPROC)wglGetProcAddress("glGetStringi");
-	if(!ptr_glGetStringi) { MessageBox(0, "Couldn't load OpenGL core version 3.0, function \"glGetStringi\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glGetStringi) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.0, function \"glGetStringi\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glIsRenderbuffer = (PFNGLISRENDERBUFFERPROC)wglGetProcAddress("glIsRenderbuffer");
-	if(!ptr_glIsRenderbuffer) { MessageBox(0, "Couldn't load OpenGL core version 3.0, function \"glIsRenderbuffer\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glIsRenderbuffer) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.0, function \"glIsRenderbuffer\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glBindRenderbuffer = (PFNGLBINDRENDERBUFFERPROC)wglGetProcAddress("glBindRenderbuffer");
-	if(!ptr_glBindRenderbuffer) { MessageBox(0, "Couldn't load OpenGL core version 3.0, function \"glBindRenderbuffer\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glBindRenderbuffer) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.0, function \"glBindRenderbuffer\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glDeleteRenderbuffers = (PFNGLDELETERENDERBUFFERSPROC)wglGetProcAddress("glDeleteRenderbuffers");
-	if(!ptr_glDeleteRenderbuffers) { MessageBox(0, "Couldn't load OpenGL core version 3.0, function \"glDeleteRenderbuffers\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glDeleteRenderbuffers) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.0, function \"glDeleteRenderbuffers\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glGenRenderbuffers = (PFNGLGENRENDERBUFFERSPROC)wglGetProcAddress("glGenRenderbuffers");
-	if(!ptr_glGenRenderbuffers) { MessageBox(0, "Couldn't load OpenGL core version 3.0, function \"glGenRenderbuffers\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glGenRenderbuffers) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.0, function \"glGenRenderbuffers\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glRenderbufferStorage = (PFNGLRENDERBUFFERSTORAGEPROC)wglGetProcAddress("glRenderbufferStorage");
-	if(!ptr_glRenderbufferStorage) { MessageBox(0, "Couldn't load OpenGL core version 3.0, function \"glRenderbufferStorage\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glRenderbufferStorage) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.0, function \"glRenderbufferStorage\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glGetRenderbufferParameteriv = (PFNGLGETRENDERBUFFERPARAMETERIVPROC)wglGetProcAddress("glGetRenderbufferParameteriv");
-	if(!ptr_glGetRenderbufferParameteriv) { MessageBox(0, "Couldn't load OpenGL core version 3.0, function \"glGetRenderbufferParameteriv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glGetRenderbufferParameteriv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.0, function \"glGetRenderbufferParameteriv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glIsFramebuffer = (PFNGLISFRAMEBUFFERPROC)wglGetProcAddress("glIsFramebuffer");
-	if(!ptr_glIsFramebuffer) { MessageBox(0, "Couldn't load OpenGL core version 3.0, function \"glIsFramebuffer\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glIsFramebuffer) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.0, function \"glIsFramebuffer\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glBindFramebuffer = (PFNGLBINDFRAMEBUFFERPROC)wglGetProcAddress("glBindFramebuffer");
-	if(!ptr_glBindFramebuffer) { MessageBox(0, "Couldn't load OpenGL core version 3.0, function \"glBindFramebuffer\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glBindFramebuffer) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.0, function \"glBindFramebuffer\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glDeleteFramebuffers = (PFNGLDELETEFRAMEBUFFERSPROC)wglGetProcAddress("glDeleteFramebuffers");
-	if(!ptr_glDeleteFramebuffers) { MessageBox(0, "Couldn't load OpenGL core version 3.0, function \"glDeleteFramebuffers\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glDeleteFramebuffers) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.0, function \"glDeleteFramebuffers\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glGenFramebuffers = (PFNGLGENFRAMEBUFFERSPROC)wglGetProcAddress("glGenFramebuffers");
-	if(!ptr_glGenFramebuffers) { MessageBox(0, "Couldn't load OpenGL core version 3.0, function \"glGenFramebuffers\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glGenFramebuffers) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.0, function \"glGenFramebuffers\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glCheckFramebufferStatus = (PFNGLCHECKFRAMEBUFFERSTATUSPROC)wglGetProcAddress("glCheckFramebufferStatus");
-	if(!ptr_glCheckFramebufferStatus) { MessageBox(0, "Couldn't load OpenGL core version 3.0, function \"glCheckFramebufferStatus\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glCheckFramebufferStatus) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.0, function \"glCheckFramebufferStatus\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glFramebufferTexture1D = (PFNGLFRAMEBUFFERTEXTURE1DPROC)wglGetProcAddress("glFramebufferTexture1D");
-	if(!ptr_glFramebufferTexture1D) { MessageBox(0, "Couldn't load OpenGL core version 3.0, function \"glFramebufferTexture1D\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glFramebufferTexture1D) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.0, function \"glFramebufferTexture1D\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glFramebufferTexture2D = (PFNGLFRAMEBUFFERTEXTURE2DPROC)wglGetProcAddress("glFramebufferTexture2D");
-	if(!ptr_glFramebufferTexture2D) { MessageBox(0, "Couldn't load OpenGL core version 3.0, function \"glFramebufferTexture2D\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glFramebufferTexture2D) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.0, function \"glFramebufferTexture2D\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glFramebufferTexture3D = (PFNGLFRAMEBUFFERTEXTURE3DPROC)wglGetProcAddress("glFramebufferTexture3D");
-	if(!ptr_glFramebufferTexture3D) { MessageBox(0, "Couldn't load OpenGL core version 3.0, function \"glFramebufferTexture3D\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glFramebufferTexture3D) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.0, function \"glFramebufferTexture3D\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glFramebufferRenderbuffer = (PFNGLFRAMEBUFFERRENDERBUFFERPROC)wglGetProcAddress("glFramebufferRenderbuffer");
-	if(!ptr_glFramebufferRenderbuffer) { MessageBox(0, "Couldn't load OpenGL core version 3.0, function \"glFramebufferRenderbuffer\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glFramebufferRenderbuffer) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.0, function \"glFramebufferRenderbuffer\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glGetFramebufferAttachmentParameteriv = (PFNGLGETFRAMEBUFFERATTACHMENTPARAMETERIVPROC)wglGetProcAddress("glGetFramebufferAttachmentParameteriv");
-	if(!ptr_glGetFramebufferAttachmentParameteriv) { MessageBox(0, "Couldn't load OpenGL core version 3.0, function \"glGetFramebufferAttachmentParameteriv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glGetFramebufferAttachmentParameteriv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.0, function \"glGetFramebufferAttachmentParameteriv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glGenerateMipmap = (PFNGLGENERATEMIPMAPPROC)wglGetProcAddress("glGenerateMipmap");
-	if(!ptr_glGenerateMipmap) { MessageBox(0, "Couldn't load OpenGL core version 3.0, function \"glGenerateMipmap\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glGenerateMipmap) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.0, function \"glGenerateMipmap\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glBlitFramebuffer = (PFNGLBLITFRAMEBUFFERPROC)wglGetProcAddress("glBlitFramebuffer");
-	if(!ptr_glBlitFramebuffer) { MessageBox(0, "Couldn't load OpenGL core version 3.0, function \"glBlitFramebuffer\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glBlitFramebuffer) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.0, function \"glBlitFramebuffer\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glRenderbufferStorageMultisample = (PFNGLRENDERBUFFERSTORAGEMULTISAMPLEPROC)wglGetProcAddress("glRenderbufferStorageMultisample");
-	if(!ptr_glRenderbufferStorageMultisample) { MessageBox(0, "Couldn't load OpenGL core version 3.0, function \"glRenderbufferStorageMultisample\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glRenderbufferStorageMultisample) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.0, function \"glRenderbufferStorageMultisample\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glFramebufferTextureLayer = (PFNGLFRAMEBUFFERTEXTURELAYERPROC)wglGetProcAddress("glFramebufferTextureLayer");
-	if(!ptr_glFramebufferTextureLayer) { MessageBox(0, "Couldn't load OpenGL core version 3.0, function \"glFramebufferTextureLayer\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glFramebufferTextureLayer) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.0, function \"glFramebufferTextureLayer\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glMapBufferRange = (PFNGLMAPBUFFERRANGEPROC)wglGetProcAddress("glMapBufferRange");
-	if(!ptr_glMapBufferRange) { MessageBox(0, "Couldn't load OpenGL core version 3.0, function \"glMapBufferRange\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glMapBufferRange) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.0, function \"glMapBufferRange\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glFlushMappedBufferRange = (PFNGLFLUSHMAPPEDBUFFERRANGEPROC)wglGetProcAddress("glFlushMappedBufferRange");
-	if(!ptr_glFlushMappedBufferRange) { MessageBox(0, "Couldn't load OpenGL core version 3.0, function \"glFlushMappedBufferRange\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glFlushMappedBufferRange) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.0, function \"glFlushMappedBufferRange\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glBindVertexArray = (PFNGLBINDVERTEXARRAYPROC)wglGetProcAddress("glBindVertexArray");
-	if(!ptr_glBindVertexArray) { MessageBox(0, "Couldn't load OpenGL core version 3.0, function \"glBindVertexArray\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glBindVertexArray) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.0, function \"glBindVertexArray\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glDeleteVertexArrays = (PFNGLDELETEVERTEXARRAYSPROC)wglGetProcAddress("glDeleteVertexArrays");
-	if(!ptr_glDeleteVertexArrays) { MessageBox(0, "Couldn't load OpenGL core version 3.0, function \"glDeleteVertexArrays\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glDeleteVertexArrays) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.0, function \"glDeleteVertexArrays\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glGenVertexArrays = (PFNGLGENVERTEXARRAYSPROC)wglGetProcAddress("glGenVertexArrays");
-	if(!ptr_glGenVertexArrays) { MessageBox(0, "Couldn't load OpenGL core version 3.0, function \"glGenVertexArrays\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glGenVertexArrays) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.0, function \"glGenVertexArrays\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glIsVertexArray = (PFNGLISVERTEXARRAYPROC)wglGetProcAddress("glIsVertexArray");
-	if(!ptr_glIsVertexArray) { MessageBox(0, "Couldn't load OpenGL core version 3.0, function \"glIsVertexArray\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glIsVertexArray) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.0, function \"glIsVertexArray\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glDrawArraysInstanced = (PFNGLDRAWARRAYSINSTANCEDPROC)wglGetProcAddress("glDrawArraysInstanced");
-	if(!ptr_glDrawArraysInstanced) { MessageBox(0, "Couldn't load OpenGL core version 3.1, function \"glDrawArraysInstanced\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glDrawArraysInstanced) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.1, function \"glDrawArraysInstanced\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glDrawElementsInstanced = (PFNGLDRAWELEMENTSINSTANCEDPROC)wglGetProcAddress("glDrawElementsInstanced");
-	if(!ptr_glDrawElementsInstanced) { MessageBox(0, "Couldn't load OpenGL core version 3.1, function \"glDrawElementsInstanced\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glDrawElementsInstanced) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.1, function \"glDrawElementsInstanced\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glTexBuffer = (PFNGLTEXBUFFERPROC)wglGetProcAddress("glTexBuffer");
-	if(!ptr_glTexBuffer) { MessageBox(0, "Couldn't load OpenGL core version 3.1, function \"glTexBuffer\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glTexBuffer) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.1, function \"glTexBuffer\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glPrimitiveRestartIndex = (PFNGLPRIMITIVERESTARTINDEXPROC)wglGetProcAddress("glPrimitiveRestartIndex");
-	if(!ptr_glPrimitiveRestartIndex) { MessageBox(0, "Couldn't load OpenGL core version 3.1, function \"glPrimitiveRestartIndex\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glPrimitiveRestartIndex) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.1, function \"glPrimitiveRestartIndex\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glCopyBufferSubData = (PFNGLCOPYBUFFERSUBDATAPROC)wglGetProcAddress("glCopyBufferSubData");
-	if(!ptr_glCopyBufferSubData) { MessageBox(0, "Couldn't load OpenGL core version 3.1, function \"glCopyBufferSubData\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glCopyBufferSubData) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.1, function \"glCopyBufferSubData\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glGetUniformIndices = (PFNGLGETUNIFORMINDICESPROC)wglGetProcAddress("glGetUniformIndices");
-	if(!ptr_glGetUniformIndices) { MessageBox(0, "Couldn't load OpenGL core version 3.1, function \"glGetUniformIndices\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glGetUniformIndices) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.1, function \"glGetUniformIndices\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glGetActiveUniformsiv = (PFNGLGETACTIVEUNIFORMSIVPROC)wglGetProcAddress("glGetActiveUniformsiv");
-	if(!ptr_glGetActiveUniformsiv) { MessageBox(0, "Couldn't load OpenGL core version 3.1, function \"glGetActiveUniformsiv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glGetActiveUniformsiv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.1, function \"glGetActiveUniformsiv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glGetActiveUniformName = (PFNGLGETACTIVEUNIFORMNAMEPROC)wglGetProcAddress("glGetActiveUniformName");
-	if(!ptr_glGetActiveUniformName) { MessageBox(0, "Couldn't load OpenGL core version 3.1, function \"glGetActiveUniformName\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glGetActiveUniformName) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.1, function \"glGetActiveUniformName\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glGetUniformBlockIndex = (PFNGLGETUNIFORMBLOCKINDEXPROC)wglGetProcAddress("glGetUniformBlockIndex");
-	if(!ptr_glGetUniformBlockIndex) { MessageBox(0, "Couldn't load OpenGL core version 3.1, function \"glGetUniformBlockIndex\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glGetUniformBlockIndex) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.1, function \"glGetUniformBlockIndex\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glGetActiveUniformBlockiv = (PFNGLGETACTIVEUNIFORMBLOCKIVPROC)wglGetProcAddress("glGetActiveUniformBlockiv");
-	if(!ptr_glGetActiveUniformBlockiv) { MessageBox(0, "Couldn't load OpenGL core version 3.1, function \"glGetActiveUniformBlockiv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glGetActiveUniformBlockiv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.1, function \"glGetActiveUniformBlockiv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glGetActiveUniformBlockName = (PFNGLGETACTIVEUNIFORMBLOCKNAMEPROC)wglGetProcAddress("glGetActiveUniformBlockName");
-	if(!ptr_glGetActiveUniformBlockName) { MessageBox(0, "Couldn't load OpenGL core version 3.1, function \"glGetActiveUniformBlockName\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glGetActiveUniformBlockName) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.1, function \"glGetActiveUniformBlockName\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glUniformBlockBinding = (PFNGLUNIFORMBLOCKBINDINGPROC)wglGetProcAddress("glUniformBlockBinding");
-	if(!ptr_glUniformBlockBinding) { MessageBox(0, "Couldn't load OpenGL core version 3.1, function \"glUniformBlockBinding\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glUniformBlockBinding) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.1, function \"glUniformBlockBinding\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glDrawElementsBaseVertex = (PFNGLDRAWELEMENTSBASEVERTEXPROC)wglGetProcAddress("glDrawElementsBaseVertex");
-	if(!ptr_glDrawElementsBaseVertex) { MessageBox(0, "Couldn't load OpenGL core version 3.2, function \"glDrawElementsBaseVertex\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glDrawElementsBaseVertex) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.2, function \"glDrawElementsBaseVertex\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glDrawRangeElementsBaseVertex = (PFNGLDRAWRANGEELEMENTSBASEVERTEXPROC)wglGetProcAddress("glDrawRangeElementsBaseVertex");
-	if(!ptr_glDrawRangeElementsBaseVertex) { MessageBox(0, "Couldn't load OpenGL core version 3.2, function \"glDrawRangeElementsBaseVertex\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glDrawRangeElementsBaseVertex) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.2, function \"glDrawRangeElementsBaseVertex\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glDrawElementsInstancedBaseVertex = (PFNGLDRAWELEMENTSINSTANCEDBASEVERTEXPROC)wglGetProcAddress("glDrawElementsInstancedBaseVertex");
-	if(!ptr_glDrawElementsInstancedBaseVertex) { MessageBox(0, "Couldn't load OpenGL core version 3.2, function \"glDrawElementsInstancedBaseVertex\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glDrawElementsInstancedBaseVertex) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.2, function \"glDrawElementsInstancedBaseVertex\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glMultiDrawElementsBaseVertex = (PFNGLMULTIDRAWELEMENTSBASEVERTEXPROC)wglGetProcAddress("glMultiDrawElementsBaseVertex");
-	if(!ptr_glMultiDrawElementsBaseVertex) { MessageBox(0, "Couldn't load OpenGL core version 3.2, function \"glMultiDrawElementsBaseVertex\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glMultiDrawElementsBaseVertex) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.2, function \"glMultiDrawElementsBaseVertex\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glProvokingVertex = (PFNGLPROVOKINGVERTEXPROC)wglGetProcAddress("glProvokingVertex");
-	if(!ptr_glProvokingVertex) { MessageBox(0, "Couldn't load OpenGL core version 3.2, function \"glProvokingVertex\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glProvokingVertex) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.2, function \"glProvokingVertex\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glFenceSync = (PFNGLFENCESYNCPROC)wglGetProcAddress("glFenceSync");
-	if(!ptr_glFenceSync) { MessageBox(0, "Couldn't load OpenGL core version 3.2, function \"glFenceSync\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glFenceSync) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.2, function \"glFenceSync\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glIsSync = (PFNGLISSYNCPROC)wglGetProcAddress("glIsSync");
-	if(!ptr_glIsSync) { MessageBox(0, "Couldn't load OpenGL core version 3.2, function \"glIsSync\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glIsSync) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.2, function \"glIsSync\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glDeleteSync = (PFNGLDELETESYNCPROC)wglGetProcAddress("glDeleteSync");
-	if(!ptr_glDeleteSync) { MessageBox(0, "Couldn't load OpenGL core version 3.2, function \"glDeleteSync\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glDeleteSync) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.2, function \"glDeleteSync\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glClientWaitSync = (PFNGLCLIENTWAITSYNCPROC)wglGetProcAddress("glClientWaitSync");
-	if(!ptr_glClientWaitSync) { MessageBox(0, "Couldn't load OpenGL core version 3.2, function \"glClientWaitSync\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glClientWaitSync) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.2, function \"glClientWaitSync\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glWaitSync = (PFNGLWAITSYNCPROC)wglGetProcAddress("glWaitSync");
-	if(!ptr_glWaitSync) { MessageBox(0, "Couldn't load OpenGL core version 3.2, function \"glWaitSync\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glWaitSync) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.2, function \"glWaitSync\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glGetInteger64v = (PFNGLGETINTEGER64VPROC)wglGetProcAddress("glGetInteger64v");
-	if(!ptr_glGetInteger64v) { MessageBox(0, "Couldn't load OpenGL core version 3.2, function \"glGetInteger64v\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glGetInteger64v) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.2, function \"glGetInteger64v\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glGetSynciv = (PFNGLGETSYNCIVPROC)wglGetProcAddress("glGetSynciv");
-	if(!ptr_glGetSynciv) { MessageBox(0, "Couldn't load OpenGL core version 3.2, function \"glGetSynciv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glGetSynciv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.2, function \"glGetSynciv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glGetInteger64i_v = (PFNGLGETINTEGER64I_VPROC)wglGetProcAddress("glGetInteger64i_v");
-	if(!ptr_glGetInteger64i_v) { MessageBox(0, "Couldn't load OpenGL core version 3.2, function \"glGetInteger64i_v\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glGetInteger64i_v) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.2, function \"glGetInteger64i_v\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glGetBufferParameteri64v = (PFNGLGETBUFFERPARAMETERI64VPROC)wglGetProcAddress("glGetBufferParameteri64v");
-	if(!ptr_glGetBufferParameteri64v) { MessageBox(0, "Couldn't load OpenGL core version 3.2, function \"glGetBufferParameteri64v\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glGetBufferParameteri64v) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.2, function \"glGetBufferParameteri64v\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glFramebufferTexture = (PFNGLFRAMEBUFFERTEXTUREPROC)wglGetProcAddress("glFramebufferTexture");
-	if(!ptr_glFramebufferTexture) { MessageBox(0, "Couldn't load OpenGL core version 3.2, function \"glFramebufferTexture\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glFramebufferTexture) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.2, function \"glFramebufferTexture\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glTexImage2DMultisample = (PFNGLTEXIMAGE2DMULTISAMPLEPROC)wglGetProcAddress("glTexImage2DMultisample");
-	if(!ptr_glTexImage2DMultisample) { MessageBox(0, "Couldn't load OpenGL core version 3.2, function \"glTexImage2DMultisample\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glTexImage2DMultisample) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.2, function \"glTexImage2DMultisample\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glTexImage3DMultisample = (PFNGLTEXIMAGE3DMULTISAMPLEPROC)wglGetProcAddress("glTexImage3DMultisample");
-	if(!ptr_glTexImage3DMultisample) { MessageBox(0, "Couldn't load OpenGL core version 3.2, function \"glTexImage3DMultisample\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glTexImage3DMultisample) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.2, function \"glTexImage3DMultisample\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glGetMultisamplefv = (PFNGLGETMULTISAMPLEFVPROC)wglGetProcAddress("glGetMultisamplefv");
-	if(!ptr_glGetMultisamplefv) { MessageBox(0, "Couldn't load OpenGL core version 3.2, function \"glGetMultisamplefv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glGetMultisamplefv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.2, function \"glGetMultisamplefv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glSampleMaski = (PFNGLSAMPLEMASKIPROC)wglGetProcAddress("glSampleMaski");
-	if(!ptr_glSampleMaski) { MessageBox(0, "Couldn't load OpenGL core version 3.2, function \"glSampleMaski\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glSampleMaski) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.2, function \"glSampleMaski\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glBindFragDataLocationIndexed = (PFNGLBINDFRAGDATALOCATIONINDEXEDPROC)wglGetProcAddress("glBindFragDataLocationIndexed");
-	if(!ptr_glBindFragDataLocationIndexed) { MessageBox(0, "Couldn't load OpenGL core version 3.3, function \"glBindFragDataLocationIndexed\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glBindFragDataLocationIndexed) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.3, function \"glBindFragDataLocationIndexed\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glGetFragDataIndex = (PFNGLGETFRAGDATAINDEXPROC)wglGetProcAddress("glGetFragDataIndex");
-	if(!ptr_glGetFragDataIndex) { MessageBox(0, "Couldn't load OpenGL core version 3.3, function \"glGetFragDataIndex\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glGetFragDataIndex) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.3, function \"glGetFragDataIndex\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glGenSamplers = (PFNGLGENSAMPLERSPROC)wglGetProcAddress("glGenSamplers");
-	if(!ptr_glGenSamplers) { MessageBox(0, "Couldn't load OpenGL core version 3.3, function \"glGenSamplers\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glGenSamplers) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.3, function \"glGenSamplers\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glDeleteSamplers = (PFNGLDELETESAMPLERSPROC)wglGetProcAddress("glDeleteSamplers");
-	if(!ptr_glDeleteSamplers) { MessageBox(0, "Couldn't load OpenGL core version 3.3, function \"glDeleteSamplers\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glDeleteSamplers) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.3, function \"glDeleteSamplers\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glIsSampler = (PFNGLISSAMPLERPROC)wglGetProcAddress("glIsSampler");
-	if(!ptr_glIsSampler) { MessageBox(0, "Couldn't load OpenGL core version 3.3, function \"glIsSampler\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glIsSampler) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.3, function \"glIsSampler\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glBindSampler = (PFNGLBINDSAMPLERPROC)wglGetProcAddress("glBindSampler");
-	if(!ptr_glBindSampler) { MessageBox(0, "Couldn't load OpenGL core version 3.3, function \"glBindSampler\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glBindSampler) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.3, function \"glBindSampler\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glSamplerParameteri = (PFNGLSAMPLERPARAMETERIPROC)wglGetProcAddress("glSamplerParameteri");
-	if(!ptr_glSamplerParameteri) { MessageBox(0, "Couldn't load OpenGL core version 3.3, function \"glSamplerParameteri\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glSamplerParameteri) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.3, function \"glSamplerParameteri\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glSamplerParameteriv = (PFNGLSAMPLERPARAMETERIVPROC)wglGetProcAddress("glSamplerParameteriv");
-	if(!ptr_glSamplerParameteriv) { MessageBox(0, "Couldn't load OpenGL core version 3.3, function \"glSamplerParameteriv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glSamplerParameteriv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.3, function \"glSamplerParameteriv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glSamplerParameterf = (PFNGLSAMPLERPARAMETERFPROC)wglGetProcAddress("glSamplerParameterf");
-	if(!ptr_glSamplerParameterf) { MessageBox(0, "Couldn't load OpenGL core version 3.3, function \"glSamplerParameterf\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glSamplerParameterf) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.3, function \"glSamplerParameterf\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glSamplerParameterfv = (PFNGLSAMPLERPARAMETERFVPROC)wglGetProcAddress("glSamplerParameterfv");
-	if(!ptr_glSamplerParameterfv) { MessageBox(0, "Couldn't load OpenGL core version 3.3, function \"glSamplerParameterfv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glSamplerParameterfv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.3, function \"glSamplerParameterfv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glSamplerParameterIiv = (PFNGLSAMPLERPARAMETERIIVPROC)wglGetProcAddress("glSamplerParameterIiv");
-	if(!ptr_glSamplerParameterIiv) { MessageBox(0, "Couldn't load OpenGL core version 3.3, function \"glSamplerParameterIiv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glSamplerParameterIiv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.3, function \"glSamplerParameterIiv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glSamplerParameterIuiv = (PFNGLSAMPLERPARAMETERIUIVPROC)wglGetProcAddress("glSamplerParameterIuiv");
-	if(!ptr_glSamplerParameterIuiv) { MessageBox(0, "Couldn't load OpenGL core version 3.3, function \"glSamplerParameterIuiv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glSamplerParameterIuiv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.3, function \"glSamplerParameterIuiv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glGetSamplerParameteriv = (PFNGLGETSAMPLERPARAMETERIVPROC)wglGetProcAddress("glGetSamplerParameteriv");
-	if(!ptr_glGetSamplerParameteriv) { MessageBox(0, "Couldn't load OpenGL core version 3.3, function \"glGetSamplerParameteriv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glGetSamplerParameteriv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.3, function \"glGetSamplerParameteriv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glGetSamplerParameterIiv = (PFNGLGETSAMPLERPARAMETERIIVPROC)wglGetProcAddress("glGetSamplerParameterIiv");
-	if(!ptr_glGetSamplerParameterIiv) { MessageBox(0, "Couldn't load OpenGL core version 3.3, function \"glGetSamplerParameterIiv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glGetSamplerParameterIiv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.3, function \"glGetSamplerParameterIiv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glGetSamplerParameterfv = (PFNGLGETSAMPLERPARAMETERFVPROC)wglGetProcAddress("glGetSamplerParameterfv");
-	if(!ptr_glGetSamplerParameterfv) { MessageBox(0, "Couldn't load OpenGL core version 3.3, function \"glGetSamplerParameterfv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glGetSamplerParameterfv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.3, function \"glGetSamplerParameterfv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glGetSamplerParameterIuiv = (PFNGLGETSAMPLERPARAMETERIUIVPROC)wglGetProcAddress("glGetSamplerParameterIuiv");
-	if(!ptr_glGetSamplerParameterIuiv) { MessageBox(0, "Couldn't load OpenGL core version 3.3, function \"glGetSamplerParameterIuiv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glGetSamplerParameterIuiv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.3, function \"glGetSamplerParameterIuiv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glQueryCounter = (PFNGLQUERYCOUNTERPROC)wglGetProcAddress("glQueryCounter");
-	if(!ptr_glQueryCounter) { MessageBox(0, "Couldn't load OpenGL core version 3.3, function \"glQueryCounter\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glQueryCounter) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.3, function \"glQueryCounter\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glGetQueryObjecti64v = (PFNGLGETQUERYOBJECTI64VPROC)wglGetProcAddress("glGetQueryObjecti64v");
-	if(!ptr_glGetQueryObjecti64v) { MessageBox(0, "Couldn't load OpenGL core version 3.3, function \"glGetQueryObjecti64v\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glGetQueryObjecti64v) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.3, function \"glGetQueryObjecti64v\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glGetQueryObjectui64v = (PFNGLGETQUERYOBJECTUI64VPROC)wglGetProcAddress("glGetQueryObjectui64v");
-	if(!ptr_glGetQueryObjectui64v) { MessageBox(0, "Couldn't load OpenGL core version 3.3, function \"glGetQueryObjectui64v\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glGetQueryObjectui64v) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.3, function \"glGetQueryObjectui64v\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glVertexAttribDivisor = (PFNGLVERTEXATTRIBDIVISORPROC)wglGetProcAddress("glVertexAttribDivisor");
-	if(!ptr_glVertexAttribDivisor) { MessageBox(0, "Couldn't load OpenGL core version 3.3, function \"glVertexAttribDivisor\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glVertexAttribDivisor) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.3, function \"glVertexAttribDivisor\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glVertexAttribP1ui = (PFNGLVERTEXATTRIBP1UIPROC)wglGetProcAddress("glVertexAttribP1ui");
-	if(!ptr_glVertexAttribP1ui) { MessageBox(0, "Couldn't load OpenGL core version 3.3, function \"glVertexAttribP1ui\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glVertexAttribP1ui) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.3, function \"glVertexAttribP1ui\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glVertexAttribP1uiv = (PFNGLVERTEXATTRIBP1UIVPROC)wglGetProcAddress("glVertexAttribP1uiv");
-	if(!ptr_glVertexAttribP1uiv) { MessageBox(0, "Couldn't load OpenGL core version 3.3, function \"glVertexAttribP1uiv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glVertexAttribP1uiv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.3, function \"glVertexAttribP1uiv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glVertexAttribP2ui = (PFNGLVERTEXATTRIBP2UIPROC)wglGetProcAddress("glVertexAttribP2ui");
-	if(!ptr_glVertexAttribP2ui) { MessageBox(0, "Couldn't load OpenGL core version 3.3, function \"glVertexAttribP2ui\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glVertexAttribP2ui) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.3, function \"glVertexAttribP2ui\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glVertexAttribP2uiv = (PFNGLVERTEXATTRIBP2UIVPROC)wglGetProcAddress("glVertexAttribP2uiv");
-	if(!ptr_glVertexAttribP2uiv) { MessageBox(0, "Couldn't load OpenGL core version 3.3, function \"glVertexAttribP2uiv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glVertexAttribP2uiv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.3, function \"glVertexAttribP2uiv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glVertexAttribP3ui = (PFNGLVERTEXATTRIBP3UIPROC)wglGetProcAddress("glVertexAttribP3ui");
-	if(!ptr_glVertexAttribP3ui) { MessageBox(0, "Couldn't load OpenGL core version 3.3, function \"glVertexAttribP3ui\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glVertexAttribP3ui) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.3, function \"glVertexAttribP3ui\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glVertexAttribP3uiv = (PFNGLVERTEXATTRIBP3UIVPROC)wglGetProcAddress("glVertexAttribP3uiv");
-	if(!ptr_glVertexAttribP3uiv) { MessageBox(0, "Couldn't load OpenGL core version 3.3, function \"glVertexAttribP3uiv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glVertexAttribP3uiv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.3, function \"glVertexAttribP3uiv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glVertexAttribP4ui = (PFNGLVERTEXATTRIBP4UIPROC)wglGetProcAddress("glVertexAttribP4ui");
-	if(!ptr_glVertexAttribP4ui) { MessageBox(0, "Couldn't load OpenGL core version 3.3, function \"glVertexAttribP4ui\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glVertexAttribP4ui) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.3, function \"glVertexAttribP4ui\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glVertexAttribP4uiv = (PFNGLVERTEXATTRIBP4UIVPROC)wglGetProcAddress("glVertexAttribP4uiv");
-	if(!ptr_glVertexAttribP4uiv) { MessageBox(0, "Couldn't load OpenGL core version 3.3, function \"glVertexAttribP4uiv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glVertexAttribP4uiv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.3, function \"glVertexAttribP4uiv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glVertexP2ui = (PFNGLVERTEXP2UIPROC)wglGetProcAddress("glVertexP2ui");
-	if(!ptr_glVertexP2ui) { MessageBox(0, "Couldn't load OpenGL core version 3.3, function \"glVertexP2ui\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glVertexP2ui) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.3, function \"glVertexP2ui\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glVertexP2uiv = (PFNGLVERTEXP2UIVPROC)wglGetProcAddress("glVertexP2uiv");
-	if(!ptr_glVertexP2uiv) { MessageBox(0, "Couldn't load OpenGL core version 3.3, function \"glVertexP2uiv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glVertexP2uiv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.3, function \"glVertexP2uiv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glVertexP3ui = (PFNGLVERTEXP3UIPROC)wglGetProcAddress("glVertexP3ui");
-	if(!ptr_glVertexP3ui) { MessageBox(0, "Couldn't load OpenGL core version 3.3, function \"glVertexP3ui\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glVertexP3ui) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.3, function \"glVertexP3ui\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glVertexP3uiv = (PFNGLVERTEXP3UIVPROC)wglGetProcAddress("glVertexP3uiv");
-	if(!ptr_glVertexP3uiv) { MessageBox(0, "Couldn't load OpenGL core version 3.3, function \"glVertexP3uiv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glVertexP3uiv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.3, function \"glVertexP3uiv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glVertexP4ui = (PFNGLVERTEXP4UIPROC)wglGetProcAddress("glVertexP4ui");
-	if(!ptr_glVertexP4ui) { MessageBox(0, "Couldn't load OpenGL core version 3.3, function \"glVertexP4ui\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glVertexP4ui) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.3, function \"glVertexP4ui\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glVertexP4uiv = (PFNGLVERTEXP4UIVPROC)wglGetProcAddress("glVertexP4uiv");
-	if(!ptr_glVertexP4uiv) { MessageBox(0, "Couldn't load OpenGL core version 3.3, function \"glVertexP4uiv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glVertexP4uiv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.3, function \"glVertexP4uiv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glTexCoordP1ui = (PFNGLTEXCOORDP1UIPROC)wglGetProcAddress("glTexCoordP1ui");
-	if(!ptr_glTexCoordP1ui) { MessageBox(0, "Couldn't load OpenGL core version 3.3, function \"glTexCoordP1ui\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glTexCoordP1ui) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.3, function \"glTexCoordP1ui\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glTexCoordP1uiv = (PFNGLTEXCOORDP1UIVPROC)wglGetProcAddress("glTexCoordP1uiv");
-	if(!ptr_glTexCoordP1uiv) { MessageBox(0, "Couldn't load OpenGL core version 3.3, function \"glTexCoordP1uiv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glTexCoordP1uiv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.3, function \"glTexCoordP1uiv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glTexCoordP2ui = (PFNGLTEXCOORDP2UIPROC)wglGetProcAddress("glTexCoordP2ui");
-	if(!ptr_glTexCoordP2ui) { MessageBox(0, "Couldn't load OpenGL core version 3.3, function \"glTexCoordP2ui\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glTexCoordP2ui) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.3, function \"glTexCoordP2ui\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glTexCoordP2uiv = (PFNGLTEXCOORDP2UIVPROC)wglGetProcAddress("glTexCoordP2uiv");
-	if(!ptr_glTexCoordP2uiv) { MessageBox(0, "Couldn't load OpenGL core version 3.3, function \"glTexCoordP2uiv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glTexCoordP2uiv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.3, function \"glTexCoordP2uiv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glTexCoordP3ui = (PFNGLTEXCOORDP3UIPROC)wglGetProcAddress("glTexCoordP3ui");
-	if(!ptr_glTexCoordP3ui) { MessageBox(0, "Couldn't load OpenGL core version 3.3, function \"glTexCoordP3ui\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glTexCoordP3ui) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.3, function \"glTexCoordP3ui\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glTexCoordP3uiv = (PFNGLTEXCOORDP3UIVPROC)wglGetProcAddress("glTexCoordP3uiv");
-	if(!ptr_glTexCoordP3uiv) { MessageBox(0, "Couldn't load OpenGL core version 3.3, function \"glTexCoordP3uiv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glTexCoordP3uiv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.3, function \"glTexCoordP3uiv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glTexCoordP4ui = (PFNGLTEXCOORDP4UIPROC)wglGetProcAddress("glTexCoordP4ui");
-	if(!ptr_glTexCoordP4ui) { MessageBox(0, "Couldn't load OpenGL core version 3.3, function \"glTexCoordP4ui\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glTexCoordP4ui) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.3, function \"glTexCoordP4ui\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glTexCoordP4uiv = (PFNGLTEXCOORDP4UIVPROC)wglGetProcAddress("glTexCoordP4uiv");
-	if(!ptr_glTexCoordP4uiv) { MessageBox(0, "Couldn't load OpenGL core version 3.3, function \"glTexCoordP4uiv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glTexCoordP4uiv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.3, function \"glTexCoordP4uiv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glMultiTexCoordP1ui = (PFNGLMULTITEXCOORDP1UIPROC)wglGetProcAddress("glMultiTexCoordP1ui");
-	if(!ptr_glMultiTexCoordP1ui) { MessageBox(0, "Couldn't load OpenGL core version 3.3, function \"glMultiTexCoordP1ui\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glMultiTexCoordP1ui) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.3, function \"glMultiTexCoordP1ui\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glMultiTexCoordP1uiv = (PFNGLMULTITEXCOORDP1UIVPROC)wglGetProcAddress("glMultiTexCoordP1uiv");
-	if(!ptr_glMultiTexCoordP1uiv) { MessageBox(0, "Couldn't load OpenGL core version 3.3, function \"glMultiTexCoordP1uiv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glMultiTexCoordP1uiv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.3, function \"glMultiTexCoordP1uiv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glMultiTexCoordP2ui = (PFNGLMULTITEXCOORDP2UIPROC)wglGetProcAddress("glMultiTexCoordP2ui");
-	if(!ptr_glMultiTexCoordP2ui) { MessageBox(0, "Couldn't load OpenGL core version 3.3, function \"glMultiTexCoordP2ui\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glMultiTexCoordP2ui) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.3, function \"glMultiTexCoordP2ui\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glMultiTexCoordP2uiv = (PFNGLMULTITEXCOORDP2UIVPROC)wglGetProcAddress("glMultiTexCoordP2uiv");
-	if(!ptr_glMultiTexCoordP2uiv) { MessageBox(0, "Couldn't load OpenGL core version 3.3, function \"glMultiTexCoordP2uiv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glMultiTexCoordP2uiv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.3, function \"glMultiTexCoordP2uiv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glMultiTexCoordP3ui = (PFNGLMULTITEXCOORDP3UIPROC)wglGetProcAddress("glMultiTexCoordP3ui");
-	if(!ptr_glMultiTexCoordP3ui) { MessageBox(0, "Couldn't load OpenGL core version 3.3, function \"glMultiTexCoordP3ui\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glMultiTexCoordP3ui) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.3, function \"glMultiTexCoordP3ui\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glMultiTexCoordP3uiv = (PFNGLMULTITEXCOORDP3UIVPROC)wglGetProcAddress("glMultiTexCoordP3uiv");
-	if(!ptr_glMultiTexCoordP3uiv) { MessageBox(0, "Couldn't load OpenGL core version 3.3, function \"glMultiTexCoordP3uiv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glMultiTexCoordP3uiv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.3, function \"glMultiTexCoordP3uiv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glMultiTexCoordP4ui = (PFNGLMULTITEXCOORDP4UIPROC)wglGetProcAddress("glMultiTexCoordP4ui");
-	if(!ptr_glMultiTexCoordP4ui) { MessageBox(0, "Couldn't load OpenGL core version 3.3, function \"glMultiTexCoordP4ui\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glMultiTexCoordP4ui) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.3, function \"glMultiTexCoordP4ui\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glMultiTexCoordP4uiv = (PFNGLMULTITEXCOORDP4UIVPROC)wglGetProcAddress("glMultiTexCoordP4uiv");
-	if(!ptr_glMultiTexCoordP4uiv) { MessageBox(0, "Couldn't load OpenGL core version 3.3, function \"glMultiTexCoordP4uiv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glMultiTexCoordP4uiv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.3, function \"glMultiTexCoordP4uiv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glNormalP3ui = (PFNGLNORMALP3UIPROC)wglGetProcAddress("glNormalP3ui");
-	if(!ptr_glNormalP3ui) { MessageBox(0, "Couldn't load OpenGL core version 3.3, function \"glNormalP3ui\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glNormalP3ui) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.3, function \"glNormalP3ui\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glNormalP3uiv = (PFNGLNORMALP3UIVPROC)wglGetProcAddress("glNormalP3uiv");
-	if(!ptr_glNormalP3uiv) { MessageBox(0, "Couldn't load OpenGL core version 3.3, function \"glNormalP3uiv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glNormalP3uiv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.3, function \"glNormalP3uiv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glColorP3ui = (PFNGLCOLORP3UIPROC)wglGetProcAddress("glColorP3ui");
-	if(!ptr_glColorP3ui) { MessageBox(0, "Couldn't load OpenGL core version 3.3, function \"glColorP3ui\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glColorP3ui) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.3, function \"glColorP3ui\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glColorP3uiv = (PFNGLCOLORP3UIVPROC)wglGetProcAddress("glColorP3uiv");
-	if(!ptr_glColorP3uiv) { MessageBox(0, "Couldn't load OpenGL core version 3.3, function \"glColorP3uiv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glColorP3uiv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.3, function \"glColorP3uiv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glColorP4ui = (PFNGLCOLORP4UIPROC)wglGetProcAddress("glColorP4ui");
-	if(!ptr_glColorP4ui) { MessageBox(0, "Couldn't load OpenGL core version 3.3, function \"glColorP4ui\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glColorP4ui) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.3, function \"glColorP4ui\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glColorP4uiv = (PFNGLCOLORP4UIVPROC)wglGetProcAddress("glColorP4uiv");
-	if(!ptr_glColorP4uiv) { MessageBox(0, "Couldn't load OpenGL core version 3.3, function \"glColorP4uiv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glColorP4uiv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.3, function \"glColorP4uiv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glSecondaryColorP3ui = (PFNGLSECONDARYCOLORP3UIPROC)wglGetProcAddress("glSecondaryColorP3ui");
-	if(!ptr_glSecondaryColorP3ui) { MessageBox(0, "Couldn't load OpenGL core version 3.3, function \"glSecondaryColorP3ui\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glSecondaryColorP3ui) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.3, function \"glSecondaryColorP3ui\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glSecondaryColorP3uiv = (PFNGLSECONDARYCOLORP3UIVPROC)wglGetProcAddress("glSecondaryColorP3uiv");
-	if(!ptr_glSecondaryColorP3uiv) { MessageBox(0, "Couldn't load OpenGL core version 3.3, function \"glSecondaryColorP3uiv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glSecondaryColorP3uiv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 3.3, function \"glSecondaryColorP3uiv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glMinSampleShading = (PFNGLMINSAMPLESHADINGPROC)wglGetProcAddress("glMinSampleShading");
-	if(!ptr_glMinSampleShading) { MessageBox(0, "Couldn't load OpenGL core version 4.0, function \"glMinSampleShading\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glMinSampleShading) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.0, function \"glMinSampleShading\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glBlendEquationi = (PFNGLBLENDEQUATIONIPROC)wglGetProcAddress("glBlendEquationi");
-	if(!ptr_glBlendEquationi) { MessageBox(0, "Couldn't load OpenGL core version 4.0, function \"glBlendEquationi\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glBlendEquationi) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.0, function \"glBlendEquationi\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glBlendEquationSeparatei = (PFNGLBLENDEQUATIONSEPARATEIPROC)wglGetProcAddress("glBlendEquationSeparatei");
-	if(!ptr_glBlendEquationSeparatei) { MessageBox(0, "Couldn't load OpenGL core version 4.0, function \"glBlendEquationSeparatei\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glBlendEquationSeparatei) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.0, function \"glBlendEquationSeparatei\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glBlendFunci = (PFNGLBLENDFUNCIPROC)wglGetProcAddress("glBlendFunci");
-	if(!ptr_glBlendFunci) { MessageBox(0, "Couldn't load OpenGL core version 4.0, function \"glBlendFunci\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glBlendFunci) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.0, function \"glBlendFunci\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glBlendFuncSeparatei = (PFNGLBLENDFUNCSEPARATEIPROC)wglGetProcAddress("glBlendFuncSeparatei");
-	if(!ptr_glBlendFuncSeparatei) { MessageBox(0, "Couldn't load OpenGL core version 4.0, function \"glBlendFuncSeparatei\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glBlendFuncSeparatei) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.0, function \"glBlendFuncSeparatei\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glDrawArraysIndirect = (PFNGLDRAWARRAYSINDIRECTPROC)wglGetProcAddress("glDrawArraysIndirect");
-	if(!ptr_glDrawArraysIndirect) { MessageBox(0, "Couldn't load OpenGL core version 4.0, function \"glDrawArraysIndirect\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glDrawArraysIndirect) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.0, function \"glDrawArraysIndirect\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glDrawElementsIndirect = (PFNGLDRAWELEMENTSINDIRECTPROC)wglGetProcAddress("glDrawElementsIndirect");
-	if(!ptr_glDrawElementsIndirect) { MessageBox(0, "Couldn't load OpenGL core version 4.0, function \"glDrawElementsIndirect\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glDrawElementsIndirect) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.0, function \"glDrawElementsIndirect\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glUniform1d = (PFNGLUNIFORM1DPROC)wglGetProcAddress("glUniform1d");
-	if(!ptr_glUniform1d) { MessageBox(0, "Couldn't load OpenGL core version 4.0, function \"glUniform1d\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glUniform1d) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.0, function \"glUniform1d\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glUniform2d = (PFNGLUNIFORM2DPROC)wglGetProcAddress("glUniform2d");
-	if(!ptr_glUniform2d) { MessageBox(0, "Couldn't load OpenGL core version 4.0, function \"glUniform2d\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glUniform2d) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.0, function \"glUniform2d\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glUniform3d = (PFNGLUNIFORM3DPROC)wglGetProcAddress("glUniform3d");
-	if(!ptr_glUniform3d) { MessageBox(0, "Couldn't load OpenGL core version 4.0, function \"glUniform3d\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glUniform3d) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.0, function \"glUniform3d\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glUniform4d = (PFNGLUNIFORM4DPROC)wglGetProcAddress("glUniform4d");
-	if(!ptr_glUniform4d) { MessageBox(0, "Couldn't load OpenGL core version 4.0, function \"glUniform4d\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glUniform4d) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.0, function \"glUniform4d\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glUniform1dv = (PFNGLUNIFORM1DVPROC)wglGetProcAddress("glUniform1dv");
-	if(!ptr_glUniform1dv) { MessageBox(0, "Couldn't load OpenGL core version 4.0, function \"glUniform1dv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glUniform1dv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.0, function \"glUniform1dv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glUniform2dv = (PFNGLUNIFORM2DVPROC)wglGetProcAddress("glUniform2dv");
-	if(!ptr_glUniform2dv) { MessageBox(0, "Couldn't load OpenGL core version 4.0, function \"glUniform2dv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glUniform2dv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.0, function \"glUniform2dv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glUniform3dv = (PFNGLUNIFORM3DVPROC)wglGetProcAddress("glUniform3dv");
-	if(!ptr_glUniform3dv) { MessageBox(0, "Couldn't load OpenGL core version 4.0, function \"glUniform3dv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glUniform3dv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.0, function \"glUniform3dv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glUniform4dv = (PFNGLUNIFORM4DVPROC)wglGetProcAddress("glUniform4dv");
-	if(!ptr_glUniform4dv) { MessageBox(0, "Couldn't load OpenGL core version 4.0, function \"glUniform4dv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glUniform4dv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.0, function \"glUniform4dv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glUniformMatrix2dv = (PFNGLUNIFORMMATRIX2DVPROC)wglGetProcAddress("glUniformMatrix2dv");
-	if(!ptr_glUniformMatrix2dv) { MessageBox(0, "Couldn't load OpenGL core version 4.0, function \"glUniformMatrix2dv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glUniformMatrix2dv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.0, function \"glUniformMatrix2dv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glUniformMatrix3dv = (PFNGLUNIFORMMATRIX3DVPROC)wglGetProcAddress("glUniformMatrix3dv");
-	if(!ptr_glUniformMatrix3dv) { MessageBox(0, "Couldn't load OpenGL core version 4.0, function \"glUniformMatrix3dv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glUniformMatrix3dv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.0, function \"glUniformMatrix3dv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glUniformMatrix4dv = (PFNGLUNIFORMMATRIX4DVPROC)wglGetProcAddress("glUniformMatrix4dv");
-	if(!ptr_glUniformMatrix4dv) { MessageBox(0, "Couldn't load OpenGL core version 4.0, function \"glUniformMatrix4dv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glUniformMatrix4dv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.0, function \"glUniformMatrix4dv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glUniformMatrix2x3dv = (PFNGLUNIFORMMATRIX2X3DVPROC)wglGetProcAddress("glUniformMatrix2x3dv");
-	if(!ptr_glUniformMatrix2x3dv) { MessageBox(0, "Couldn't load OpenGL core version 4.0, function \"glUniformMatrix2x3dv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glUniformMatrix2x3dv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.0, function \"glUniformMatrix2x3dv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glUniformMatrix2x4dv = (PFNGLUNIFORMMATRIX2X4DVPROC)wglGetProcAddress("glUniformMatrix2x4dv");
-	if(!ptr_glUniformMatrix2x4dv) { MessageBox(0, "Couldn't load OpenGL core version 4.0, function \"glUniformMatrix2x4dv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glUniformMatrix2x4dv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.0, function \"glUniformMatrix2x4dv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glUniformMatrix3x2dv = (PFNGLUNIFORMMATRIX3X2DVPROC)wglGetProcAddress("glUniformMatrix3x2dv");
-	if(!ptr_glUniformMatrix3x2dv) { MessageBox(0, "Couldn't load OpenGL core version 4.0, function \"glUniformMatrix3x2dv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glUniformMatrix3x2dv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.0, function \"glUniformMatrix3x2dv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glUniformMatrix3x4dv = (PFNGLUNIFORMMATRIX3X4DVPROC)wglGetProcAddress("glUniformMatrix3x4dv");
-	if(!ptr_glUniformMatrix3x4dv) { MessageBox(0, "Couldn't load OpenGL core version 4.0, function \"glUniformMatrix3x4dv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glUniformMatrix3x4dv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.0, function \"glUniformMatrix3x4dv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glUniformMatrix4x2dv = (PFNGLUNIFORMMATRIX4X2DVPROC)wglGetProcAddress("glUniformMatrix4x2dv");
-	if(!ptr_glUniformMatrix4x2dv) { MessageBox(0, "Couldn't load OpenGL core version 4.0, function \"glUniformMatrix4x2dv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glUniformMatrix4x2dv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.0, function \"glUniformMatrix4x2dv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glUniformMatrix4x3dv = (PFNGLUNIFORMMATRIX4X3DVPROC)wglGetProcAddress("glUniformMatrix4x3dv");
-	if(!ptr_glUniformMatrix4x3dv) { MessageBox(0, "Couldn't load OpenGL core version 4.0, function \"glUniformMatrix4x3dv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glUniformMatrix4x3dv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.0, function \"glUniformMatrix4x3dv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glGetUniformdv = (PFNGLGETUNIFORMDVPROC)wglGetProcAddress("glGetUniformdv");
-	if(!ptr_glGetUniformdv) { MessageBox(0, "Couldn't load OpenGL core version 4.0, function \"glGetUniformdv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glGetUniformdv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.0, function \"glGetUniformdv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glGetSubroutineUniformLocation = (PFNGLGETSUBROUTINEUNIFORMLOCATIONPROC)wglGetProcAddress("glGetSubroutineUniformLocation");
-	if(!ptr_glGetSubroutineUniformLocation) { MessageBox(0, "Couldn't load OpenGL core version 4.0, function \"glGetSubroutineUniformLocation\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glGetSubroutineUniformLocation) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.0, function \"glGetSubroutineUniformLocation\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glGetSubroutineIndex = (PFNGLGETSUBROUTINEINDEXPROC)wglGetProcAddress("glGetSubroutineIndex");
-	if(!ptr_glGetSubroutineIndex) { MessageBox(0, "Couldn't load OpenGL core version 4.0, function \"glGetSubroutineIndex\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glGetSubroutineIndex) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.0, function \"glGetSubroutineIndex\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glGetActiveSubroutineUniformiv = (PFNGLGETACTIVESUBROUTINEUNIFORMIVPROC)wglGetProcAddress("glGetActiveSubroutineUniformiv");
-	if(!ptr_glGetActiveSubroutineUniformiv) { MessageBox(0, "Couldn't load OpenGL core version 4.0, function \"glGetActiveSubroutineUniformiv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glGetActiveSubroutineUniformiv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.0, function \"glGetActiveSubroutineUniformiv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glGetActiveSubroutineUniformName = (PFNGLGETACTIVESUBROUTINEUNIFORMNAMEPROC)wglGetProcAddress("glGetActiveSubroutineUniformName");
-	if(!ptr_glGetActiveSubroutineUniformName) { MessageBox(0, "Couldn't load OpenGL core version 4.0, function \"glGetActiveSubroutineUniformName\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glGetActiveSubroutineUniformName) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.0, function \"glGetActiveSubroutineUniformName\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glGetActiveSubroutineName = (PFNGLGETACTIVESUBROUTINENAMEPROC)wglGetProcAddress("glGetActiveSubroutineName");
-	if(!ptr_glGetActiveSubroutineName) { MessageBox(0, "Couldn't load OpenGL core version 4.0, function \"glGetActiveSubroutineName\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glGetActiveSubroutineName) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.0, function \"glGetActiveSubroutineName\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glUniformSubroutinesuiv = (PFNGLUNIFORMSUBROUTINESUIVPROC)wglGetProcAddress("glUniformSubroutinesuiv");
-	if(!ptr_glUniformSubroutinesuiv) { MessageBox(0, "Couldn't load OpenGL core version 4.0, function \"glUniformSubroutinesuiv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glUniformSubroutinesuiv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.0, function \"glUniformSubroutinesuiv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glGetUniformSubroutineuiv = (PFNGLGETUNIFORMSUBROUTINEUIVPROC)wglGetProcAddress("glGetUniformSubroutineuiv");
-	if(!ptr_glGetUniformSubroutineuiv) { MessageBox(0, "Couldn't load OpenGL core version 4.0, function \"glGetUniformSubroutineuiv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glGetUniformSubroutineuiv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.0, function \"glGetUniformSubroutineuiv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glGetProgramStageiv = (PFNGLGETPROGRAMSTAGEIVPROC)wglGetProcAddress("glGetProgramStageiv");
-	if(!ptr_glGetProgramStageiv) { MessageBox(0, "Couldn't load OpenGL core version 4.0, function \"glGetProgramStageiv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glGetProgramStageiv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.0, function \"glGetProgramStageiv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glPatchParameteri = (PFNGLPATCHPARAMETERIPROC)wglGetProcAddress("glPatchParameteri");
-	if(!ptr_glPatchParameteri) { MessageBox(0, "Couldn't load OpenGL core version 4.0, function \"glPatchParameteri\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glPatchParameteri) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.0, function \"glPatchParameteri\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glPatchParameterfv = (PFNGLPATCHPARAMETERFVPROC)wglGetProcAddress("glPatchParameterfv");
-	if(!ptr_glPatchParameterfv) { MessageBox(0, "Couldn't load OpenGL core version 4.0, function \"glPatchParameterfv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glPatchParameterfv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.0, function \"glPatchParameterfv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glBindTransformFeedback = (PFNGLBINDTRANSFORMFEEDBACKPROC)wglGetProcAddress("glBindTransformFeedback");
-	if(!ptr_glBindTransformFeedback) { MessageBox(0, "Couldn't load OpenGL core version 4.0, function \"glBindTransformFeedback\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glBindTransformFeedback) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.0, function \"glBindTransformFeedback\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glDeleteTransformFeedbacks = (PFNGLDELETETRANSFORMFEEDBACKSPROC)wglGetProcAddress("glDeleteTransformFeedbacks");
-	if(!ptr_glDeleteTransformFeedbacks) { MessageBox(0, "Couldn't load OpenGL core version 4.0, function \"glDeleteTransformFeedbacks\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glDeleteTransformFeedbacks) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.0, function \"glDeleteTransformFeedbacks\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glGenTransformFeedbacks = (PFNGLGENTRANSFORMFEEDBACKSPROC)wglGetProcAddress("glGenTransformFeedbacks");
-	if(!ptr_glGenTransformFeedbacks) { MessageBox(0, "Couldn't load OpenGL core version 4.0, function \"glGenTransformFeedbacks\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glGenTransformFeedbacks) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.0, function \"glGenTransformFeedbacks\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glIsTransformFeedback = (PFNGLISTRANSFORMFEEDBACKPROC)wglGetProcAddress("glIsTransformFeedback");
-	if(!ptr_glIsTransformFeedback) { MessageBox(0, "Couldn't load OpenGL core version 4.0, function \"glIsTransformFeedback\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glIsTransformFeedback) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.0, function \"glIsTransformFeedback\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glPauseTransformFeedback = (PFNGLPAUSETRANSFORMFEEDBACKPROC)wglGetProcAddress("glPauseTransformFeedback");
-	if(!ptr_glPauseTransformFeedback) { MessageBox(0, "Couldn't load OpenGL core version 4.0, function \"glPauseTransformFeedback\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glPauseTransformFeedback) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.0, function \"glPauseTransformFeedback\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glResumeTransformFeedback = (PFNGLRESUMETRANSFORMFEEDBACKPROC)wglGetProcAddress("glResumeTransformFeedback");
-	if(!ptr_glResumeTransformFeedback) { MessageBox(0, "Couldn't load OpenGL core version 4.0, function \"glResumeTransformFeedback\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glResumeTransformFeedback) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.0, function \"glResumeTransformFeedback\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glDrawTransformFeedback = (PFNGLDRAWTRANSFORMFEEDBACKPROC)wglGetProcAddress("glDrawTransformFeedback");
-	if(!ptr_glDrawTransformFeedback) { MessageBox(0, "Couldn't load OpenGL core version 4.0, function \"glDrawTransformFeedback\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glDrawTransformFeedback) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.0, function \"glDrawTransformFeedback\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glDrawTransformFeedbackStream = (PFNGLDRAWTRANSFORMFEEDBACKSTREAMPROC)wglGetProcAddress("glDrawTransformFeedbackStream");
-	if(!ptr_glDrawTransformFeedbackStream) { MessageBox(0, "Couldn't load OpenGL core version 4.0, function \"glDrawTransformFeedbackStream\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glDrawTransformFeedbackStream) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.0, function \"glDrawTransformFeedbackStream\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glBeginQueryIndexed = (PFNGLBEGINQUERYINDEXEDPROC)wglGetProcAddress("glBeginQueryIndexed");
-	if(!ptr_glBeginQueryIndexed) { MessageBox(0, "Couldn't load OpenGL core version 4.0, function \"glBeginQueryIndexed\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glBeginQueryIndexed) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.0, function \"glBeginQueryIndexed\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glEndQueryIndexed = (PFNGLENDQUERYINDEXEDPROC)wglGetProcAddress("glEndQueryIndexed");
-	if(!ptr_glEndQueryIndexed) { MessageBox(0, "Couldn't load OpenGL core version 4.0, function \"glEndQueryIndexed\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glEndQueryIndexed) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.0, function \"glEndQueryIndexed\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glGetQueryIndexediv = (PFNGLGETQUERYINDEXEDIVPROC)wglGetProcAddress("glGetQueryIndexediv");
-	if(!ptr_glGetQueryIndexediv) { MessageBox(0, "Couldn't load OpenGL core version 4.0, function \"glGetQueryIndexediv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glGetQueryIndexediv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.0, function \"glGetQueryIndexediv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glReleaseShaderCompiler = (PFNGLRELEASESHADERCOMPILERPROC)wglGetProcAddress("glReleaseShaderCompiler");
-	if(!ptr_glReleaseShaderCompiler) { MessageBox(0, "Couldn't load OpenGL core version 4.1, function \"glReleaseShaderCompiler\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glReleaseShaderCompiler) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.1, function \"glReleaseShaderCompiler\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glShaderBinary = (PFNGLSHADERBINARYPROC)wglGetProcAddress("glShaderBinary");
-	if(!ptr_glShaderBinary) { MessageBox(0, "Couldn't load OpenGL core version 4.1, function \"glShaderBinary\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glShaderBinary) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.1, function \"glShaderBinary\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glGetShaderPrecisionFormat = (PFNGLGETSHADERPRECISIONFORMATPROC)wglGetProcAddress("glGetShaderPrecisionFormat");
-	if(!ptr_glGetShaderPrecisionFormat) { MessageBox(0, "Couldn't load OpenGL core version 4.1, function \"glGetShaderPrecisionFormat\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glGetShaderPrecisionFormat) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.1, function \"glGetShaderPrecisionFormat\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glDepthRangef = (PFNGLDEPTHRANGEFPROC)wglGetProcAddress("glDepthRangef");
-	if(!ptr_glDepthRangef) { MessageBox(0, "Couldn't load OpenGL core version 4.1, function \"glDepthRangef\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glDepthRangef) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.1, function \"glDepthRangef\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glClearDepthf = (PFNGLCLEARDEPTHFPROC)wglGetProcAddress("glClearDepthf");
-	if(!ptr_glClearDepthf) { MessageBox(0, "Couldn't load OpenGL core version 4.1, function \"glClearDepthf\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glClearDepthf) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.1, function \"glClearDepthf\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glGetProgramBinary = (PFNGLGETPROGRAMBINARYPROC)wglGetProcAddress("glGetProgramBinary");
-	if(!ptr_glGetProgramBinary) { MessageBox(0, "Couldn't load OpenGL core version 4.1, function \"glGetProgramBinary\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glGetProgramBinary) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.1, function \"glGetProgramBinary\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glProgramBinary = (PFNGLPROGRAMBINARYPROC)wglGetProcAddress("glProgramBinary");
-	if(!ptr_glProgramBinary) { MessageBox(0, "Couldn't load OpenGL core version 4.1, function \"glProgramBinary\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glProgramBinary) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.1, function \"glProgramBinary\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glProgramParameteri = (PFNGLPROGRAMPARAMETERIPROC)wglGetProcAddress("glProgramParameteri");
-	if(!ptr_glProgramParameteri) { MessageBox(0, "Couldn't load OpenGL core version 4.1, function \"glProgramParameteri\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glProgramParameteri) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.1, function \"glProgramParameteri\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glUseProgramStages = (PFNGLUSEPROGRAMSTAGESPROC)wglGetProcAddress("glUseProgramStages");
-	if(!ptr_glUseProgramStages) { MessageBox(0, "Couldn't load OpenGL core version 4.1, function \"glUseProgramStages\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glUseProgramStages) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.1, function \"glUseProgramStages\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glActiveShaderProgram = (PFNGLACTIVESHADERPROGRAMPROC)wglGetProcAddress("glActiveShaderProgram");
-	if(!ptr_glActiveShaderProgram) { MessageBox(0, "Couldn't load OpenGL core version 4.1, function \"glActiveShaderProgram\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glActiveShaderProgram) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.1, function \"glActiveShaderProgram\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glCreateShaderProgramv = (PFNGLCREATESHADERPROGRAMVPROC)wglGetProcAddress("glCreateShaderProgramv");
-	if(!ptr_glCreateShaderProgramv) { MessageBox(0, "Couldn't load OpenGL core version 4.1, function \"glCreateShaderProgramv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glCreateShaderProgramv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.1, function \"glCreateShaderProgramv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glBindProgramPipeline = (PFNGLBINDPROGRAMPIPELINEPROC)wglGetProcAddress("glBindProgramPipeline");
-	if(!ptr_glBindProgramPipeline) { MessageBox(0, "Couldn't load OpenGL core version 4.1, function \"glBindProgramPipeline\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glBindProgramPipeline) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.1, function \"glBindProgramPipeline\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glDeleteProgramPipelines = (PFNGLDELETEPROGRAMPIPELINESPROC)wglGetProcAddress("glDeleteProgramPipelines");
-	if(!ptr_glDeleteProgramPipelines) { MessageBox(0, "Couldn't load OpenGL core version 4.1, function \"glDeleteProgramPipelines\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glDeleteProgramPipelines) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.1, function \"glDeleteProgramPipelines\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glGenProgramPipelines = (PFNGLGENPROGRAMPIPELINESPROC)wglGetProcAddress("glGenProgramPipelines");
-	if(!ptr_glGenProgramPipelines) { MessageBox(0, "Couldn't load OpenGL core version 4.1, function \"glGenProgramPipelines\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glGenProgramPipelines) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.1, function \"glGenProgramPipelines\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glIsProgramPipeline = (PFNGLISPROGRAMPIPELINEPROC)wglGetProcAddress("glIsProgramPipeline");
-	if(!ptr_glIsProgramPipeline) { MessageBox(0, "Couldn't load OpenGL core version 4.1, function \"glIsProgramPipeline\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glIsProgramPipeline) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.1, function \"glIsProgramPipeline\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glGetProgramPipelineiv = (PFNGLGETPROGRAMPIPELINEIVPROC)wglGetProcAddress("glGetProgramPipelineiv");
-	if(!ptr_glGetProgramPipelineiv) { MessageBox(0, "Couldn't load OpenGL core version 4.1, function \"glGetProgramPipelineiv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glGetProgramPipelineiv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.1, function \"glGetProgramPipelineiv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glProgramUniform1i = (PFNGLPROGRAMUNIFORM1IPROC)wglGetProcAddress("glProgramUniform1i");
-	if(!ptr_glProgramUniform1i) { MessageBox(0, "Couldn't load OpenGL core version 4.1, function \"glProgramUniform1i\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glProgramUniform1i) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.1, function \"glProgramUniform1i\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glProgramUniform1iv = (PFNGLPROGRAMUNIFORM1IVPROC)wglGetProcAddress("glProgramUniform1iv");
-	if(!ptr_glProgramUniform1iv) { MessageBox(0, "Couldn't load OpenGL core version 4.1, function \"glProgramUniform1iv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glProgramUniform1iv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.1, function \"glProgramUniform1iv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glProgramUniform1f = (PFNGLPROGRAMUNIFORM1FPROC)wglGetProcAddress("glProgramUniform1f");
-	if(!ptr_glProgramUniform1f) { MessageBox(0, "Couldn't load OpenGL core version 4.1, function \"glProgramUniform1f\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glProgramUniform1f) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.1, function \"glProgramUniform1f\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glProgramUniform1fv = (PFNGLPROGRAMUNIFORM1FVPROC)wglGetProcAddress("glProgramUniform1fv");
-	if(!ptr_glProgramUniform1fv) { MessageBox(0, "Couldn't load OpenGL core version 4.1, function \"glProgramUniform1fv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glProgramUniform1fv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.1, function \"glProgramUniform1fv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glProgramUniform1d = (PFNGLPROGRAMUNIFORM1DPROC)wglGetProcAddress("glProgramUniform1d");
-	if(!ptr_glProgramUniform1d) { MessageBox(0, "Couldn't load OpenGL core version 4.1, function \"glProgramUniform1d\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glProgramUniform1d) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.1, function \"glProgramUniform1d\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glProgramUniform1dv = (PFNGLPROGRAMUNIFORM1DVPROC)wglGetProcAddress("glProgramUniform1dv");
-	if(!ptr_glProgramUniform1dv) { MessageBox(0, "Couldn't load OpenGL core version 4.1, function \"glProgramUniform1dv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glProgramUniform1dv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.1, function \"glProgramUniform1dv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glProgramUniform1ui = (PFNGLPROGRAMUNIFORM1UIPROC)wglGetProcAddress("glProgramUniform1ui");
-	if(!ptr_glProgramUniform1ui) { MessageBox(0, "Couldn't load OpenGL core version 4.1, function \"glProgramUniform1ui\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glProgramUniform1ui) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.1, function \"glProgramUniform1ui\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glProgramUniform1uiv = (PFNGLPROGRAMUNIFORM1UIVPROC)wglGetProcAddress("glProgramUniform1uiv");
-	if(!ptr_glProgramUniform1uiv) { MessageBox(0, "Couldn't load OpenGL core version 4.1, function \"glProgramUniform1uiv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glProgramUniform1uiv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.1, function \"glProgramUniform1uiv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glProgramUniform2i = (PFNGLPROGRAMUNIFORM2IPROC)wglGetProcAddress("glProgramUniform2i");
-	if(!ptr_glProgramUniform2i) { MessageBox(0, "Couldn't load OpenGL core version 4.1, function \"glProgramUniform2i\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glProgramUniform2i) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.1, function \"glProgramUniform2i\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glProgramUniform2iv = (PFNGLPROGRAMUNIFORM2IVPROC)wglGetProcAddress("glProgramUniform2iv");
-	if(!ptr_glProgramUniform2iv) { MessageBox(0, "Couldn't load OpenGL core version 4.1, function \"glProgramUniform2iv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glProgramUniform2iv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.1, function \"glProgramUniform2iv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glProgramUniform2f = (PFNGLPROGRAMUNIFORM2FPROC)wglGetProcAddress("glProgramUniform2f");
-	if(!ptr_glProgramUniform2f) { MessageBox(0, "Couldn't load OpenGL core version 4.1, function \"glProgramUniform2f\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glProgramUniform2f) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.1, function \"glProgramUniform2f\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glProgramUniform2fv = (PFNGLPROGRAMUNIFORM2FVPROC)wglGetProcAddress("glProgramUniform2fv");
-	if(!ptr_glProgramUniform2fv) { MessageBox(0, "Couldn't load OpenGL core version 4.1, function \"glProgramUniform2fv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glProgramUniform2fv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.1, function \"glProgramUniform2fv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glProgramUniform2d = (PFNGLPROGRAMUNIFORM2DPROC)wglGetProcAddress("glProgramUniform2d");
-	if(!ptr_glProgramUniform2d) { MessageBox(0, "Couldn't load OpenGL core version 4.1, function \"glProgramUniform2d\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glProgramUniform2d) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.1, function \"glProgramUniform2d\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glProgramUniform2dv = (PFNGLPROGRAMUNIFORM2DVPROC)wglGetProcAddress("glProgramUniform2dv");
-	if(!ptr_glProgramUniform2dv) { MessageBox(0, "Couldn't load OpenGL core version 4.1, function \"glProgramUniform2dv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glProgramUniform2dv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.1, function \"glProgramUniform2dv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glProgramUniform2ui = (PFNGLPROGRAMUNIFORM2UIPROC)wglGetProcAddress("glProgramUniform2ui");
-	if(!ptr_glProgramUniform2ui) { MessageBox(0, "Couldn't load OpenGL core version 4.1, function \"glProgramUniform2ui\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glProgramUniform2ui) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.1, function \"glProgramUniform2ui\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glProgramUniform2uiv = (PFNGLPROGRAMUNIFORM2UIVPROC)wglGetProcAddress("glProgramUniform2uiv");
-	if(!ptr_glProgramUniform2uiv) { MessageBox(0, "Couldn't load OpenGL core version 4.1, function \"glProgramUniform2uiv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glProgramUniform2uiv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.1, function \"glProgramUniform2uiv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glProgramUniform3i = (PFNGLPROGRAMUNIFORM3IPROC)wglGetProcAddress("glProgramUniform3i");
-	if(!ptr_glProgramUniform3i) { MessageBox(0, "Couldn't load OpenGL core version 4.1, function \"glProgramUniform3i\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glProgramUniform3i) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.1, function \"glProgramUniform3i\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glProgramUniform3iv = (PFNGLPROGRAMUNIFORM3IVPROC)wglGetProcAddress("glProgramUniform3iv");
-	if(!ptr_glProgramUniform3iv) { MessageBox(0, "Couldn't load OpenGL core version 4.1, function \"glProgramUniform3iv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glProgramUniform3iv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.1, function \"glProgramUniform3iv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glProgramUniform3f = (PFNGLPROGRAMUNIFORM3FPROC)wglGetProcAddress("glProgramUniform3f");
-	if(!ptr_glProgramUniform3f) { MessageBox(0, "Couldn't load OpenGL core version 4.1, function \"glProgramUniform3f\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glProgramUniform3f) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.1, function \"glProgramUniform3f\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glProgramUniform3fv = (PFNGLPROGRAMUNIFORM3FVPROC)wglGetProcAddress("glProgramUniform3fv");
-	if(!ptr_glProgramUniform3fv) { MessageBox(0, "Couldn't load OpenGL core version 4.1, function \"glProgramUniform3fv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glProgramUniform3fv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.1, function \"glProgramUniform3fv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glProgramUniform3d = (PFNGLPROGRAMUNIFORM3DPROC)wglGetProcAddress("glProgramUniform3d");
-	if(!ptr_glProgramUniform3d) { MessageBox(0, "Couldn't load OpenGL core version 4.1, function \"glProgramUniform3d\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glProgramUniform3d) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.1, function \"glProgramUniform3d\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glProgramUniform3dv = (PFNGLPROGRAMUNIFORM3DVPROC)wglGetProcAddress("glProgramUniform3dv");
-	if(!ptr_glProgramUniform3dv) { MessageBox(0, "Couldn't load OpenGL core version 4.1, function \"glProgramUniform3dv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glProgramUniform3dv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.1, function \"glProgramUniform3dv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glProgramUniform3ui = (PFNGLPROGRAMUNIFORM3UIPROC)wglGetProcAddress("glProgramUniform3ui");
-	if(!ptr_glProgramUniform3ui) { MessageBox(0, "Couldn't load OpenGL core version 4.1, function \"glProgramUniform3ui\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glProgramUniform3ui) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.1, function \"glProgramUniform3ui\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glProgramUniform3uiv = (PFNGLPROGRAMUNIFORM3UIVPROC)wglGetProcAddress("glProgramUniform3uiv");
-	if(!ptr_glProgramUniform3uiv) { MessageBox(0, "Couldn't load OpenGL core version 4.1, function \"glProgramUniform3uiv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glProgramUniform3uiv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.1, function \"glProgramUniform3uiv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glProgramUniform4i = (PFNGLPROGRAMUNIFORM4IPROC)wglGetProcAddress("glProgramUniform4i");
-	if(!ptr_glProgramUniform4i) { MessageBox(0, "Couldn't load OpenGL core version 4.1, function \"glProgramUniform4i\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glProgramUniform4i) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.1, function \"glProgramUniform4i\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glProgramUniform4iv = (PFNGLPROGRAMUNIFORM4IVPROC)wglGetProcAddress("glProgramUniform4iv");
-	if(!ptr_glProgramUniform4iv) { MessageBox(0, "Couldn't load OpenGL core version 4.1, function \"glProgramUniform4iv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glProgramUniform4iv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.1, function \"glProgramUniform4iv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glProgramUniform4f = (PFNGLPROGRAMUNIFORM4FPROC)wglGetProcAddress("glProgramUniform4f");
-	if(!ptr_glProgramUniform4f) { MessageBox(0, "Couldn't load OpenGL core version 4.1, function \"glProgramUniform4f\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glProgramUniform4f) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.1, function \"glProgramUniform4f\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glProgramUniform4fv = (PFNGLPROGRAMUNIFORM4FVPROC)wglGetProcAddress("glProgramUniform4fv");
-	if(!ptr_glProgramUniform4fv) { MessageBox(0, "Couldn't load OpenGL core version 4.1, function \"glProgramUniform4fv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glProgramUniform4fv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.1, function \"glProgramUniform4fv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glProgramUniform4d = (PFNGLPROGRAMUNIFORM4DPROC)wglGetProcAddress("glProgramUniform4d");
-	if(!ptr_glProgramUniform4d) { MessageBox(0, "Couldn't load OpenGL core version 4.1, function \"glProgramUniform4d\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glProgramUniform4d) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.1, function \"glProgramUniform4d\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glProgramUniform4dv = (PFNGLPROGRAMUNIFORM4DVPROC)wglGetProcAddress("glProgramUniform4dv");
-	if(!ptr_glProgramUniform4dv) { MessageBox(0, "Couldn't load OpenGL core version 4.1, function \"glProgramUniform4dv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glProgramUniform4dv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.1, function \"glProgramUniform4dv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glProgramUniform4ui = (PFNGLPROGRAMUNIFORM4UIPROC)wglGetProcAddress("glProgramUniform4ui");
-	if(!ptr_glProgramUniform4ui) { MessageBox(0, "Couldn't load OpenGL core version 4.1, function \"glProgramUniform4ui\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glProgramUniform4ui) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.1, function \"glProgramUniform4ui\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glProgramUniform4uiv = (PFNGLPROGRAMUNIFORM4UIVPROC)wglGetProcAddress("glProgramUniform4uiv");
-	if(!ptr_glProgramUniform4uiv) { MessageBox(0, "Couldn't load OpenGL core version 4.1, function \"glProgramUniform4uiv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glProgramUniform4uiv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.1, function \"glProgramUniform4uiv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glProgramUniformMatrix2fv = (PFNGLPROGRAMUNIFORMMATRIX2FVPROC)wglGetProcAddress("glProgramUniformMatrix2fv");
-	if(!ptr_glProgramUniformMatrix2fv) { MessageBox(0, "Couldn't load OpenGL core version 4.1, function \"glProgramUniformMatrix2fv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glProgramUniformMatrix2fv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.1, function \"glProgramUniformMatrix2fv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glProgramUniformMatrix3fv = (PFNGLPROGRAMUNIFORMMATRIX3FVPROC)wglGetProcAddress("glProgramUniformMatrix3fv");
-	if(!ptr_glProgramUniformMatrix3fv) { MessageBox(0, "Couldn't load OpenGL core version 4.1, function \"glProgramUniformMatrix3fv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glProgramUniformMatrix3fv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.1, function \"glProgramUniformMatrix3fv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glProgramUniformMatrix4fv = (PFNGLPROGRAMUNIFORMMATRIX4FVPROC)wglGetProcAddress("glProgramUniformMatrix4fv");
-	if(!ptr_glProgramUniformMatrix4fv) { MessageBox(0, "Couldn't load OpenGL core version 4.1, function \"glProgramUniformMatrix4fv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glProgramUniformMatrix4fv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.1, function \"glProgramUniformMatrix4fv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glProgramUniformMatrix2dv = (PFNGLPROGRAMUNIFORMMATRIX2DVPROC)wglGetProcAddress("glProgramUniformMatrix2dv");
-	if(!ptr_glProgramUniformMatrix2dv) { MessageBox(0, "Couldn't load OpenGL core version 4.1, function \"glProgramUniformMatrix2dv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glProgramUniformMatrix2dv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.1, function \"glProgramUniformMatrix2dv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glProgramUniformMatrix3dv = (PFNGLPROGRAMUNIFORMMATRIX3DVPROC)wglGetProcAddress("glProgramUniformMatrix3dv");
-	if(!ptr_glProgramUniformMatrix3dv) { MessageBox(0, "Couldn't load OpenGL core version 4.1, function \"glProgramUniformMatrix3dv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glProgramUniformMatrix3dv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.1, function \"glProgramUniformMatrix3dv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glProgramUniformMatrix4dv = (PFNGLPROGRAMUNIFORMMATRIX4DVPROC)wglGetProcAddress("glProgramUniformMatrix4dv");
-	if(!ptr_glProgramUniformMatrix4dv) { MessageBox(0, "Couldn't load OpenGL core version 4.1, function \"glProgramUniformMatrix4dv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glProgramUniformMatrix4dv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.1, function \"glProgramUniformMatrix4dv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glProgramUniformMatrix2x3fv = (PFNGLPROGRAMUNIFORMMATRIX2X3FVPROC)wglGetProcAddress("glProgramUniformMatrix2x3fv");
-	if(!ptr_glProgramUniformMatrix2x3fv) { MessageBox(0, "Couldn't load OpenGL core version 4.1, function \"glProgramUniformMatrix2x3fv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glProgramUniformMatrix2x3fv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.1, function \"glProgramUniformMatrix2x3fv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glProgramUniformMatrix3x2fv = (PFNGLPROGRAMUNIFORMMATRIX3X2FVPROC)wglGetProcAddress("glProgramUniformMatrix3x2fv");
-	if(!ptr_glProgramUniformMatrix3x2fv) { MessageBox(0, "Couldn't load OpenGL core version 4.1, function \"glProgramUniformMatrix3x2fv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glProgramUniformMatrix3x2fv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.1, function \"glProgramUniformMatrix3x2fv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glProgramUniformMatrix2x4fv = (PFNGLPROGRAMUNIFORMMATRIX2X4FVPROC)wglGetProcAddress("glProgramUniformMatrix2x4fv");
-	if(!ptr_glProgramUniformMatrix2x4fv) { MessageBox(0, "Couldn't load OpenGL core version 4.1, function \"glProgramUniformMatrix2x4fv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glProgramUniformMatrix2x4fv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.1, function \"glProgramUniformMatrix2x4fv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glProgramUniformMatrix4x2fv = (PFNGLPROGRAMUNIFORMMATRIX4X2FVPROC)wglGetProcAddress("glProgramUniformMatrix4x2fv");
-	if(!ptr_glProgramUniformMatrix4x2fv) { MessageBox(0, "Couldn't load OpenGL core version 4.1, function \"glProgramUniformMatrix4x2fv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glProgramUniformMatrix4x2fv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.1, function \"glProgramUniformMatrix4x2fv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glProgramUniformMatrix3x4fv = (PFNGLPROGRAMUNIFORMMATRIX3X4FVPROC)wglGetProcAddress("glProgramUniformMatrix3x4fv");
-	if(!ptr_glProgramUniformMatrix3x4fv) { MessageBox(0, "Couldn't load OpenGL core version 4.1, function \"glProgramUniformMatrix3x4fv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glProgramUniformMatrix3x4fv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.1, function \"glProgramUniformMatrix3x4fv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glProgramUniformMatrix4x3fv = (PFNGLPROGRAMUNIFORMMATRIX4X3FVPROC)wglGetProcAddress("glProgramUniformMatrix4x3fv");
-	if(!ptr_glProgramUniformMatrix4x3fv) { MessageBox(0, "Couldn't load OpenGL core version 4.1, function \"glProgramUniformMatrix4x3fv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glProgramUniformMatrix4x3fv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.1, function \"glProgramUniformMatrix4x3fv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glProgramUniformMatrix2x3dv = (PFNGLPROGRAMUNIFORMMATRIX2X3DVPROC)wglGetProcAddress("glProgramUniformMatrix2x3dv");
-	if(!ptr_glProgramUniformMatrix2x3dv) { MessageBox(0, "Couldn't load OpenGL core version 4.1, function \"glProgramUniformMatrix2x3dv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glProgramUniformMatrix2x3dv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.1, function \"glProgramUniformMatrix2x3dv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glProgramUniformMatrix3x2dv = (PFNGLPROGRAMUNIFORMMATRIX3X2DVPROC)wglGetProcAddress("glProgramUniformMatrix3x2dv");
-	if(!ptr_glProgramUniformMatrix3x2dv) { MessageBox(0, "Couldn't load OpenGL core version 4.1, function \"glProgramUniformMatrix3x2dv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glProgramUniformMatrix3x2dv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.1, function \"glProgramUniformMatrix3x2dv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glProgramUniformMatrix2x4dv = (PFNGLPROGRAMUNIFORMMATRIX2X4DVPROC)wglGetProcAddress("glProgramUniformMatrix2x4dv");
-	if(!ptr_glProgramUniformMatrix2x4dv) { MessageBox(0, "Couldn't load OpenGL core version 4.1, function \"glProgramUniformMatrix2x4dv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glProgramUniformMatrix2x4dv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.1, function \"glProgramUniformMatrix2x4dv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glProgramUniformMatrix4x2dv = (PFNGLPROGRAMUNIFORMMATRIX4X2DVPROC)wglGetProcAddress("glProgramUniformMatrix4x2dv");
-	if(!ptr_glProgramUniformMatrix4x2dv) { MessageBox(0, "Couldn't load OpenGL core version 4.1, function \"glProgramUniformMatrix4x2dv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glProgramUniformMatrix4x2dv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.1, function \"glProgramUniformMatrix4x2dv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glProgramUniformMatrix3x4dv = (PFNGLPROGRAMUNIFORMMATRIX3X4DVPROC)wglGetProcAddress("glProgramUniformMatrix3x4dv");
-	if(!ptr_glProgramUniformMatrix3x4dv) { MessageBox(0, "Couldn't load OpenGL core version 4.1, function \"glProgramUniformMatrix3x4dv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glProgramUniformMatrix3x4dv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.1, function \"glProgramUniformMatrix3x4dv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glProgramUniformMatrix4x3dv = (PFNGLPROGRAMUNIFORMMATRIX4X3DVPROC)wglGetProcAddress("glProgramUniformMatrix4x3dv");
-	if(!ptr_glProgramUniformMatrix4x3dv) { MessageBox(0, "Couldn't load OpenGL core version 4.1, function \"glProgramUniformMatrix4x3dv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glProgramUniformMatrix4x3dv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.1, function \"glProgramUniformMatrix4x3dv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glValidateProgramPipeline = (PFNGLVALIDATEPROGRAMPIPELINEPROC)wglGetProcAddress("glValidateProgramPipeline");
-	if(!ptr_glValidateProgramPipeline) { MessageBox(0, "Couldn't load OpenGL core version 4.1, function \"glValidateProgramPipeline\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glValidateProgramPipeline) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.1, function \"glValidateProgramPipeline\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glGetProgramPipelineInfoLog = (PFNGLGETPROGRAMPIPELINEINFOLOGPROC)wglGetProcAddress("glGetProgramPipelineInfoLog");
-	if(!ptr_glGetProgramPipelineInfoLog) { MessageBox(0, "Couldn't load OpenGL core version 4.1, function \"glGetProgramPipelineInfoLog\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glGetProgramPipelineInfoLog) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.1, function \"glGetProgramPipelineInfoLog\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glVertexAttribL1d = (PFNGLVERTEXATTRIBL1DPROC)wglGetProcAddress("glVertexAttribL1d");
-	if(!ptr_glVertexAttribL1d) { MessageBox(0, "Couldn't load OpenGL core version 4.1, function \"glVertexAttribL1d\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glVertexAttribL1d) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.1, function \"glVertexAttribL1d\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glVertexAttribL2d = (PFNGLVERTEXATTRIBL2DPROC)wglGetProcAddress("glVertexAttribL2d");
-	if(!ptr_glVertexAttribL2d) { MessageBox(0, "Couldn't load OpenGL core version 4.1, function \"glVertexAttribL2d\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glVertexAttribL2d) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.1, function \"glVertexAttribL2d\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glVertexAttribL3d = (PFNGLVERTEXATTRIBL3DPROC)wglGetProcAddress("glVertexAttribL3d");
-	if(!ptr_glVertexAttribL3d) { MessageBox(0, "Couldn't load OpenGL core version 4.1, function \"glVertexAttribL3d\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glVertexAttribL3d) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.1, function \"glVertexAttribL3d\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glVertexAttribL4d = (PFNGLVERTEXATTRIBL4DPROC)wglGetProcAddress("glVertexAttribL4d");
-	if(!ptr_glVertexAttribL4d) { MessageBox(0, "Couldn't load OpenGL core version 4.1, function \"glVertexAttribL4d\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glVertexAttribL4d) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.1, function \"glVertexAttribL4d\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glVertexAttribL1dv = (PFNGLVERTEXATTRIBL1DVPROC)wglGetProcAddress("glVertexAttribL1dv");
-	if(!ptr_glVertexAttribL1dv) { MessageBox(0, "Couldn't load OpenGL core version 4.1, function \"glVertexAttribL1dv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glVertexAttribL1dv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.1, function \"glVertexAttribL1dv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glVertexAttribL2dv = (PFNGLVERTEXATTRIBL2DVPROC)wglGetProcAddress("glVertexAttribL2dv");
-	if(!ptr_glVertexAttribL2dv) { MessageBox(0, "Couldn't load OpenGL core version 4.1, function \"glVertexAttribL2dv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glVertexAttribL2dv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.1, function \"glVertexAttribL2dv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glVertexAttribL3dv = (PFNGLVERTEXATTRIBL3DVPROC)wglGetProcAddress("glVertexAttribL3dv");
-	if(!ptr_glVertexAttribL3dv) { MessageBox(0, "Couldn't load OpenGL core version 4.1, function \"glVertexAttribL3dv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glVertexAttribL3dv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.1, function \"glVertexAttribL3dv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glVertexAttribL4dv = (PFNGLVERTEXATTRIBL4DVPROC)wglGetProcAddress("glVertexAttribL4dv");
-	if(!ptr_glVertexAttribL4dv) { MessageBox(0, "Couldn't load OpenGL core version 4.1, function \"glVertexAttribL4dv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glVertexAttribL4dv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.1, function \"glVertexAttribL4dv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glVertexAttribLPointer = (PFNGLVERTEXATTRIBLPOINTERPROC)wglGetProcAddress("glVertexAttribLPointer");
-	if(!ptr_glVertexAttribLPointer) { MessageBox(0, "Couldn't load OpenGL core version 4.1, function \"glVertexAttribLPointer\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glVertexAttribLPointer) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.1, function \"glVertexAttribLPointer\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glGetVertexAttribLdv = (PFNGLGETVERTEXATTRIBLDVPROC)wglGetProcAddress("glGetVertexAttribLdv");
-	if(!ptr_glGetVertexAttribLdv) { MessageBox(0, "Couldn't load OpenGL core version 4.1, function \"glGetVertexAttribLdv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glGetVertexAttribLdv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.1, function \"glGetVertexAttribLdv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glViewportArrayv = (PFNGLVIEWPORTARRAYVPROC)wglGetProcAddress("glViewportArrayv");
-	if(!ptr_glViewportArrayv) { MessageBox(0, "Couldn't load OpenGL core version 4.1, function \"glViewportArrayv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glViewportArrayv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.1, function \"glViewportArrayv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glViewportIndexedf = (PFNGLVIEWPORTINDEXEDFPROC)wglGetProcAddress("glViewportIndexedf");
-	if(!ptr_glViewportIndexedf) { MessageBox(0, "Couldn't load OpenGL core version 4.1, function \"glViewportIndexedf\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glViewportIndexedf) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.1, function \"glViewportIndexedf\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glViewportIndexedfv = (PFNGLVIEWPORTINDEXEDFVPROC)wglGetProcAddress("glViewportIndexedfv");
-	if(!ptr_glViewportIndexedfv) { MessageBox(0, "Couldn't load OpenGL core version 4.1, function \"glViewportIndexedfv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glViewportIndexedfv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.1, function \"glViewportIndexedfv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glScissorArrayv = (PFNGLSCISSORARRAYVPROC)wglGetProcAddress("glScissorArrayv");
-	if(!ptr_glScissorArrayv) { MessageBox(0, "Couldn't load OpenGL core version 4.1, function \"glScissorArrayv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glScissorArrayv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.1, function \"glScissorArrayv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glScissorIndexed = (PFNGLSCISSORINDEXEDPROC)wglGetProcAddress("glScissorIndexed");
-	if(!ptr_glScissorIndexed) { MessageBox(0, "Couldn't load OpenGL core version 4.1, function \"glScissorIndexed\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glScissorIndexed) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.1, function \"glScissorIndexed\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glScissorIndexedv = (PFNGLSCISSORINDEXEDVPROC)wglGetProcAddress("glScissorIndexedv");
-	if(!ptr_glScissorIndexedv) { MessageBox(0, "Couldn't load OpenGL core version 4.1, function \"glScissorIndexedv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glScissorIndexedv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.1, function \"glScissorIndexedv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glDepthRangeArrayv = (PFNGLDEPTHRANGEARRAYVPROC)wglGetProcAddress("glDepthRangeArrayv");
-	if(!ptr_glDepthRangeArrayv) { MessageBox(0, "Couldn't load OpenGL core version 4.1, function \"glDepthRangeArrayv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glDepthRangeArrayv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.1, function \"glDepthRangeArrayv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glDepthRangeIndexed = (PFNGLDEPTHRANGEINDEXEDPROC)wglGetProcAddress("glDepthRangeIndexed");
-	if(!ptr_glDepthRangeIndexed) { MessageBox(0, "Couldn't load OpenGL core version 4.1, function \"glDepthRangeIndexed\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glDepthRangeIndexed) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.1, function \"glDepthRangeIndexed\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glGetFloati_v = (PFNGLGETFLOATI_VPROC)wglGetProcAddress("glGetFloati_v");
-	if(!ptr_glGetFloati_v) { MessageBox(0, "Couldn't load OpenGL core version 4.1, function \"glGetFloati_v\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glGetFloati_v) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.1, function \"glGetFloati_v\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glGetDoublei_v = (PFNGLGETDOUBLEI_VPROC)wglGetProcAddress("glGetDoublei_v");
-	if(!ptr_glGetDoublei_v) { MessageBox(0, "Couldn't load OpenGL core version 4.1, function \"glGetDoublei_v\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glGetDoublei_v) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.1, function \"glGetDoublei_v\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glDrawArraysInstancedBaseInstance = (PFNGLDRAWARRAYSINSTANCEDBASEINSTANCEPROC)wglGetProcAddress("glDrawArraysInstancedBaseInstance");
-	if(!ptr_glDrawArraysInstancedBaseInstance) { MessageBox(0, "Couldn't load OpenGL core version 4.2, function \"glDrawArraysInstancedBaseInstance\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glDrawArraysInstancedBaseInstance) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.2, function \"glDrawArraysInstancedBaseInstance\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glDrawElementsInstancedBaseInstance = (PFNGLDRAWELEMENTSINSTANCEDBASEINSTANCEPROC)wglGetProcAddress("glDrawElementsInstancedBaseInstance");
-	if(!ptr_glDrawElementsInstancedBaseInstance) { MessageBox(0, "Couldn't load OpenGL core version 4.2, function \"glDrawElementsInstancedBaseInstance\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glDrawElementsInstancedBaseInstance) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.2, function \"glDrawElementsInstancedBaseInstance\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glDrawElementsInstancedBaseVertexBaseInstance = (PFNGLDRAWELEMENTSINSTANCEDBASEVERTEXBASEINSTANCEPROC)wglGetProcAddress("glDrawElementsInstancedBaseVertexBaseInstance");
-	if(!ptr_glDrawElementsInstancedBaseVertexBaseInstance) { MessageBox(0, "Couldn't load OpenGL core version 4.2, function \"glDrawElementsInstancedBaseVertexBaseInstance\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glDrawElementsInstancedBaseVertexBaseInstance) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.2, function \"glDrawElementsInstancedBaseVertexBaseInstance\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glGetInternalformativ = (PFNGLGETINTERNALFORMATIVPROC)wglGetProcAddress("glGetInternalformativ");
-	if(!ptr_glGetInternalformativ) { MessageBox(0, "Couldn't load OpenGL core version 4.2, function \"glGetInternalformativ\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glGetInternalformativ) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.2, function \"glGetInternalformativ\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glGetActiveAtomicCounterBufferiv = (PFNGLGETACTIVEATOMICCOUNTERBUFFERIVPROC)wglGetProcAddress("glGetActiveAtomicCounterBufferiv");
-	if(!ptr_glGetActiveAtomicCounterBufferiv) { MessageBox(0, "Couldn't load OpenGL core version 4.2, function \"glGetActiveAtomicCounterBufferiv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glGetActiveAtomicCounterBufferiv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.2, function \"glGetActiveAtomicCounterBufferiv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glBindImageTexture = (PFNGLBINDIMAGETEXTUREPROC)wglGetProcAddress("glBindImageTexture");
-	if(!ptr_glBindImageTexture) { MessageBox(0, "Couldn't load OpenGL core version 4.2, function \"glBindImageTexture\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glBindImageTexture) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.2, function \"glBindImageTexture\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glMemoryBarrier = (PFNGLMEMORYBARRIERPROC)wglGetProcAddress("glMemoryBarrier");
-	if(!ptr_glMemoryBarrier) { MessageBox(0, "Couldn't load OpenGL core version 4.2, function \"glMemoryBarrier\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glMemoryBarrier) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.2, function \"glMemoryBarrier\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glTexStorage1D = (PFNGLTEXSTORAGE1DPROC)wglGetProcAddress("glTexStorage1D");
-	if(!ptr_glTexStorage1D) { MessageBox(0, "Couldn't load OpenGL core version 4.2, function \"glTexStorage1D\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glTexStorage1D) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.2, function \"glTexStorage1D\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glTexStorage2D = (PFNGLTEXSTORAGE2DPROC)wglGetProcAddress("glTexStorage2D");
-	if(!ptr_glTexStorage2D) { MessageBox(0, "Couldn't load OpenGL core version 4.2, function \"glTexStorage2D\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glTexStorage2D) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.2, function \"glTexStorage2D\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glTexStorage3D = (PFNGLTEXSTORAGE3DPROC)wglGetProcAddress("glTexStorage3D");
-	if(!ptr_glTexStorage3D) { MessageBox(0, "Couldn't load OpenGL core version 4.2, function \"glTexStorage3D\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glTexStorage3D) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.2, function \"glTexStorage3D\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glDrawTransformFeedbackInstanced = (PFNGLDRAWTRANSFORMFEEDBACKINSTANCEDPROC)wglGetProcAddress("glDrawTransformFeedbackInstanced");
-	if(!ptr_glDrawTransformFeedbackInstanced) { MessageBox(0, "Couldn't load OpenGL core version 4.2, function \"glDrawTransformFeedbackInstanced\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glDrawTransformFeedbackInstanced) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.2, function \"glDrawTransformFeedbackInstanced\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glDrawTransformFeedbackStreamInstanced = (PFNGLDRAWTRANSFORMFEEDBACKSTREAMINSTANCEDPROC)wglGetProcAddress("glDrawTransformFeedbackStreamInstanced");
-	if(!ptr_glDrawTransformFeedbackStreamInstanced) { MessageBox(0, "Couldn't load OpenGL core version 4.2, function \"glDrawTransformFeedbackStreamInstanced\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glDrawTransformFeedbackStreamInstanced) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.2, function \"glDrawTransformFeedbackStreamInstanced\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glClearBufferData = (PFNGLCLEARBUFFERDATAPROC)wglGetProcAddress("glClearBufferData");
-	if(!ptr_glClearBufferData) { MessageBox(0, "Couldn't load OpenGL core version 4.3, function \"glClearBufferData\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glClearBufferData) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.3, function \"glClearBufferData\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glClearBufferSubData = (PFNGLCLEARBUFFERSUBDATAPROC)wglGetProcAddress("glClearBufferSubData");
-	if(!ptr_glClearBufferSubData) { MessageBox(0, "Couldn't load OpenGL core version 4.3, function \"glClearBufferSubData\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glClearBufferSubData) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.3, function \"glClearBufferSubData\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glDispatchCompute = (PFNGLDISPATCHCOMPUTEPROC)wglGetProcAddress("glDispatchCompute");
-	if(!ptr_glDispatchCompute) { MessageBox(0, "Couldn't load OpenGL core version 4.3, function \"glDispatchCompute\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glDispatchCompute) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.3, function \"glDispatchCompute\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glDispatchComputeIndirect = (PFNGLDISPATCHCOMPUTEINDIRECTPROC)wglGetProcAddress("glDispatchComputeIndirect");
-	if(!ptr_glDispatchComputeIndirect) { MessageBox(0, "Couldn't load OpenGL core version 4.3, function \"glDispatchComputeIndirect\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glDispatchComputeIndirect) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.3, function \"glDispatchComputeIndirect\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glCopyImageSubData = (PFNGLCOPYIMAGESUBDATAPROC)wglGetProcAddress("glCopyImageSubData");
-	if(!ptr_glCopyImageSubData) { MessageBox(0, "Couldn't load OpenGL core version 4.3, function \"glCopyImageSubData\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glCopyImageSubData) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.3, function \"glCopyImageSubData\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glFramebufferParameteri = (PFNGLFRAMEBUFFERPARAMETERIPROC)wglGetProcAddress("glFramebufferParameteri");
-	if(!ptr_glFramebufferParameteri) { MessageBox(0, "Couldn't load OpenGL core version 4.3, function \"glFramebufferParameteri\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glFramebufferParameteri) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.3, function \"glFramebufferParameteri\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glGetFramebufferParameteriv = (PFNGLGETFRAMEBUFFERPARAMETERIVPROC)wglGetProcAddress("glGetFramebufferParameteriv");
-	if(!ptr_glGetFramebufferParameteriv) { MessageBox(0, "Couldn't load OpenGL core version 4.3, function \"glGetFramebufferParameteriv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glGetFramebufferParameteriv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.3, function \"glGetFramebufferParameteriv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glGetInternalformati64v = (PFNGLGETINTERNALFORMATI64VPROC)wglGetProcAddress("glGetInternalformati64v");
-	if(!ptr_glGetInternalformati64v) { MessageBox(0, "Couldn't load OpenGL core version 4.3, function \"glGetInternalformati64v\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glGetInternalformati64v) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.3, function \"glGetInternalformati64v\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glInvalidateTexSubImage = (PFNGLINVALIDATETEXSUBIMAGEPROC)wglGetProcAddress("glInvalidateTexSubImage");
-	if(!ptr_glInvalidateTexSubImage) { MessageBox(0, "Couldn't load OpenGL core version 4.3, function \"glInvalidateTexSubImage\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glInvalidateTexSubImage) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.3, function \"glInvalidateTexSubImage\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glInvalidateTexImage = (PFNGLINVALIDATETEXIMAGEPROC)wglGetProcAddress("glInvalidateTexImage");
-	if(!ptr_glInvalidateTexImage) { MessageBox(0, "Couldn't load OpenGL core version 4.3, function \"glInvalidateTexImage\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glInvalidateTexImage) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.3, function \"glInvalidateTexImage\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glInvalidateBufferSubData = (PFNGLINVALIDATEBUFFERSUBDATAPROC)wglGetProcAddress("glInvalidateBufferSubData");
-	if(!ptr_glInvalidateBufferSubData) { MessageBox(0, "Couldn't load OpenGL core version 4.3, function \"glInvalidateBufferSubData\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glInvalidateBufferSubData) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.3, function \"glInvalidateBufferSubData\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glInvalidateBufferData = (PFNGLINVALIDATEBUFFERDATAPROC)wglGetProcAddress("glInvalidateBufferData");
-	if(!ptr_glInvalidateBufferData) { MessageBox(0, "Couldn't load OpenGL core version 4.3, function \"glInvalidateBufferData\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glInvalidateBufferData) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.3, function \"glInvalidateBufferData\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glInvalidateFramebuffer = (PFNGLINVALIDATEFRAMEBUFFERPROC)wglGetProcAddress("glInvalidateFramebuffer");
-	if(!ptr_glInvalidateFramebuffer) { MessageBox(0, "Couldn't load OpenGL core version 4.3, function \"glInvalidateFramebuffer\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glInvalidateFramebuffer) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.3, function \"glInvalidateFramebuffer\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glInvalidateSubFramebuffer = (PFNGLINVALIDATESUBFRAMEBUFFERPROC)wglGetProcAddress("glInvalidateSubFramebuffer");
-	if(!ptr_glInvalidateSubFramebuffer) { MessageBox(0, "Couldn't load OpenGL core version 4.3, function \"glInvalidateSubFramebuffer\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glInvalidateSubFramebuffer) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.3, function \"glInvalidateSubFramebuffer\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glMultiDrawArraysIndirect = (PFNGLMULTIDRAWARRAYSINDIRECTPROC)wglGetProcAddress("glMultiDrawArraysIndirect");
-	if(!ptr_glMultiDrawArraysIndirect) { MessageBox(0, "Couldn't load OpenGL core version 4.3, function \"glMultiDrawArraysIndirect\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glMultiDrawArraysIndirect) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.3, function \"glMultiDrawArraysIndirect\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glMultiDrawElementsIndirect = (PFNGLMULTIDRAWELEMENTSINDIRECTPROC)wglGetProcAddress("glMultiDrawElementsIndirect");
-	if(!ptr_glMultiDrawElementsIndirect) { MessageBox(0, "Couldn't load OpenGL core version 4.3, function \"glMultiDrawElementsIndirect\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glMultiDrawElementsIndirect) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.3, function \"glMultiDrawElementsIndirect\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glGetProgramInterfaceiv = (PFNGLGETPROGRAMINTERFACEIVPROC)wglGetProcAddress("glGetProgramInterfaceiv");
-	if(!ptr_glGetProgramInterfaceiv) { MessageBox(0, "Couldn't load OpenGL core version 4.3, function \"glGetProgramInterfaceiv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glGetProgramInterfaceiv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.3, function \"glGetProgramInterfaceiv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glGetProgramResourceIndex = (PFNGLGETPROGRAMRESOURCEINDEXPROC)wglGetProcAddress("glGetProgramResourceIndex");
-	if(!ptr_glGetProgramResourceIndex) { MessageBox(0, "Couldn't load OpenGL core version 4.3, function \"glGetProgramResourceIndex\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glGetProgramResourceIndex) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.3, function \"glGetProgramResourceIndex\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glGetProgramResourceName = (PFNGLGETPROGRAMRESOURCENAMEPROC)wglGetProcAddress("glGetProgramResourceName");
-	if(!ptr_glGetProgramResourceName) { MessageBox(0, "Couldn't load OpenGL core version 4.3, function \"glGetProgramResourceName\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glGetProgramResourceName) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.3, function \"glGetProgramResourceName\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glGetProgramResourceiv = (PFNGLGETPROGRAMRESOURCEIVPROC)wglGetProcAddress("glGetProgramResourceiv");
-	if(!ptr_glGetProgramResourceiv) { MessageBox(0, "Couldn't load OpenGL core version 4.3, function \"glGetProgramResourceiv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glGetProgramResourceiv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.3, function \"glGetProgramResourceiv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glGetProgramResourceLocation = (PFNGLGETPROGRAMRESOURCELOCATIONPROC)wglGetProcAddress("glGetProgramResourceLocation");
-	if(!ptr_glGetProgramResourceLocation) { MessageBox(0, "Couldn't load OpenGL core version 4.3, function \"glGetProgramResourceLocation\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glGetProgramResourceLocation) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.3, function \"glGetProgramResourceLocation\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glGetProgramResourceLocationIndex = (PFNGLGETPROGRAMRESOURCELOCATIONINDEXPROC)wglGetProcAddress("glGetProgramResourceLocationIndex");
-	if(!ptr_glGetProgramResourceLocationIndex) { MessageBox(0, "Couldn't load OpenGL core version 4.3, function \"glGetProgramResourceLocationIndex\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glGetProgramResourceLocationIndex) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.3, function \"glGetProgramResourceLocationIndex\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glShaderStorageBlockBinding = (PFNGLSHADERSTORAGEBLOCKBINDINGPROC)wglGetProcAddress("glShaderStorageBlockBinding");
-	if(!ptr_glShaderStorageBlockBinding) { MessageBox(0, "Couldn't load OpenGL core version 4.3, function \"glShaderStorageBlockBinding\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glShaderStorageBlockBinding) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.3, function \"glShaderStorageBlockBinding\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glTexBufferRange = (PFNGLTEXBUFFERRANGEPROC)wglGetProcAddress("glTexBufferRange");
-	if(!ptr_glTexBufferRange) { MessageBox(0, "Couldn't load OpenGL core version 4.3, function \"glTexBufferRange\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glTexBufferRange) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.3, function \"glTexBufferRange\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glTexStorage2DMultisample = (PFNGLTEXSTORAGE2DMULTISAMPLEPROC)wglGetProcAddress("glTexStorage2DMultisample");
-	if(!ptr_glTexStorage2DMultisample) { MessageBox(0, "Couldn't load OpenGL core version 4.3, function \"glTexStorage2DMultisample\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glTexStorage2DMultisample) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.3, function \"glTexStorage2DMultisample\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glTexStorage3DMultisample = (PFNGLTEXSTORAGE3DMULTISAMPLEPROC)wglGetProcAddress("glTexStorage3DMultisample");
-	if(!ptr_glTexStorage3DMultisample) { MessageBox(0, "Couldn't load OpenGL core version 4.3, function \"glTexStorage3DMultisample\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glTexStorage3DMultisample) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.3, function \"glTexStorage3DMultisample\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glTextureView = (PFNGLTEXTUREVIEWPROC)wglGetProcAddress("glTextureView");
-	if(!ptr_glTextureView) { MessageBox(0, "Couldn't load OpenGL core version 4.3, function \"glTextureView\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glTextureView) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.3, function \"glTextureView\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glBindVertexBuffer = (PFNGLBINDVERTEXBUFFERPROC)wglGetProcAddress("glBindVertexBuffer");
-	if(!ptr_glBindVertexBuffer) { MessageBox(0, "Couldn't load OpenGL core version 4.3, function \"glBindVertexBuffer\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glBindVertexBuffer) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.3, function \"glBindVertexBuffer\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glVertexAttribFormat = (PFNGLVERTEXATTRIBFORMATPROC)wglGetProcAddress("glVertexAttribFormat");
-	if(!ptr_glVertexAttribFormat) { MessageBox(0, "Couldn't load OpenGL core version 4.3, function \"glVertexAttribFormat\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glVertexAttribFormat) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.3, function \"glVertexAttribFormat\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glVertexAttribIFormat = (PFNGLVERTEXATTRIBIFORMATPROC)wglGetProcAddress("glVertexAttribIFormat");
-	if(!ptr_glVertexAttribIFormat) { MessageBox(0, "Couldn't load OpenGL core version 4.3, function \"glVertexAttribIFormat\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glVertexAttribIFormat) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.3, function \"glVertexAttribIFormat\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glVertexAttribLFormat = (PFNGLVERTEXATTRIBLFORMATPROC)wglGetProcAddress("glVertexAttribLFormat");
-	if(!ptr_glVertexAttribLFormat) { MessageBox(0, "Couldn't load OpenGL core version 4.3, function \"glVertexAttribLFormat\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glVertexAttribLFormat) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.3, function \"glVertexAttribLFormat\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glVertexAttribBinding = (PFNGLVERTEXATTRIBBINDINGPROC)wglGetProcAddress("glVertexAttribBinding");
-	if(!ptr_glVertexAttribBinding) { MessageBox(0, "Couldn't load OpenGL core version 4.3, function \"glVertexAttribBinding\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glVertexAttribBinding) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.3, function \"glVertexAttribBinding\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glVertexBindingDivisor = (PFNGLVERTEXBINDINGDIVISORPROC)wglGetProcAddress("glVertexBindingDivisor");
-	if(!ptr_glVertexBindingDivisor) { MessageBox(0, "Couldn't load OpenGL core version 4.3, function \"glVertexBindingDivisor\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glVertexBindingDivisor) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.3, function \"glVertexBindingDivisor\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glDebugMessageControl = (PFNGLDEBUGMESSAGECONTROLPROC)wglGetProcAddress("glDebugMessageControl");
-	if(!ptr_glDebugMessageControl) { MessageBox(0, "Couldn't load OpenGL core version 4.3, function \"glDebugMessageControl\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glDebugMessageControl) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.3, function \"glDebugMessageControl\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glDebugMessageInsert = (PFNGLDEBUGMESSAGEINSERTPROC)wglGetProcAddress("glDebugMessageInsert");
-	if(!ptr_glDebugMessageInsert) { MessageBox(0, "Couldn't load OpenGL core version 4.3, function \"glDebugMessageInsert\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glDebugMessageInsert) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.3, function \"glDebugMessageInsert\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glDebugMessageCallback = (PFNGLDEBUGMESSAGECALLBACKPROC)wglGetProcAddress("glDebugMessageCallback");
-	if(!ptr_glDebugMessageCallback) { MessageBox(0, "Couldn't load OpenGL core version 4.3, function \"glDebugMessageCallback\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glDebugMessageCallback) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.3, function \"glDebugMessageCallback\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glGetDebugMessageLog = (PFNGLGETDEBUGMESSAGELOGPROC)wglGetProcAddress("glGetDebugMessageLog");
-	if(!ptr_glGetDebugMessageLog) { MessageBox(0, "Couldn't load OpenGL core version 4.3, function \"glGetDebugMessageLog\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glGetDebugMessageLog) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.3, function \"glGetDebugMessageLog\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glPushDebugGroup = (PFNGLPUSHDEBUGGROUPPROC)wglGetProcAddress("glPushDebugGroup");
-	if(!ptr_glPushDebugGroup) { MessageBox(0, "Couldn't load OpenGL core version 4.3, function \"glPushDebugGroup\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glPushDebugGroup) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.3, function \"glPushDebugGroup\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glPopDebugGroup = (PFNGLPOPDEBUGGROUPPROC)wglGetProcAddress("glPopDebugGroup");
-	if(!ptr_glPopDebugGroup) { MessageBox(0, "Couldn't load OpenGL core version 4.3, function \"glPopDebugGroup\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glPopDebugGroup) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.3, function \"glPopDebugGroup\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glObjectLabel = (PFNGLOBJECTLABELPROC)wglGetProcAddress("glObjectLabel");
-	if(!ptr_glObjectLabel) { MessageBox(0, "Couldn't load OpenGL core version 4.3, function \"glObjectLabel\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glObjectLabel) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.3, function \"glObjectLabel\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glGetObjectLabel = (PFNGLGETOBJECTLABELPROC)wglGetProcAddress("glGetObjectLabel");
-	if(!ptr_glGetObjectLabel) { MessageBox(0, "Couldn't load OpenGL core version 4.3, function \"glGetObjectLabel\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glGetObjectLabel) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.3, function \"glGetObjectLabel\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glObjectPtrLabel = (PFNGLOBJECTPTRLABELPROC)wglGetProcAddress("glObjectPtrLabel");
-	if(!ptr_glObjectPtrLabel) { MessageBox(0, "Couldn't load OpenGL core version 4.3, function \"glObjectPtrLabel\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glObjectPtrLabel) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.3, function \"glObjectPtrLabel\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glGetObjectPtrLabel = (PFNGLGETOBJECTPTRLABELPROC)wglGetProcAddress("glGetObjectPtrLabel");
-	if(!ptr_glGetObjectPtrLabel) { MessageBox(0, "Couldn't load OpenGL core version 4.3, function \"glGetObjectPtrLabel\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glGetObjectPtrLabel) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.3, function \"glGetObjectPtrLabel\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glBufferStorage = (PFNGLBUFFERSTORAGEPROC)wglGetProcAddress("glBufferStorage");
-	if(!ptr_glBufferStorage) { MessageBox(0, "Couldn't load OpenGL core version 4.4, function \"glBufferStorage\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glBufferStorage) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.4, function \"glBufferStorage\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glClearTexImage = (PFNGLCLEARTEXIMAGEPROC)wglGetProcAddress("glClearTexImage");
-	if(!ptr_glClearTexImage) { MessageBox(0, "Couldn't load OpenGL core version 4.4, function \"glClearTexImage\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glClearTexImage) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.4, function \"glClearTexImage\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glClearTexSubImage = (PFNGLCLEARTEXSUBIMAGEPROC)wglGetProcAddress("glClearTexSubImage");
-	if(!ptr_glClearTexSubImage) { MessageBox(0, "Couldn't load OpenGL core version 4.4, function \"glClearTexSubImage\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glClearTexSubImage) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.4, function \"glClearTexSubImage\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glBindBuffersBase = (PFNGLBINDBUFFERSBASEPROC)wglGetProcAddress("glBindBuffersBase");
-	if(!ptr_glBindBuffersBase) { MessageBox(0, "Couldn't load OpenGL core version 4.4, function \"glBindBuffersBase\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glBindBuffersBase) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.4, function \"glBindBuffersBase\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glBindBuffersRange = (PFNGLBINDBUFFERSRANGEPROC)wglGetProcAddress("glBindBuffersRange");
-	if(!ptr_glBindBuffersRange) { MessageBox(0, "Couldn't load OpenGL core version 4.4, function \"glBindBuffersRange\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glBindBuffersRange) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.4, function \"glBindBuffersRange\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glBindTextures = (PFNGLBINDTEXTURESPROC)wglGetProcAddress("glBindTextures");
-	if(!ptr_glBindTextures) { MessageBox(0, "Couldn't load OpenGL core version 4.4, function \"glBindTextures\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glBindTextures) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.4, function \"glBindTextures\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glBindSamplers = (PFNGLBINDSAMPLERSPROC)wglGetProcAddress("glBindSamplers");
-	if(!ptr_glBindSamplers) { MessageBox(0, "Couldn't load OpenGL core version 4.4, function \"glBindSamplers\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glBindSamplers) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.4, function \"glBindSamplers\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glBindImageTextures = (PFNGLBINDIMAGETEXTURESPROC)wglGetProcAddress("glBindImageTextures");
-	if(!ptr_glBindImageTextures) { MessageBox(0, "Couldn't load OpenGL core version 4.4, function \"glBindImageTextures\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glBindImageTextures) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.4, function \"glBindImageTextures\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glBindVertexBuffers = (PFNGLBINDVERTEXBUFFERSPROC)wglGetProcAddress("glBindVertexBuffers");
-	if(!ptr_glBindVertexBuffers) { MessageBox(0, "Couldn't load OpenGL core version 4.4, function \"glBindVertexBuffers\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glBindVertexBuffers) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.4, function \"glBindVertexBuffers\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glClipControl = (PFNGLCLIPCONTROLPROC)wglGetProcAddress("glClipControl");
-	if(!ptr_glClipControl) { MessageBox(0, "Couldn't load OpenGL core version 4.5, function \"glClipControl\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glClipControl) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.5, function \"glClipControl\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glCreateTransformFeedbacks = (PFNGLCREATETRANSFORMFEEDBACKSPROC)wglGetProcAddress("glCreateTransformFeedbacks");
-	if(!ptr_glCreateTransformFeedbacks) { MessageBox(0, "Couldn't load OpenGL core version 4.5, function \"glCreateTransformFeedbacks\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glCreateTransformFeedbacks) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.5, function \"glCreateTransformFeedbacks\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glTransformFeedbackBufferBase = (PFNGLTRANSFORMFEEDBACKBUFFERBASEPROC)wglGetProcAddress("glTransformFeedbackBufferBase");
-	if(!ptr_glTransformFeedbackBufferBase) { MessageBox(0, "Couldn't load OpenGL core version 4.5, function \"glTransformFeedbackBufferBase\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glTransformFeedbackBufferBase) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.5, function \"glTransformFeedbackBufferBase\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glTransformFeedbackBufferRange = (PFNGLTRANSFORMFEEDBACKBUFFERRANGEPROC)wglGetProcAddress("glTransformFeedbackBufferRange");
-	if(!ptr_glTransformFeedbackBufferRange) { MessageBox(0, "Couldn't load OpenGL core version 4.5, function \"glTransformFeedbackBufferRange\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glTransformFeedbackBufferRange) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.5, function \"glTransformFeedbackBufferRange\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glGetTransformFeedbackiv = (PFNGLGETTRANSFORMFEEDBACKIVPROC)wglGetProcAddress("glGetTransformFeedbackiv");
-	if(!ptr_glGetTransformFeedbackiv) { MessageBox(0, "Couldn't load OpenGL core version 4.5, function \"glGetTransformFeedbackiv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glGetTransformFeedbackiv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.5, function \"glGetTransformFeedbackiv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glGetTransformFeedbacki_v = (PFNGLGETTRANSFORMFEEDBACKI_VPROC)wglGetProcAddress("glGetTransformFeedbacki_v");
-	if(!ptr_glGetTransformFeedbacki_v) { MessageBox(0, "Couldn't load OpenGL core version 4.5, function \"glGetTransformFeedbacki_v\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glGetTransformFeedbacki_v) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.5, function \"glGetTransformFeedbacki_v\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glGetTransformFeedbacki64_v = (PFNGLGETTRANSFORMFEEDBACKI64_VPROC)wglGetProcAddress("glGetTransformFeedbacki64_v");
-	if(!ptr_glGetTransformFeedbacki64_v) { MessageBox(0, "Couldn't load OpenGL core version 4.5, function \"glGetTransformFeedbacki64_v\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glGetTransformFeedbacki64_v) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.5, function \"glGetTransformFeedbacki64_v\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glCreateBuffers = (PFNGLCREATEBUFFERSPROC)wglGetProcAddress("glCreateBuffers");
-	if(!ptr_glCreateBuffers) { MessageBox(0, "Couldn't load OpenGL core version 4.5, function \"glCreateBuffers\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glCreateBuffers) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.5, function \"glCreateBuffers\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glNamedBufferStorage = (PFNGLNAMEDBUFFERSTORAGEPROC)wglGetProcAddress("glNamedBufferStorage");
-	if(!ptr_glNamedBufferStorage) { MessageBox(0, "Couldn't load OpenGL core version 4.5, function \"glNamedBufferStorage\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glNamedBufferStorage) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.5, function \"glNamedBufferStorage\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glNamedBufferData = (PFNGLNAMEDBUFFERDATAPROC)wglGetProcAddress("glNamedBufferData");
-	if(!ptr_glNamedBufferData) { MessageBox(0, "Couldn't load OpenGL core version 4.5, function \"glNamedBufferData\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glNamedBufferData) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.5, function \"glNamedBufferData\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glNamedBufferSubData = (PFNGLNAMEDBUFFERSUBDATAPROC)wglGetProcAddress("glNamedBufferSubData");
-	if(!ptr_glNamedBufferSubData) { MessageBox(0, "Couldn't load OpenGL core version 4.5, function \"glNamedBufferSubData\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glNamedBufferSubData) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.5, function \"glNamedBufferSubData\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glCopyNamedBufferSubData = (PFNGLCOPYNAMEDBUFFERSUBDATAPROC)wglGetProcAddress("glCopyNamedBufferSubData");
-	if(!ptr_glCopyNamedBufferSubData) { MessageBox(0, "Couldn't load OpenGL core version 4.5, function \"glCopyNamedBufferSubData\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glCopyNamedBufferSubData) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.5, function \"glCopyNamedBufferSubData\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glClearNamedBufferData = (PFNGLCLEARNAMEDBUFFERDATAPROC)wglGetProcAddress("glClearNamedBufferData");
-	if(!ptr_glClearNamedBufferData) { MessageBox(0, "Couldn't load OpenGL core version 4.5, function \"glClearNamedBufferData\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glClearNamedBufferData) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.5, function \"glClearNamedBufferData\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glClearNamedBufferSubData = (PFNGLCLEARNAMEDBUFFERSUBDATAPROC)wglGetProcAddress("glClearNamedBufferSubData");
-	if(!ptr_glClearNamedBufferSubData) { MessageBox(0, "Couldn't load OpenGL core version 4.5, function \"glClearNamedBufferSubData\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glClearNamedBufferSubData) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.5, function \"glClearNamedBufferSubData\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glMapNamedBuffer = (PFNGLMAPNAMEDBUFFERPROC)wglGetProcAddress("glMapNamedBuffer");
-	if(!ptr_glMapNamedBuffer) { MessageBox(0, "Couldn't load OpenGL core version 4.5, function \"glMapNamedBuffer\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glMapNamedBuffer) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.5, function \"glMapNamedBuffer\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glMapNamedBufferRange = (PFNGLMAPNAMEDBUFFERRANGEPROC)wglGetProcAddress("glMapNamedBufferRange");
-	if(!ptr_glMapNamedBufferRange) { MessageBox(0, "Couldn't load OpenGL core version 4.5, function \"glMapNamedBufferRange\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glMapNamedBufferRange) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.5, function \"glMapNamedBufferRange\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glUnmapNamedBuffer = (PFNGLUNMAPNAMEDBUFFERPROC)wglGetProcAddress("glUnmapNamedBuffer");
-	if(!ptr_glUnmapNamedBuffer) { MessageBox(0, "Couldn't load OpenGL core version 4.5, function \"glUnmapNamedBuffer\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glUnmapNamedBuffer) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.5, function \"glUnmapNamedBuffer\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glFlushMappedNamedBufferRange = (PFNGLFLUSHMAPPEDNAMEDBUFFERRANGEPROC)wglGetProcAddress("glFlushMappedNamedBufferRange");
-	if(!ptr_glFlushMappedNamedBufferRange) { MessageBox(0, "Couldn't load OpenGL core version 4.5, function \"glFlushMappedNamedBufferRange\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glFlushMappedNamedBufferRange) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.5, function \"glFlushMappedNamedBufferRange\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glGetNamedBufferParameteriv = (PFNGLGETNAMEDBUFFERPARAMETERIVPROC)wglGetProcAddress("glGetNamedBufferParameteriv");
-	if(!ptr_glGetNamedBufferParameteriv) { MessageBox(0, "Couldn't load OpenGL core version 4.5, function \"glGetNamedBufferParameteriv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glGetNamedBufferParameteriv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.5, function \"glGetNamedBufferParameteriv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glGetNamedBufferParameteri64v = (PFNGLGETNAMEDBUFFERPARAMETERI64VPROC)wglGetProcAddress("glGetNamedBufferParameteri64v");
-	if(!ptr_glGetNamedBufferParameteri64v) { MessageBox(0, "Couldn't load OpenGL core version 4.5, function \"glGetNamedBufferParameteri64v\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glGetNamedBufferParameteri64v) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.5, function \"glGetNamedBufferParameteri64v\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glGetNamedBufferPointerv = (PFNGLGETNAMEDBUFFERPOINTERVPROC)wglGetProcAddress("glGetNamedBufferPointerv");
-	if(!ptr_glGetNamedBufferPointerv) { MessageBox(0, "Couldn't load OpenGL core version 4.5, function \"glGetNamedBufferPointerv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glGetNamedBufferPointerv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.5, function \"glGetNamedBufferPointerv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glGetNamedBufferSubData = (PFNGLGETNAMEDBUFFERSUBDATAPROC)wglGetProcAddress("glGetNamedBufferSubData");
-	if(!ptr_glGetNamedBufferSubData) { MessageBox(0, "Couldn't load OpenGL core version 4.5, function \"glGetNamedBufferSubData\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glGetNamedBufferSubData) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.5, function \"glGetNamedBufferSubData\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glCreateFramebuffers = (PFNGLCREATEFRAMEBUFFERSPROC)wglGetProcAddress("glCreateFramebuffers");
-	if(!ptr_glCreateFramebuffers) { MessageBox(0, "Couldn't load OpenGL core version 4.5, function \"glCreateFramebuffers\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glCreateFramebuffers) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.5, function \"glCreateFramebuffers\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glNamedFramebufferRenderbuffer = (PFNGLNAMEDFRAMEBUFFERRENDERBUFFERPROC)wglGetProcAddress("glNamedFramebufferRenderbuffer");
-	if(!ptr_glNamedFramebufferRenderbuffer) { MessageBox(0, "Couldn't load OpenGL core version 4.5, function \"glNamedFramebufferRenderbuffer\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glNamedFramebufferRenderbuffer) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.5, function \"glNamedFramebufferRenderbuffer\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glNamedFramebufferParameteri = (PFNGLNAMEDFRAMEBUFFERPARAMETERIPROC)wglGetProcAddress("glNamedFramebufferParameteri");
-	if(!ptr_glNamedFramebufferParameteri) { MessageBox(0, "Couldn't load OpenGL core version 4.5, function \"glNamedFramebufferParameteri\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glNamedFramebufferParameteri) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.5, function \"glNamedFramebufferParameteri\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glNamedFramebufferTexture = (PFNGLNAMEDFRAMEBUFFERTEXTUREPROC)wglGetProcAddress("glNamedFramebufferTexture");
-	if(!ptr_glNamedFramebufferTexture) { MessageBox(0, "Couldn't load OpenGL core version 4.5, function \"glNamedFramebufferTexture\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glNamedFramebufferTexture) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.5, function \"glNamedFramebufferTexture\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glNamedFramebufferTextureLayer = (PFNGLNAMEDFRAMEBUFFERTEXTURELAYERPROC)wglGetProcAddress("glNamedFramebufferTextureLayer");
-	if(!ptr_glNamedFramebufferTextureLayer) { MessageBox(0, "Couldn't load OpenGL core version 4.5, function \"glNamedFramebufferTextureLayer\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glNamedFramebufferTextureLayer) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.5, function \"glNamedFramebufferTextureLayer\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glNamedFramebufferDrawBuffer = (PFNGLNAMEDFRAMEBUFFERDRAWBUFFERPROC)wglGetProcAddress("glNamedFramebufferDrawBuffer");
-	if(!ptr_glNamedFramebufferDrawBuffer) { MessageBox(0, "Couldn't load OpenGL core version 4.5, function \"glNamedFramebufferDrawBuffer\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glNamedFramebufferDrawBuffer) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.5, function \"glNamedFramebufferDrawBuffer\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glNamedFramebufferDrawBuffers = (PFNGLNAMEDFRAMEBUFFERDRAWBUFFERSPROC)wglGetProcAddress("glNamedFramebufferDrawBuffers");
-	if(!ptr_glNamedFramebufferDrawBuffers) { MessageBox(0, "Couldn't load OpenGL core version 4.5, function \"glNamedFramebufferDrawBuffers\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glNamedFramebufferDrawBuffers) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.5, function \"glNamedFramebufferDrawBuffers\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glNamedFramebufferReadBuffer = (PFNGLNAMEDFRAMEBUFFERREADBUFFERPROC)wglGetProcAddress("glNamedFramebufferReadBuffer");
-	if(!ptr_glNamedFramebufferReadBuffer) { MessageBox(0, "Couldn't load OpenGL core version 4.5, function \"glNamedFramebufferReadBuffer\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glNamedFramebufferReadBuffer) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.5, function \"glNamedFramebufferReadBuffer\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glInvalidateNamedFramebufferData = (PFNGLINVALIDATENAMEDFRAMEBUFFERDATAPROC)wglGetProcAddress("glInvalidateNamedFramebufferData");
-	if(!ptr_glInvalidateNamedFramebufferData) { MessageBox(0, "Couldn't load OpenGL core version 4.5, function \"glInvalidateNamedFramebufferData\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glInvalidateNamedFramebufferData) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.5, function \"glInvalidateNamedFramebufferData\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glInvalidateNamedFramebufferSubData = (PFNGLINVALIDATENAMEDFRAMEBUFFERSUBDATAPROC)wglGetProcAddress("glInvalidateNamedFramebufferSubData");
-	if(!ptr_glInvalidateNamedFramebufferSubData) { MessageBox(0, "Couldn't load OpenGL core version 4.5, function \"glInvalidateNamedFramebufferSubData\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glInvalidateNamedFramebufferSubData) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.5, function \"glInvalidateNamedFramebufferSubData\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glClearNamedFramebufferiv = (PFNGLCLEARNAMEDFRAMEBUFFERIVPROC)wglGetProcAddress("glClearNamedFramebufferiv");
-	if(!ptr_glClearNamedFramebufferiv) { MessageBox(0, "Couldn't load OpenGL core version 4.5, function \"glClearNamedFramebufferiv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glClearNamedFramebufferiv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.5, function \"glClearNamedFramebufferiv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glClearNamedFramebufferuiv = (PFNGLCLEARNAMEDFRAMEBUFFERUIVPROC)wglGetProcAddress("glClearNamedFramebufferuiv");
-	if(!ptr_glClearNamedFramebufferuiv) { MessageBox(0, "Couldn't load OpenGL core version 4.5, function \"glClearNamedFramebufferuiv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glClearNamedFramebufferuiv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.5, function \"glClearNamedFramebufferuiv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glClearNamedFramebufferfv = (PFNGLCLEARNAMEDFRAMEBUFFERFVPROC)wglGetProcAddress("glClearNamedFramebufferfv");
-	if(!ptr_glClearNamedFramebufferfv) { MessageBox(0, "Couldn't load OpenGL core version 4.5, function \"glClearNamedFramebufferfv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glClearNamedFramebufferfv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.5, function \"glClearNamedFramebufferfv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glClearNamedFramebufferfi = (PFNGLCLEARNAMEDFRAMEBUFFERFIPROC)wglGetProcAddress("glClearNamedFramebufferfi");
-	if(!ptr_glClearNamedFramebufferfi) { MessageBox(0, "Couldn't load OpenGL core version 4.5, function \"glClearNamedFramebufferfi\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glClearNamedFramebufferfi) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.5, function \"glClearNamedFramebufferfi\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glBlitNamedFramebuffer = (PFNGLBLITNAMEDFRAMEBUFFERPROC)wglGetProcAddress("glBlitNamedFramebuffer");
-	if(!ptr_glBlitNamedFramebuffer) { MessageBox(0, "Couldn't load OpenGL core version 4.5, function \"glBlitNamedFramebuffer\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glBlitNamedFramebuffer) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.5, function \"glBlitNamedFramebuffer\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glCheckNamedFramebufferStatus = (PFNGLCHECKNAMEDFRAMEBUFFERSTATUSPROC)wglGetProcAddress("glCheckNamedFramebufferStatus");
-	if(!ptr_glCheckNamedFramebufferStatus) { MessageBox(0, "Couldn't load OpenGL core version 4.5, function \"glCheckNamedFramebufferStatus\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glCheckNamedFramebufferStatus) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.5, function \"glCheckNamedFramebufferStatus\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glGetNamedFramebufferParameteriv = (PFNGLGETNAMEDFRAMEBUFFERPARAMETERIVPROC)wglGetProcAddress("glGetNamedFramebufferParameteriv");
-	if(!ptr_glGetNamedFramebufferParameteriv) { MessageBox(0, "Couldn't load OpenGL core version 4.5, function \"glGetNamedFramebufferParameteriv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glGetNamedFramebufferParameteriv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.5, function \"glGetNamedFramebufferParameteriv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glGetNamedFramebufferAttachmentParameteriv = (PFNGLGETNAMEDFRAMEBUFFERATTACHMENTPARAMETERIVPROC)wglGetProcAddress("glGetNamedFramebufferAttachmentParameteriv");
-	if(!ptr_glGetNamedFramebufferAttachmentParameteriv) { MessageBox(0, "Couldn't load OpenGL core version 4.5, function \"glGetNamedFramebufferAttachmentParameteriv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glGetNamedFramebufferAttachmentParameteriv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.5, function \"glGetNamedFramebufferAttachmentParameteriv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glCreateRenderbuffers = (PFNGLCREATERENDERBUFFERSPROC)wglGetProcAddress("glCreateRenderbuffers");
-	if(!ptr_glCreateRenderbuffers) { MessageBox(0, "Couldn't load OpenGL core version 4.5, function \"glCreateRenderbuffers\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glCreateRenderbuffers) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.5, function \"glCreateRenderbuffers\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glNamedRenderbufferStorage = (PFNGLNAMEDRENDERBUFFERSTORAGEPROC)wglGetProcAddress("glNamedRenderbufferStorage");
-	if(!ptr_glNamedRenderbufferStorage) { MessageBox(0, "Couldn't load OpenGL core version 4.5, function \"glNamedRenderbufferStorage\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glNamedRenderbufferStorage) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.5, function \"glNamedRenderbufferStorage\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glNamedRenderbufferStorageMultisample = (PFNGLNAMEDRENDERBUFFERSTORAGEMULTISAMPLEPROC)wglGetProcAddress("glNamedRenderbufferStorageMultisample");
-	if(!ptr_glNamedRenderbufferStorageMultisample) { MessageBox(0, "Couldn't load OpenGL core version 4.5, function \"glNamedRenderbufferStorageMultisample\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glNamedRenderbufferStorageMultisample) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.5, function \"glNamedRenderbufferStorageMultisample\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glGetNamedRenderbufferParameteriv = (PFNGLGETNAMEDRENDERBUFFERPARAMETERIVPROC)wglGetProcAddress("glGetNamedRenderbufferParameteriv");
-	if(!ptr_glGetNamedRenderbufferParameteriv) { MessageBox(0, "Couldn't load OpenGL core version 4.5, function \"glGetNamedRenderbufferParameteriv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glGetNamedRenderbufferParameteriv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.5, function \"glGetNamedRenderbufferParameteriv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glCreateTextures = (PFNGLCREATETEXTURESPROC)wglGetProcAddress("glCreateTextures");
-	if(!ptr_glCreateTextures) { MessageBox(0, "Couldn't load OpenGL core version 4.5, function \"glCreateTextures\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glCreateTextures) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.5, function \"glCreateTextures\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glTextureBuffer = (PFNGLTEXTUREBUFFERPROC)wglGetProcAddress("glTextureBuffer");
-	if(!ptr_glTextureBuffer) { MessageBox(0, "Couldn't load OpenGL core version 4.5, function \"glTextureBuffer\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glTextureBuffer) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.5, function \"glTextureBuffer\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glTextureBufferRange = (PFNGLTEXTUREBUFFERRANGEPROC)wglGetProcAddress("glTextureBufferRange");
-	if(!ptr_glTextureBufferRange) { MessageBox(0, "Couldn't load OpenGL core version 4.5, function \"glTextureBufferRange\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glTextureBufferRange) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.5, function \"glTextureBufferRange\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glTextureStorage1D = (PFNGLTEXTURESTORAGE1DPROC)wglGetProcAddress("glTextureStorage1D");
-	if(!ptr_glTextureStorage1D) { MessageBox(0, "Couldn't load OpenGL core version 4.5, function \"glTextureStorage1D\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glTextureStorage1D) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.5, function \"glTextureStorage1D\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glTextureStorage2D = (PFNGLTEXTURESTORAGE2DPROC)wglGetProcAddress("glTextureStorage2D");
-	if(!ptr_glTextureStorage2D) { MessageBox(0, "Couldn't load OpenGL core version 4.5, function \"glTextureStorage2D\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glTextureStorage2D) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.5, function \"glTextureStorage2D\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glTextureStorage3D = (PFNGLTEXTURESTORAGE3DPROC)wglGetProcAddress("glTextureStorage3D");
-	if(!ptr_glTextureStorage3D) { MessageBox(0, "Couldn't load OpenGL core version 4.5, function \"glTextureStorage3D\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glTextureStorage3D) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.5, function \"glTextureStorage3D\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glTextureStorage2DMultisample = (PFNGLTEXTURESTORAGE2DMULTISAMPLEPROC)wglGetProcAddress("glTextureStorage2DMultisample");
-	if(!ptr_glTextureStorage2DMultisample) { MessageBox(0, "Couldn't load OpenGL core version 4.5, function \"glTextureStorage2DMultisample\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glTextureStorage2DMultisample) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.5, function \"glTextureStorage2DMultisample\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glTextureStorage3DMultisample = (PFNGLTEXTURESTORAGE3DMULTISAMPLEPROC)wglGetProcAddress("glTextureStorage3DMultisample");
-	if(!ptr_glTextureStorage3DMultisample) { MessageBox(0, "Couldn't load OpenGL core version 4.5, function \"glTextureStorage3DMultisample\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glTextureStorage3DMultisample) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.5, function \"glTextureStorage3DMultisample\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glTextureSubImage1D = (PFNGLTEXTURESUBIMAGE1DPROC)wglGetProcAddress("glTextureSubImage1D");
-	if(!ptr_glTextureSubImage1D) { MessageBox(0, "Couldn't load OpenGL core version 4.5, function \"glTextureSubImage1D\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glTextureSubImage1D) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.5, function \"glTextureSubImage1D\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glTextureSubImage2D = (PFNGLTEXTURESUBIMAGE2DPROC)wglGetProcAddress("glTextureSubImage2D");
-	if(!ptr_glTextureSubImage2D) { MessageBox(0, "Couldn't load OpenGL core version 4.5, function \"glTextureSubImage2D\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glTextureSubImage2D) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.5, function \"glTextureSubImage2D\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glTextureSubImage3D = (PFNGLTEXTURESUBIMAGE3DPROC)wglGetProcAddress("glTextureSubImage3D");
-	if(!ptr_glTextureSubImage3D) { MessageBox(0, "Couldn't load OpenGL core version 4.5, function \"glTextureSubImage3D\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glTextureSubImage3D) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.5, function \"glTextureSubImage3D\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glCompressedTextureSubImage1D = (PFNGLCOMPRESSEDTEXTURESUBIMAGE1DPROC)wglGetProcAddress("glCompressedTextureSubImage1D");
-	if(!ptr_glCompressedTextureSubImage1D) { MessageBox(0, "Couldn't load OpenGL core version 4.5, function \"glCompressedTextureSubImage1D\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glCompressedTextureSubImage1D) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.5, function \"glCompressedTextureSubImage1D\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glCompressedTextureSubImage2D = (PFNGLCOMPRESSEDTEXTURESUBIMAGE2DPROC)wglGetProcAddress("glCompressedTextureSubImage2D");
-	if(!ptr_glCompressedTextureSubImage2D) { MessageBox(0, "Couldn't load OpenGL core version 4.5, function \"glCompressedTextureSubImage2D\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glCompressedTextureSubImage2D) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.5, function \"glCompressedTextureSubImage2D\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glCompressedTextureSubImage3D = (PFNGLCOMPRESSEDTEXTURESUBIMAGE3DPROC)wglGetProcAddress("glCompressedTextureSubImage3D");
-	if(!ptr_glCompressedTextureSubImage3D) { MessageBox(0, "Couldn't load OpenGL core version 4.5, function \"glCompressedTextureSubImage3D\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glCompressedTextureSubImage3D) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.5, function \"glCompressedTextureSubImage3D\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glCopyTextureSubImage1D = (PFNGLCOPYTEXTURESUBIMAGE1DPROC)wglGetProcAddress("glCopyTextureSubImage1D");
-	if(!ptr_glCopyTextureSubImage1D) { MessageBox(0, "Couldn't load OpenGL core version 4.5, function \"glCopyTextureSubImage1D\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glCopyTextureSubImage1D) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.5, function \"glCopyTextureSubImage1D\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glCopyTextureSubImage2D = (PFNGLCOPYTEXTURESUBIMAGE2DPROC)wglGetProcAddress("glCopyTextureSubImage2D");
-	if(!ptr_glCopyTextureSubImage2D) { MessageBox(0, "Couldn't load OpenGL core version 4.5, function \"glCopyTextureSubImage2D\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glCopyTextureSubImage2D) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.5, function \"glCopyTextureSubImage2D\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glCopyTextureSubImage3D = (PFNGLCOPYTEXTURESUBIMAGE3DPROC)wglGetProcAddress("glCopyTextureSubImage3D");
-	if(!ptr_glCopyTextureSubImage3D) { MessageBox(0, "Couldn't load OpenGL core version 4.5, function \"glCopyTextureSubImage3D\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glCopyTextureSubImage3D) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.5, function \"glCopyTextureSubImage3D\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glTextureParameterf = (PFNGLTEXTUREPARAMETERFPROC)wglGetProcAddress("glTextureParameterf");
-	if(!ptr_glTextureParameterf) { MessageBox(0, "Couldn't load OpenGL core version 4.5, function \"glTextureParameterf\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glTextureParameterf) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.5, function \"glTextureParameterf\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glTextureParameterfv = (PFNGLTEXTUREPARAMETERFVPROC)wglGetProcAddress("glTextureParameterfv");
-	if(!ptr_glTextureParameterfv) { MessageBox(0, "Couldn't load OpenGL core version 4.5, function \"glTextureParameterfv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glTextureParameterfv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.5, function \"glTextureParameterfv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glTextureParameteri = (PFNGLTEXTUREPARAMETERIPROC)wglGetProcAddress("glTextureParameteri");
-	if(!ptr_glTextureParameteri) { MessageBox(0, "Couldn't load OpenGL core version 4.5, function \"glTextureParameteri\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glTextureParameteri) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.5, function \"glTextureParameteri\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glTextureParameterIiv = (PFNGLTEXTUREPARAMETERIIVPROC)wglGetProcAddress("glTextureParameterIiv");
-	if(!ptr_glTextureParameterIiv) { MessageBox(0, "Couldn't load OpenGL core version 4.5, function \"glTextureParameterIiv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glTextureParameterIiv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.5, function \"glTextureParameterIiv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glTextureParameterIuiv = (PFNGLTEXTUREPARAMETERIUIVPROC)wglGetProcAddress("glTextureParameterIuiv");
-	if(!ptr_glTextureParameterIuiv) { MessageBox(0, "Couldn't load OpenGL core version 4.5, function \"glTextureParameterIuiv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glTextureParameterIuiv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.5, function \"glTextureParameterIuiv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glTextureParameteriv = (PFNGLTEXTUREPARAMETERIVPROC)wglGetProcAddress("glTextureParameteriv");
-	if(!ptr_glTextureParameteriv) { MessageBox(0, "Couldn't load OpenGL core version 4.5, function \"glTextureParameteriv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glTextureParameteriv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.5, function \"glTextureParameteriv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glGenerateTextureMipmap = (PFNGLGENERATETEXTUREMIPMAPPROC)wglGetProcAddress("glGenerateTextureMipmap");
-	if(!ptr_glGenerateTextureMipmap) { MessageBox(0, "Couldn't load OpenGL core version 4.5, function \"glGenerateTextureMipmap\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glGenerateTextureMipmap) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.5, function \"glGenerateTextureMipmap\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glBindTextureUnit = (PFNGLBINDTEXTUREUNITPROC)wglGetProcAddress("glBindTextureUnit");
-	if(!ptr_glBindTextureUnit) { MessageBox(0, "Couldn't load OpenGL core version 4.5, function \"glBindTextureUnit\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glBindTextureUnit) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.5, function \"glBindTextureUnit\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glGetTextureImage = (PFNGLGETTEXTUREIMAGEPROC)wglGetProcAddress("glGetTextureImage");
-	if(!ptr_glGetTextureImage) { MessageBox(0, "Couldn't load OpenGL core version 4.5, function \"glGetTextureImage\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glGetTextureImage) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.5, function \"glGetTextureImage\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glGetCompressedTextureImage = (PFNGLGETCOMPRESSEDTEXTUREIMAGEPROC)wglGetProcAddress("glGetCompressedTextureImage");
-	if(!ptr_glGetCompressedTextureImage) { MessageBox(0, "Couldn't load OpenGL core version 4.5, function \"glGetCompressedTextureImage\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glGetCompressedTextureImage) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.5, function \"glGetCompressedTextureImage\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glGetTextureLevelParameterfv = (PFNGLGETTEXTURELEVELPARAMETERFVPROC)wglGetProcAddress("glGetTextureLevelParameterfv");
-	if(!ptr_glGetTextureLevelParameterfv) { MessageBox(0, "Couldn't load OpenGL core version 4.5, function \"glGetTextureLevelParameterfv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glGetTextureLevelParameterfv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.5, function \"glGetTextureLevelParameterfv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glGetTextureLevelParameteriv = (PFNGLGETTEXTURELEVELPARAMETERIVPROC)wglGetProcAddress("glGetTextureLevelParameteriv");
-	if(!ptr_glGetTextureLevelParameteriv) { MessageBox(0, "Couldn't load OpenGL core version 4.5, function \"glGetTextureLevelParameteriv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glGetTextureLevelParameteriv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.5, function \"glGetTextureLevelParameteriv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glGetTextureParameterfv = (PFNGLGETTEXTUREPARAMETERFVPROC)wglGetProcAddress("glGetTextureParameterfv");
-	if(!ptr_glGetTextureParameterfv) { MessageBox(0, "Couldn't load OpenGL core version 4.5, function \"glGetTextureParameterfv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glGetTextureParameterfv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.5, function \"glGetTextureParameterfv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glGetTextureParameterIiv = (PFNGLGETTEXTUREPARAMETERIIVPROC)wglGetProcAddress("glGetTextureParameterIiv");
-	if(!ptr_glGetTextureParameterIiv) { MessageBox(0, "Couldn't load OpenGL core version 4.5, function \"glGetTextureParameterIiv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glGetTextureParameterIiv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.5, function \"glGetTextureParameterIiv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glGetTextureParameterIuiv = (PFNGLGETTEXTUREPARAMETERIUIVPROC)wglGetProcAddress("glGetTextureParameterIuiv");
-	if(!ptr_glGetTextureParameterIuiv) { MessageBox(0, "Couldn't load OpenGL core version 4.5, function \"glGetTextureParameterIuiv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glGetTextureParameterIuiv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.5, function \"glGetTextureParameterIuiv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glGetTextureParameteriv = (PFNGLGETTEXTUREPARAMETERIVPROC)wglGetProcAddress("glGetTextureParameteriv");
-	if(!ptr_glGetTextureParameteriv) { MessageBox(0, "Couldn't load OpenGL core version 4.5, function \"glGetTextureParameteriv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glGetTextureParameteriv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.5, function \"glGetTextureParameteriv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glCreateVertexArrays = (PFNGLCREATEVERTEXARRAYSPROC)wglGetProcAddress("glCreateVertexArrays");
-	if(!ptr_glCreateVertexArrays) { MessageBox(0, "Couldn't load OpenGL core version 4.5, function \"glCreateVertexArrays\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glCreateVertexArrays) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.5, function \"glCreateVertexArrays\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glDisableVertexArrayAttrib = (PFNGLDISABLEVERTEXARRAYATTRIBPROC)wglGetProcAddress("glDisableVertexArrayAttrib");
-	if(!ptr_glDisableVertexArrayAttrib) { MessageBox(0, "Couldn't load OpenGL core version 4.5, function \"glDisableVertexArrayAttrib\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glDisableVertexArrayAttrib) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.5, function \"glDisableVertexArrayAttrib\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glEnableVertexArrayAttrib = (PFNGLENABLEVERTEXARRAYATTRIBPROC)wglGetProcAddress("glEnableVertexArrayAttrib");
-	if(!ptr_glEnableVertexArrayAttrib) { MessageBox(0, "Couldn't load OpenGL core version 4.5, function \"glEnableVertexArrayAttrib\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glEnableVertexArrayAttrib) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.5, function \"glEnableVertexArrayAttrib\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glVertexArrayElementBuffer = (PFNGLVERTEXARRAYELEMENTBUFFERPROC)wglGetProcAddress("glVertexArrayElementBuffer");
-	if(!ptr_glVertexArrayElementBuffer) { MessageBox(0, "Couldn't load OpenGL core version 4.5, function \"glVertexArrayElementBuffer\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glVertexArrayElementBuffer) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.5, function \"glVertexArrayElementBuffer\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glVertexArrayVertexBuffer = (PFNGLVERTEXARRAYVERTEXBUFFERPROC)wglGetProcAddress("glVertexArrayVertexBuffer");
-	if(!ptr_glVertexArrayVertexBuffer) { MessageBox(0, "Couldn't load OpenGL core version 4.5, function \"glVertexArrayVertexBuffer\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glVertexArrayVertexBuffer) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.5, function \"glVertexArrayVertexBuffer\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glVertexArrayVertexBuffers = (PFNGLVERTEXARRAYVERTEXBUFFERSPROC)wglGetProcAddress("glVertexArrayVertexBuffers");
-	if(!ptr_glVertexArrayVertexBuffers) { MessageBox(0, "Couldn't load OpenGL core version 4.5, function \"glVertexArrayVertexBuffers\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glVertexArrayVertexBuffers) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.5, function \"glVertexArrayVertexBuffers\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glVertexArrayAttribBinding = (PFNGLVERTEXARRAYATTRIBBINDINGPROC)wglGetProcAddress("glVertexArrayAttribBinding");
-	if(!ptr_glVertexArrayAttribBinding) { MessageBox(0, "Couldn't load OpenGL core version 4.5, function \"glVertexArrayAttribBinding\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glVertexArrayAttribBinding) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.5, function \"glVertexArrayAttribBinding\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glVertexArrayAttribFormat = (PFNGLVERTEXARRAYATTRIBFORMATPROC)wglGetProcAddress("glVertexArrayAttribFormat");
-	if(!ptr_glVertexArrayAttribFormat) { MessageBox(0, "Couldn't load OpenGL core version 4.5, function \"glVertexArrayAttribFormat\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glVertexArrayAttribFormat) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.5, function \"glVertexArrayAttribFormat\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glVertexArrayAttribIFormat = (PFNGLVERTEXARRAYATTRIBIFORMATPROC)wglGetProcAddress("glVertexArrayAttribIFormat");
-	if(!ptr_glVertexArrayAttribIFormat) { MessageBox(0, "Couldn't load OpenGL core version 4.5, function \"glVertexArrayAttribIFormat\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glVertexArrayAttribIFormat) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.5, function \"glVertexArrayAttribIFormat\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glVertexArrayAttribLFormat = (PFNGLVERTEXARRAYATTRIBLFORMATPROC)wglGetProcAddress("glVertexArrayAttribLFormat");
-	if(!ptr_glVertexArrayAttribLFormat) { MessageBox(0, "Couldn't load OpenGL core version 4.5, function \"glVertexArrayAttribLFormat\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glVertexArrayAttribLFormat) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.5, function \"glVertexArrayAttribLFormat\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glVertexArrayBindingDivisor = (PFNGLVERTEXARRAYBINDINGDIVISORPROC)wglGetProcAddress("glVertexArrayBindingDivisor");
-	if(!ptr_glVertexArrayBindingDivisor) { MessageBox(0, "Couldn't load OpenGL core version 4.5, function \"glVertexArrayBindingDivisor\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glVertexArrayBindingDivisor) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.5, function \"glVertexArrayBindingDivisor\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glGetVertexArrayiv = (PFNGLGETVERTEXARRAYIVPROC)wglGetProcAddress("glGetVertexArrayiv");
-	if(!ptr_glGetVertexArrayiv) { MessageBox(0, "Couldn't load OpenGL core version 4.5, function \"glGetVertexArrayiv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glGetVertexArrayiv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.5, function \"glGetVertexArrayiv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glGetVertexArrayIndexediv = (PFNGLGETVERTEXARRAYINDEXEDIVPROC)wglGetProcAddress("glGetVertexArrayIndexediv");
-	if(!ptr_glGetVertexArrayIndexediv) { MessageBox(0, "Couldn't load OpenGL core version 4.5, function \"glGetVertexArrayIndexediv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glGetVertexArrayIndexediv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.5, function \"glGetVertexArrayIndexediv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glGetVertexArrayIndexed64iv = (PFNGLGETVERTEXARRAYINDEXED64IVPROC)wglGetProcAddress("glGetVertexArrayIndexed64iv");
-	if(!ptr_glGetVertexArrayIndexed64iv) { MessageBox(0, "Couldn't load OpenGL core version 4.5, function \"glGetVertexArrayIndexed64iv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glGetVertexArrayIndexed64iv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.5, function \"glGetVertexArrayIndexed64iv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glCreateSamplers = (PFNGLCREATESAMPLERSPROC)wglGetProcAddress("glCreateSamplers");
-	if(!ptr_glCreateSamplers) { MessageBox(0, "Couldn't load OpenGL core version 4.5, function \"glCreateSamplers\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glCreateSamplers) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.5, function \"glCreateSamplers\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glCreateProgramPipelines = (PFNGLCREATEPROGRAMPIPELINESPROC)wglGetProcAddress("glCreateProgramPipelines");
-	if(!ptr_glCreateProgramPipelines) { MessageBox(0, "Couldn't load OpenGL core version 4.5, function \"glCreateProgramPipelines\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glCreateProgramPipelines) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.5, function \"glCreateProgramPipelines\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glCreateQueries = (PFNGLCREATEQUERIESPROC)wglGetProcAddress("glCreateQueries");
-	if(!ptr_glCreateQueries) { MessageBox(0, "Couldn't load OpenGL core version 4.5, function \"glCreateQueries\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glCreateQueries) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.5, function \"glCreateQueries\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glGetQueryBufferObjecti64v = (PFNGLGETQUERYBUFFEROBJECTI64VPROC)wglGetProcAddress("glGetQueryBufferObjecti64v");
-	if(!ptr_glGetQueryBufferObjecti64v) { MessageBox(0, "Couldn't load OpenGL core version 4.5, function \"glGetQueryBufferObjecti64v\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glGetQueryBufferObjecti64v) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.5, function \"glGetQueryBufferObjecti64v\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glGetQueryBufferObjectiv = (PFNGLGETQUERYBUFFEROBJECTIVPROC)wglGetProcAddress("glGetQueryBufferObjectiv");
-	if(!ptr_glGetQueryBufferObjectiv) { MessageBox(0, "Couldn't load OpenGL core version 4.5, function \"glGetQueryBufferObjectiv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glGetQueryBufferObjectiv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.5, function \"glGetQueryBufferObjectiv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glGetQueryBufferObjectui64v = (PFNGLGETQUERYBUFFEROBJECTUI64VPROC)wglGetProcAddress("glGetQueryBufferObjectui64v");
-	if(!ptr_glGetQueryBufferObjectui64v) { MessageBox(0, "Couldn't load OpenGL core version 4.5, function \"glGetQueryBufferObjectui64v\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glGetQueryBufferObjectui64v) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.5, function \"glGetQueryBufferObjectui64v\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glGetQueryBufferObjectuiv = (PFNGLGETQUERYBUFFEROBJECTUIVPROC)wglGetProcAddress("glGetQueryBufferObjectuiv");
-	if(!ptr_glGetQueryBufferObjectuiv) { MessageBox(0, "Couldn't load OpenGL core version 4.5, function \"glGetQueryBufferObjectuiv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glGetQueryBufferObjectuiv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.5, function \"glGetQueryBufferObjectuiv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glMemoryBarrierByRegion = (PFNGLMEMORYBARRIERBYREGIONPROC)wglGetProcAddress("glMemoryBarrierByRegion");
-	if(!ptr_glMemoryBarrierByRegion) { MessageBox(0, "Couldn't load OpenGL core version 4.5, function \"glMemoryBarrierByRegion\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glMemoryBarrierByRegion) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.5, function \"glMemoryBarrierByRegion\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glGetTextureSubImage = (PFNGLGETTEXTURESUBIMAGEPROC)wglGetProcAddress("glGetTextureSubImage");
-	if(!ptr_glGetTextureSubImage) { MessageBox(0, "Couldn't load OpenGL core version 4.5, function \"glGetTextureSubImage\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glGetTextureSubImage) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.5, function \"glGetTextureSubImage\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glGetCompressedTextureSubImage = (PFNGLGETCOMPRESSEDTEXTURESUBIMAGEPROC)wglGetProcAddress("glGetCompressedTextureSubImage");
-	if(!ptr_glGetCompressedTextureSubImage) { MessageBox(0, "Couldn't load OpenGL core version 4.5, function \"glGetCompressedTextureSubImage\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glGetCompressedTextureSubImage) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.5, function \"glGetCompressedTextureSubImage\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glGetGraphicsResetStatus = (PFNGLGETGRAPHICSRESETSTATUSPROC)wglGetProcAddress("glGetGraphicsResetStatus");
-	if(!ptr_glGetGraphicsResetStatus) { MessageBox(0, "Couldn't load OpenGL core version 4.5, function \"glGetGraphicsResetStatus\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glGetGraphicsResetStatus) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.5, function \"glGetGraphicsResetStatus\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glGetnCompressedTexImage = (PFNGLGETNCOMPRESSEDTEXIMAGEPROC)wglGetProcAddress("glGetnCompressedTexImage");
-	if(!ptr_glGetnCompressedTexImage) { MessageBox(0, "Couldn't load OpenGL core version 4.5, function \"glGetnCompressedTexImage\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glGetnCompressedTexImage) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.5, function \"glGetnCompressedTexImage\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glGetnTexImage = (PFNGLGETNTEXIMAGEPROC)wglGetProcAddress("glGetnTexImage");
-	if(!ptr_glGetnTexImage) { MessageBox(0, "Couldn't load OpenGL core version 4.5, function \"glGetnTexImage\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glGetnTexImage) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.5, function \"glGetnTexImage\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glGetnUniformdv = (PFNGLGETNUNIFORMDVPROC)wglGetProcAddress("glGetnUniformdv");
-	if(!ptr_glGetnUniformdv) { MessageBox(0, "Couldn't load OpenGL core version 4.5, function \"glGetnUniformdv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glGetnUniformdv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.5, function \"glGetnUniformdv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glGetnUniformfv = (PFNGLGETNUNIFORMFVPROC)wglGetProcAddress("glGetnUniformfv");
-	if(!ptr_glGetnUniformfv) { MessageBox(0, "Couldn't load OpenGL core version 4.5, function \"glGetnUniformfv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glGetnUniformfv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.5, function \"glGetnUniformfv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glGetnUniformiv = (PFNGLGETNUNIFORMIVPROC)wglGetProcAddress("glGetnUniformiv");
-	if(!ptr_glGetnUniformiv) { MessageBox(0, "Couldn't load OpenGL core version 4.5, function \"glGetnUniformiv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glGetnUniformiv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.5, function \"glGetnUniformiv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glGetnUniformuiv = (PFNGLGETNUNIFORMUIVPROC)wglGetProcAddress("glGetnUniformuiv");
-	if(!ptr_glGetnUniformuiv) { MessageBox(0, "Couldn't load OpenGL core version 4.5, function \"glGetnUniformuiv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glGetnUniformuiv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.5, function \"glGetnUniformuiv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glReadnPixels = (PFNGLREADNPIXELSPROC)wglGetProcAddress("glReadnPixels");
-	if(!ptr_glReadnPixels) { MessageBox(0, "Couldn't load OpenGL core version 4.5, function \"glReadnPixels\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glReadnPixels) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.5, function \"glReadnPixels\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glGetnMapdv = (PFNGLGETNMAPDVPROC)wglGetProcAddress("glGetnMapdv");
-	if(!ptr_glGetnMapdv) { MessageBox(0, "Couldn't load OpenGL core version 4.5, function \"glGetnMapdv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glGetnMapdv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.5, function \"glGetnMapdv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glGetnMapfv = (PFNGLGETNMAPFVPROC)wglGetProcAddress("glGetnMapfv");
-	if(!ptr_glGetnMapfv) { MessageBox(0, "Couldn't load OpenGL core version 4.5, function \"glGetnMapfv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glGetnMapfv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.5, function \"glGetnMapfv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glGetnMapiv = (PFNGLGETNMAPIVPROC)wglGetProcAddress("glGetnMapiv");
-	if(!ptr_glGetnMapiv) { MessageBox(0, "Couldn't load OpenGL core version 4.5, function \"glGetnMapiv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glGetnMapiv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.5, function \"glGetnMapiv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glGetnPixelMapfv = (PFNGLGETNPIXELMAPFVPROC)wglGetProcAddress("glGetnPixelMapfv");
-	if(!ptr_glGetnPixelMapfv) { MessageBox(0, "Couldn't load OpenGL core version 4.5, function \"glGetnPixelMapfv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glGetnPixelMapfv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.5, function \"glGetnPixelMapfv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glGetnPixelMapuiv = (PFNGLGETNPIXELMAPUIVPROC)wglGetProcAddress("glGetnPixelMapuiv");
-	if(!ptr_glGetnPixelMapuiv) { MessageBox(0, "Couldn't load OpenGL core version 4.5, function \"glGetnPixelMapuiv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glGetnPixelMapuiv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.5, function \"glGetnPixelMapuiv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glGetnPixelMapusv = (PFNGLGETNPIXELMAPUSVPROC)wglGetProcAddress("glGetnPixelMapusv");
-	if(!ptr_glGetnPixelMapusv) { MessageBox(0, "Couldn't load OpenGL core version 4.5, function \"glGetnPixelMapusv\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glGetnPixelMapusv) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.5, function \"glGetnPixelMapusv\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glGetnPolygonStipple = (PFNGLGETNPOLYGONSTIPPLEPROC)wglGetProcAddress("glGetnPolygonStipple");
-	if(!ptr_glGetnPolygonStipple) { MessageBox(0, "Couldn't load OpenGL core version 4.5, function \"glGetnPolygonStipple\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glGetnPolygonStipple) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.5, function \"glGetnPolygonStipple\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glGetnColorTable = (PFNGLGETNCOLORTABLEPROC)wglGetProcAddress("glGetnColorTable");
-	if(!ptr_glGetnColorTable) { MessageBox(0, "Couldn't load OpenGL core version 4.5, function \"glGetnColorTable\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glGetnColorTable) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.5, function \"glGetnColorTable\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glGetnConvolutionFilter = (PFNGLGETNCONVOLUTIONFILTERPROC)wglGetProcAddress("glGetnConvolutionFilter");
-	if(!ptr_glGetnConvolutionFilter) { MessageBox(0, "Couldn't load OpenGL core version 4.5, function \"glGetnConvolutionFilter\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glGetnConvolutionFilter) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.5, function \"glGetnConvolutionFilter\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glGetnSeparableFilter = (PFNGLGETNSEPARABLEFILTERPROC)wglGetProcAddress("glGetnSeparableFilter");
-	if(!ptr_glGetnSeparableFilter) { MessageBox(0, "Couldn't load OpenGL core version 4.5, function \"glGetnSeparableFilter\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glGetnSeparableFilter) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.5, function \"glGetnSeparableFilter\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glGetnHistogram = (PFNGLGETNHISTOGRAMPROC)wglGetProcAddress("glGetnHistogram");
-	if(!ptr_glGetnHistogram) { MessageBox(0, "Couldn't load OpenGL core version 4.5, function \"glGetnHistogram\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glGetnHistogram) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.5, function \"glGetnHistogram\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glGetnMinmax = (PFNGLGETNMINMAXPROC)wglGetProcAddress("glGetnMinmax");
-	if(!ptr_glGetnMinmax) { MessageBox(0, "Couldn't load OpenGL core version 4.5, function \"glGetnMinmax\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glGetnMinmax) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.5, function \"glGetnMinmax\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glTextureBarrier = (PFNGLTEXTUREBARRIERPROC)wglGetProcAddress("glTextureBarrier");
-	if(!ptr_glTextureBarrier) { MessageBox(0, "Couldn't load OpenGL core version 4.5, function \"glTextureBarrier\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glTextureBarrier) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.5, function \"glTextureBarrier\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glSpecializeShader = (PFNGLSPECIALIZESHADERPROC)wglGetProcAddress("glSpecializeShader");
-	if(!ptr_glSpecializeShader) { MessageBox(0, "Couldn't load OpenGL core version 4.6, function \"glSpecializeShader\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glSpecializeShader) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.6, function \"glSpecializeShader\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glMultiDrawArraysIndirectCount = (PFNGLMULTIDRAWARRAYSINDIRECTCOUNTPROC)wglGetProcAddress("glMultiDrawArraysIndirectCount");
-	if(!ptr_glMultiDrawArraysIndirectCount) { MessageBox(0, "Couldn't load OpenGL core version 4.6, function \"glMultiDrawArraysIndirectCount\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glMultiDrawArraysIndirectCount) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.6, function \"glMultiDrawArraysIndirectCount\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glMultiDrawElementsIndirectCount = (PFNGLMULTIDRAWELEMENTSINDIRECTCOUNTPROC)wglGetProcAddress("glMultiDrawElementsIndirectCount");
-	if(!ptr_glMultiDrawElementsIndirectCount) { MessageBox(0, "Couldn't load OpenGL core version 4.6, function \"glMultiDrawElementsIndirectCount\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glMultiDrawElementsIndirectCount) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.6, function \"glMultiDrawElementsIndirectCount\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glPolygonOffsetClamp = (PFNGLPOLYGONOFFSETCLAMPPROC)wglGetProcAddress("glPolygonOffsetClamp");
-	if(!ptr_glPolygonOffsetClamp) { MessageBox(0, "Couldn't load OpenGL core version 4.6, function \"glPolygonOffsetClamp\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glPolygonOffsetClamp) { MessageBox(0, TEXT("Couldn't load OpenGL core version 4.6, function \"glPolygonOffsetClamp\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glGetTextureHandle = (PFNGLGETTEXTUREHANDLEARBPROC)wglGetProcAddress("glGetTextureHandleARB");
-	if(!ptr_glGetTextureHandle) { MessageBox(0, "Couldn't load OpenGL extension bindless_texture, function \"glGetTextureHandleARB\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glGetTextureHandle) { MessageBox(0, TEXT("Couldn't load OpenGL extension bindless_texture, function \"glGetTextureHandleARB\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glGetTextureSamplerHandle = (PFNGLGETTEXTURESAMPLERHANDLEARBPROC)wglGetProcAddress("glGetTextureSamplerHandleARB");
-	if(!ptr_glGetTextureSamplerHandle) { MessageBox(0, "Couldn't load OpenGL extension bindless_texture, function \"glGetTextureSamplerHandleARB\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glGetTextureSamplerHandle) { MessageBox(0, TEXT("Couldn't load OpenGL extension bindless_texture, function \"glGetTextureSamplerHandleARB\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glMakeTextureHandleResident = (PFNGLMAKETEXTUREHANDLERESIDENTARBPROC)wglGetProcAddress("glMakeTextureHandleResidentARB");
-	if(!ptr_glMakeTextureHandleResident) { MessageBox(0, "Couldn't load OpenGL extension bindless_texture, function \"glMakeTextureHandleResidentARB\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glMakeTextureHandleResident) { MessageBox(0, TEXT("Couldn't load OpenGL extension bindless_texture, function \"glMakeTextureHandleResidentARB\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glMakeTextureHandleNonResident = (PFNGLMAKETEXTUREHANDLENONRESIDENTARBPROC)wglGetProcAddress("glMakeTextureHandleNonResidentARB");
-	if(!ptr_glMakeTextureHandleNonResident) { MessageBox(0, "Couldn't load OpenGL extension bindless_texture, function \"glMakeTextureHandleNonResidentARB\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glMakeTextureHandleNonResident) { MessageBox(0, TEXT("Couldn't load OpenGL extension bindless_texture, function \"glMakeTextureHandleNonResidentARB\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glGetImageHandle = (PFNGLGETIMAGEHANDLEARBPROC)wglGetProcAddress("glGetImageHandleARB");
-	if(!ptr_glGetImageHandle) { MessageBox(0, "Couldn't load OpenGL extension bindless_texture, function \"glGetImageHandleARB\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glGetImageHandle) { MessageBox(0, TEXT("Couldn't load OpenGL extension bindless_texture, function \"glGetImageHandleARB\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glMakeImageHandleResident = (PFNGLMAKEIMAGEHANDLERESIDENTARBPROC)wglGetProcAddress("glMakeImageHandleResidentARB");
-	if(!ptr_glMakeImageHandleResident) { MessageBox(0, "Couldn't load OpenGL extension bindless_texture, function \"glMakeImageHandleResidentARB\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glMakeImageHandleResident) { MessageBox(0, TEXT("Couldn't load OpenGL extension bindless_texture, function \"glMakeImageHandleResidentARB\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glMakeImageHandleNonResident = (PFNGLMAKEIMAGEHANDLENONRESIDENTARBPROC)wglGetProcAddress("glMakeImageHandleNonResidentARB");
-	if(!ptr_glMakeImageHandleNonResident) { MessageBox(0, "Couldn't load OpenGL extension bindless_texture, function \"glMakeImageHandleNonResidentARB\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glMakeImageHandleNonResident) { MessageBox(0, TEXT("Couldn't load OpenGL extension bindless_texture, function \"glMakeImageHandleNonResidentARB\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glUniformHandleui64 = (PFNGLUNIFORMHANDLEUI64ARBPROC)wglGetProcAddress("glUniformHandleui64ARB");
-	if(!ptr_glUniformHandleui64) { MessageBox(0, "Couldn't load OpenGL extension bindless_texture, function \"glUniformHandleui64ARB\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glUniformHandleui64) { MessageBox(0, TEXT("Couldn't load OpenGL extension bindless_texture, function \"glUniformHandleui64ARB\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glUniformHandleui64v = (PFNGLUNIFORMHANDLEUI64VARBPROC)wglGetProcAddress("glUniformHandleui64vARB");
-	if(!ptr_glUniformHandleui64v) { MessageBox(0, "Couldn't load OpenGL extension bindless_texture, function \"glUniformHandleui64vARB\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glUniformHandleui64v) { MessageBox(0, TEXT("Couldn't load OpenGL extension bindless_texture, function \"glUniformHandleui64vARB\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glProgramUniformHandleui64 = (PFNGLPROGRAMUNIFORMHANDLEUI64ARBPROC)wglGetProcAddress("glProgramUniformHandleui64ARB");
-	if(!ptr_glProgramUniformHandleui64) { MessageBox(0, "Couldn't load OpenGL extension bindless_texture, function \"glProgramUniformHandleui64ARB\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glProgramUniformHandleui64) { MessageBox(0, TEXT("Couldn't load OpenGL extension bindless_texture, function \"glProgramUniformHandleui64ARB\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glProgramUniformHandleui64v = (PFNGLPROGRAMUNIFORMHANDLEUI64VARBPROC)wglGetProcAddress("glProgramUniformHandleui64vARB");
-	if(!ptr_glProgramUniformHandleui64v) { MessageBox(0, "Couldn't load OpenGL extension bindless_texture, function \"glProgramUniformHandleui64vARB\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glProgramUniformHandleui64v) { MessageBox(0, TEXT("Couldn't load OpenGL extension bindless_texture, function \"glProgramUniformHandleui64vARB\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glIsTextureHandleResident = (PFNGLISTEXTUREHANDLERESIDENTARBPROC)wglGetProcAddress("glIsTextureHandleResidentARB");
-	if(!ptr_glIsTextureHandleResident) { MessageBox(0, "Couldn't load OpenGL extension bindless_texture, function \"glIsTextureHandleResidentARB\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glIsTextureHandleResident) { MessageBox(0, TEXT("Couldn't load OpenGL extension bindless_texture, function \"glIsTextureHandleResidentARB\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glIsImageHandleResident = (PFNGLISIMAGEHANDLERESIDENTARBPROC)wglGetProcAddress("glIsImageHandleResidentARB");
-	if(!ptr_glIsImageHandleResident) { MessageBox(0, "Couldn't load OpenGL extension bindless_texture, function \"glIsImageHandleResidentARB\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glIsImageHandleResident) { MessageBox(0, TEXT("Couldn't load OpenGL extension bindless_texture, function \"glIsImageHandleResidentARB\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glVertexAttribL1ui64 = (PFNGLVERTEXATTRIBL1UI64ARBPROC)wglGetProcAddress("glVertexAttribL1ui64ARB");
-	if(!ptr_glVertexAttribL1ui64) { MessageBox(0, "Couldn't load OpenGL extension bindless_texture, function \"glVertexAttribL1ui64ARB\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glVertexAttribL1ui64) { MessageBox(0, TEXT("Couldn't load OpenGL extension bindless_texture, function \"glVertexAttribL1ui64ARB\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glVertexAttribL1ui64v = (PFNGLVERTEXATTRIBL1UI64VARBPROC)wglGetProcAddress("glVertexAttribL1ui64vARB");
-	if(!ptr_glVertexAttribL1ui64v) { MessageBox(0, "Couldn't load OpenGL extension bindless_texture, function \"glVertexAttribL1ui64vARB\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glVertexAttribL1ui64v) { MessageBox(0, TEXT("Couldn't load OpenGL extension bindless_texture, function \"glVertexAttribL1ui64vARB\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	ptr_glGetVertexAttribLui64v = (PFNGLGETVERTEXATTRIBLUI64VARBPROC)wglGetProcAddress("glGetVertexAttribLui64vARB");
-	if(!ptr_glGetVertexAttribLui64v) { MessageBox(0, "Couldn't load OpenGL extension bindless_texture, function \"glGetVertexAttribLui64vARB\" is missing.", "OpenGL function missing" , MB_OK); result = -1; }
+	if(!ptr_glGetVertexAttribLui64v) { MessageBox(0, TEXT("Couldn't load OpenGL extension bindless_texture, function \"glGetVertexAttribLui64vARB\" is missing."), TEXT("OpenGL function missing"), MB_OK); result = -1; }
 
 	return result; 
 }

@@ -126,7 +126,7 @@ int main(int argc, char* argv[]) {
 
 							define << "extern " << proc << " ptr_" << stripfunc << "; " << retval << " " << stripfunc << "(" << args << ");" << std::endl;
 							// extern PFNGLBLENDCOLORPROC ptr_glBlendColor; ... glBlendColor(...);
-							declare << proc << " ptr_" << stripfunc << " = nullptr; " << retval << " " << stripfunc << "(" << args << ") {" << (retval.substr(0,4).compare("void") ? " return" : "") << " ptr_" << stripfunc << "(" << stripargs << "); }" << std::endl;
+							declare << proc << " ptr_" << stripfunc << " = nullptr; " << retval << " " << stripfunc << "(" << args << ") {" << (retval.substr(0,4).compare("void") || !retval.substr(0,6).compare("void *") ? " return" : "") << " ptr_" << stripfunc << "(" << stripargs << "); }" << std::endl;
 							// PFNGLBLENDCOLORPROC ptr_glBlendColor = nullptr;
 							unload << "\tptr_" << stripfunc << " = nullptr;" << std::endl;
 							// ptr_glBlendColor = nullptr;
@@ -134,7 +134,7 @@ int main(int argc, char* argv[]) {
 							// ptr_glBlendColor = (PFNGLBLENDCOLORPROC)wglGetProcAddress("glBlendColor");
 							load_check << "\t\t\tptr_" << stripfunc << " == nullptr ||" << std::endl;
 							load_debug << "\tptr_" << stripfunc << " = (" << proc << ")wglGetProcAddress(\"" << func << "\");" << std::endl;
-							load_debug << "\tif(!ptr_" << stripfunc << ") { MessageBox(0, \"Couldn't load OpenGL " + cur_version + ", function \\\"" + func + "\\\" is missing.\", \"OpenGL function missing\" , MB_OK); result = -1; }" << std::endl << std::endl;
+							load_debug << "\tif(!ptr_" << stripfunc << ") { MessageBox(0, TEXT(\"Couldn't load OpenGL " + cur_version + ", function \\\"" + func + "\\\" is missing.\"), TEXT(\"OpenGL function missing\"), MB_OK); result = -1; }" << std::endl << std::endl;
 						}
 					}
 					--inside;
