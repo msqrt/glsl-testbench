@@ -48,41 +48,81 @@ void setMouse(POINT p) {
 	SetCursorPos(p.x, p.y);
 }
 
-LPARAM down[256]; int downptr = 0;
+WPARAM down[256]; int downptr = 0;
+WPARAM hit[256]; int hitptr = 0;
+
+bool keyDown(UINT vk_code) {
+	for (int i = 0; i < downptr; ++i)
+		if (vk_code == down[i])
+			return true;
+	return false;
+}
+
+bool keyHit(UINT vk_code) {
+	for (int i = 0; i < hitptr; ++i)
+		if (vk_code == hit[i])
+			return true;
+	return false;
+}
+
+inline WPARAM mapExtended(WPARAM wParam, LPARAM lParam) {
+	int ext = (lParam>>24)&1;
+	switch(wParam) {
+		case VK_SHIFT: return MapVirtualKeyEx((lParam >> 16) & 0xFF, MAPVK_VSC_TO_VK_EX, GetKeyboardLayout(0));
+		case VK_CONTROL: return VK_LCONTROL+ext;
+		case VK_MENU: return VK_LMENU+ext;
+		case VK_RETURN: return VK_RETURN + ext*(VK_SEPARATOR-VK_RETURN);
+		default: return wParam;
+	}
+}
+
+std::wstring text;
 // only handle quitting here and do the rest in the message loop
 LRESULT CALLBACK wndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 	switch (uMsg) {
 	case WM_CLOSE:
 		PostQuitMessage(0);
 		return 0;
-	/*case WM_CHAR: {
-		char c = wParam;
-		printf("%c", c);
+	case WM_CHAR:
+		if(wParam == VK_BACK) // backspace
+			text = text.substr(0, text.length() - 1);
+		else
+			text += wchar_t(wParam);
 		return 0;
-	}*/
 	case WM_SYSKEYDOWN:
-	case WM_KEYDOWN: {
-		bool pressed = false;
-		for (int i = 0; i < downptr; ++i)
-			if (!((down[i] ^ lParam) & 0x1FF0000))
-				pressed = true;
-		if (!pressed)
-			down[downptr++] = lParam;
+	case WM_KEYDOWN:
+		wParam = mapExtended(wParam, lParam);
+		if (!keyDown(wParam))
+			down[downptr++] = hit[hitptr++] = wParam;
+		if (wParam == 'V' && (keyDown(VK_LCONTROL) || keyDown(VK_RCONTROL))) {
+			if (OpenClipboard(nullptr)) {
+				HANDLE data = GetClipboardData(CF_UNICODETEXT);
+				if (data) {
+					wchar_t* clipText = (wchar_t*)GlobalLock(data);
+					if (clipText) {
+						text += std::wstring(clipText);
+						text = text.substr(0, text.length());
+						GlobalUnlock(data);
+					}
+				}
+				CloseClipboard();
+			}
+		}
 		if (wParam == VK_ESCAPE)
 			PostQuitMessage(0);
 		return 0;
-	}
 	case WM_SYSKEYUP:
 	case WM_KEYUP:
+		wParam = mapExtended(wParam, lParam);
 		for (int i = 0; i < downptr - 1; ++i)
-			if (!((down[i] ^ lParam) & 0x1FF0000)) {
-				down[i] = down[downptr - 1];
+			if (wParam == down[i]) {
+				down[i] = down[downptr-1];
 				break;
 			}
-		downptr = downptr <= 1 ? 0 : downptr - 1;
+		if (downptr > 0) downptr--;
 		return 0;
 	case WM_KILLFOCUS:
-		downptr = 0;
+		hitptr = downptr = 0;
 		return 0;
 	}
 	return DefWindowProc(hwnd, uMsg, wParam, lParam);
