@@ -1,6 +1,6 @@
 
+/*
 #include "gl_helpers.h"
-#include "shaderprintf.h"
 
 #include <fstream>
 #include <sstream>
@@ -276,3 +276,4 @@ Texture<GL_TEXTURE_2D> loadImage(const std::string& path) {
 	GdiplusShutdown(token);
 	return result;
 }
+*/

@@ -61,13 +61,13 @@ struct GeometrySink : public ID2D1GeometrySink {
 
 size_t TextRenderer::updateBuffers() {
 	if (!valid) {
-		glNamedBufferData(pointBuffer, points.size() * sizeof(D2D1_POINT_2F), points.data(), GL_STATIC_DRAW);
-		glNamedBufferData(colorBuffer, colors.size() * sizeof(DWRITE_COLOR_F), colors.data(), GL_STATIC_DRAW);
-		glNamedBufferData(indexBuffer, pointIndices.size() * 4 * sizeof(uint32_t), pointIndices.data(), GL_STATIC_DRAW);
+		//glNamedBufferData(pointBuffer, points.size() * sizeof(D2D1_POINT_2F), points.data(), GL_STATIC_DRAW);
+		//glNamedBufferData(colorBuffer, colors.size() * sizeof(DWRITE_COLOR_F), colors.data(), GL_STATIC_DRAW);
+		//glNamedBufferData(indexBuffer, pointIndices.size() * 4 * sizeof(uint32_t), pointIndices.data(), GL_STATIC_DRAW);
 		valid = true;
 	}
-	glNamedBufferData(boundBuffer, currentBounds.size() * 2 * sizeof(D2D1_POINT_2F), currentBounds.data(), GL_STREAM_DRAW);
-	glNamedBufferData(rangeBuffer, currentRanges.size() * 2 * sizeof(uint32_t), currentRanges.data(), GL_STREAM_DRAW);
+	//glNamedBufferData(boundBuffer, currentBounds.size() * 2 * sizeof(D2D1_POINT_2F), currentBounds.data(), GL_STREAM_DRAW);
+	//glNamedBufferData(rangeBuffer, currentRanges.size() * 2 * sizeof(uint32_t), currentRanges.data(), GL_STREAM_DRAW);
 	size_t result = currentRanges.size();
 	currentBounds.clear();
 	currentRanges.clear();
@@ -308,10 +308,10 @@ void Font::drawText(const std::wstring& text, float x, float y, float size, floa
 
 	if (count > 0) {
 
+		/*
 		// save some state
 		bool depthTesting = glIsEnabled(GL_DEPTH_TEST);
 		bool blending = glIsEnabled(GL_BLEND);
-
 		GLenum orig_sfactor, orig_dfactor;
 		glGetIntegerv(GL_BLEND_SRC_ALPHA, (GLint*)&orig_sfactor);
 		glGetIntegerv(GL_BLEND_DST_ALPHA, (GLint*)&orig_dfactor);
@@ -337,7 +337,7 @@ void Font::drawText(const std::wstring& text, float x, float y, float size, floa
 			glEnable(GL_DEPTH_TEST);
 		if (!blending)
 			glDisable(GL_BLEND);
-		glBlendFunc(orig_sfactor, orig_dfactor);
+		glBlendFunc(orig_sfactor, orig_dfactor);*/
 	}
 
 	format->Release();

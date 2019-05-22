@@ -32,7 +32,7 @@ struct TextRenderer : public IDWriteTextRenderer {
 
 	bool valid = false;
 
-	Buffer pointBuffer, colorBuffer, indexBuffer, boundBuffer, rangeBuffer;
+	//Buffer pointBuffer, colorBuffer, indexBuffer, boundBuffer, rangeBuffer;
 
 	size_t updateBuffers();
 
@@ -57,7 +57,7 @@ struct TextRenderer : public IDWriteTextRenderer {
 struct Font {
 	Font(const std::wstring& name) : fontName(name) {
 		DWriteCreateFactory(DWRITE_FACTORY_TYPE_SHARED, __uuidof(IDWriteFactory4), reinterpret_cast<IUnknown**>(&renderer.factory));
-		program = createProgram("shaders/blitVert.glsl", "", "", "", "shaders/blitFrag.glsl");
+		//program = createProgram("shaders/blitVert.glsl", "", "", "", "shaders/blitFrag.glsl");
 	}
 	~Font() {
 		renderer.factory->Release();
@@ -66,5 +66,5 @@ struct Font {
 private:
 	std::wstring fontName;
 	TextRenderer renderer;
-	Program program;
+	//Program program;
 };

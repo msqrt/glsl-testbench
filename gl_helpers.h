@@ -4,9 +4,9 @@
 
 #include <string>
 
+/*
 #include <gl/gl.h>
 #include "loadgl/glext.h"
-#include "loadgl/loadgl46.h"
 
 GLuint createProgram(const std::string& computePath);
 GLuint createProgram(const std::string& vertexPath, const std::string& controlPath, const std::string& evaluationPath, const std::string& geometryPath, const std::string& fragmentPath);
@@ -63,7 +63,6 @@ uniform_matrix(niformMatrix4x2fv)
 uniform_matrix(niformMatrix3x4fv)
 uniform_matrix(niformMatrix4x3fv)
 #undef uniform_matrix
-
 struct Program {
 	GLuint object = 0;
 	inline Program() {}
@@ -122,3 +121,4 @@ struct Texture {
 };
 Texture<GL_TEXTURE_2D> loadImage(const std::string& path);
 template<GLenum target> void bindTexture(const std::string& name, Texture<target>& texture) { bindTexture(name, target, texture); }
+*/
