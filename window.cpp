@@ -10,15 +10,94 @@
 #pragma comment(lib, "dxva2.lib")
 
 HWND wnd;
-ID3D12Device5* device = nullptr;
-ID3D12CommandQueue* queue = nullptr;
-IDXGISwapChain1* chain = nullptr;
 IDXGIFactory7* factory = nullptr;
+ID3D12Device5* device = nullptr;
+IDXGISwapChain4* chain = nullptr;
+ID3D12CommandQueue* queue = nullptr;
+
+ID3D12GraphicsCommandList* list = nullptr;
+ID3D12Fence1* fence = nullptr;
+
+ID3D12CommandAllocator* allocator = nullptr;
+
+ID3D12RootSignature *graphicsRoot = nullptr, *computeRoot = nullptr;
 
 // update the frame onto screen
 void swapBuffers() {
-	DXGI_PRESENT_PARAMETERS presentParameters = { 0, nullptr, nullptr, nullptr }; // whole screen
-	chain->Present1(0, DXGI_PRESENT_RESTART, &presentParameters);
+
+	UINT count;
+	chain->GetLastPresentCount(&count);
+
+	if (fence->GetCompletedValue() != count) {
+		HANDLE fenceEvent = CreateEvent(nullptr, 0, 0, nullptr);
+		fence->SetEventOnCompletion(count, fenceEvent);
+		WaitForSingleObject(fenceEvent, INFINITE);
+		CloseHandle(fenceEvent);
+	}
+
+	allocator->Reset();
+	list->Reset(allocator, nullptr);
+
+	ID3D12Resource1* backBuffer;
+	chain->GetBuffer(chain->GetCurrentBackBufferIndex(), __uuidof(ID3D12Resource1), (void**)&backBuffer);
+
+	D3D12_RESOURCE_BARRIER barrier;
+	barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
+	barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
+	barrier.Transition.pResource = backBuffer;
+	barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
+	barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_PRESENT;
+	barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_RENDER_TARGET;
+
+	list->ResourceBarrier(1, &barrier);
+
+
+	D3D12_RESOURCE_DESC texDesc = backBuffer->GetDesc();
+
+	D3D12_VIEWPORT port;
+	port.TopLeftX = 0;
+	port.TopLeftY = 0;
+	port.Width = texDesc.Width;
+	port.Height = texDesc.Height;
+	port.MinDepth = .0f;
+	port.MaxDepth = 1.f;
+
+	D3D12_DESCRIPTOR_HEAP_DESC heapDesc;
+	heapDesc.NumDescriptors = 1;
+	heapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
+	heapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
+	heapDesc.NodeMask = 0;
+
+	ID3D12DescriptorHeap* heap;
+	device->CreateDescriptorHeap(&heapDesc, __uuidof(ID3D12DescriptorHeap), (void**)&heap);
+
+
+	D3D12_CPU_DESCRIPTOR_HANDLE view = heap->GetCPUDescriptorHandleForHeapStart();
+
+	D3D12_RENDER_TARGET_VIEW_DESC viewDesc;
+	viewDesc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
+	viewDesc.ViewDimension = D3D12_RTV_DIMENSION_TEXTURE2D;
+	viewDesc.Texture2D.MipSlice = 0;
+	viewDesc.Texture2D.PlaneSlice = 0;
+	device->CreateRenderTargetView(backBuffer, &viewDesc, view);
+
+	list->OMSetRenderTargets(1, &view, 0, nullptr);
+
+	const float color[] = { .1f, .1f, .1f, .0f };
+	list->ClearRenderTargetView(view, color, 0, nullptr);
+
+	barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_RENDER_TARGET;
+	barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_PRESENT;
+
+	list->ResourceBarrier(1, &barrier);
+	list->Close();
+
+	heap->Release();
+	backBuffer->Release();
+
+	queue->ExecuteCommandLists(1, (ID3D12CommandList**)&list);
+	chain->Present(0, DXGI_PRESENT_RESTART);
+	queue->Signal(fence, count+1);
 }
 
 void setTitle(const std::string& title) {
@@ -69,6 +148,13 @@ std::wstring text;
 // only handle quitting here and do the rest in the message loop
 LRESULT CALLBACK wndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 	switch (uMsg) {
+	case WM_WINDOWPOSCHANGED:
+		if (((WINDOWPOS*)lParam)->hwnd == wnd) {
+			if (chain) {
+				//chain->ResizeBuffers(0, 0, 0, DXGI_FORMAT_UNKNOWN, DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH);
+				return 0;
+			}
+		}
 	case WM_CLOSE:
 		PostQuitMessage(0);
 		return 0;
@@ -116,41 +202,6 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 	}
 	return DefWindowProc(hwnd, uMsg, wParam, lParam);
 }
-/*
-void APIENTRY glDebugCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar * message, void *) {
-
-	// format the message nicely
-	auto output = std::string("GLDEBUG: OpenGL ");
-
-	switch (type) {
-	case GL_DEBUG_TYPE_ERROR:					output += "error";							break;
-	case GL_DEBUG_TYPE_PORTABILITY:				output += "portability issue";				break;
-	case GL_DEBUG_TYPE_PERFORMANCE:				output += "performance issue";				break;
-	case GL_DEBUG_TYPE_OTHER:					output += "issue";							break;
-	case GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR:		output += "undefined behavior";				break;
-	case GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR:		output += "deprecated behavior";			break;
-	default:									output += "unknown issue";					break;
-	}
-	switch (source) {
-	case GL_DEBUG_SOURCE_API:																break;
-	case GL_DEBUG_SOURCE_WINDOW_SYSTEM:			output += " in the window system";			break;
-	case GL_DEBUG_SOURCE_SHADER_COMPILER:		output += " in the shader compiler";		break;
-	case GL_DEBUG_SOURCE_THIRD_PARTY:			output += " in third party code";			break;
-	case GL_DEBUG_SOURCE_APPLICATION:			output += " in this program";				break;
-	case GL_DEBUG_SOURCE_OTHER:					output += " in an undefined source";		break;
-	default:									output += " nowhere(?)";					break;
-	}
-
-	output += ", id " + std::to_string(id) + ":\n";
-	output += std::string(message, length);
-
-	printf("%s\n", output.c_str());
-
-	// this is invaluable; you can directly see where any opengl error originated by checking the call stack at this breakpoint
-	if (type == GL_DEBUG_TYPE_ERROR)
-		_CrtDbgBreak();
-}
-*/
 
 std::wstring getMonitorName(HMONITOR monitor) {
 	MONITORINFOEXW info;
@@ -205,8 +256,9 @@ void setupD3D() {
 	factory->EnumAdapters1(0, (IDXGIAdapter1**)&adapter);
 
 	ID3D12Debug1* debug;
-	D3D12GetDebugInterface(__uuidof(debug), (void**)&debug);
-	debug->SetEnableGPUBasedValidation(true);
+	D3D12GetDebugInterface(__uuidof(ID3D12Debug1), (void**)&debug);
+	debug->EnableDebugLayer();
+	//debug->SetEnableGPUBasedValidation(true); // potentially slow
 	debug->Release();
 
 	D3D12CreateDevice(adapter, D3D_FEATURE_LEVEL_12_1, __uuidof(ID3D12Device5), (void**)&device);
@@ -217,9 +269,28 @@ void setupD3D() {
 	queueDesc.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE; // D3D12_COMMAND_QUEUE_FLAG_DISABLE_GPU_TIMEOUT
 	queueDesc.NodeMask = 0;
 	device->CreateCommandQueue(&queueDesc, __uuidof(ID3D12CommandQueue), (void**)&queue);
+
+	device->CreateFence(0, D3D12_FENCE_FLAG_NONE, __uuidof(ID3D12Fence1), (void**)&fence);
+	fence->Signal(0);
+
+	device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, __uuidof(ID3D12CommandAllocator), (void**)&allocator);
+	
+	device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, allocator, nullptr, __uuidof(ID3D12GraphicsCommandList), (void**)&list);
+	list->Close();
 }
 
 void closeD3D() {
+	if (fence) {
+		HANDLE fenceEvent = CreateEvent(nullptr, 0, 0, nullptr);
+		queue->Signal(fence, 1);
+		if (fence->GetCompletedValue() < 1) {
+			fence->SetEventOnCompletion(1, fenceEvent);
+			WaitForSingleObject(fenceEvent, INFINITE);
+		}
+		CloseHandle(fenceEvent);
+		fence->Release();
+		fence = nullptr;
+	}
 	if (queue) queue->Release();
 	queue = nullptr;
 	if (factory) factory->Release();
@@ -240,7 +311,8 @@ void setupWindow(int width, int height, const std::string& title, bool fullscree
 	RegisterClassEx(&windowClass);
 
 	DXGI_SWAP_CHAIN_DESC1 swapDesc = { 0 };
-	swapDesc.Width = width; swapDesc.Height = height;
+	swapDesc.Width = width;
+	swapDesc.Height = height;
 	swapDesc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
 	swapDesc.Stereo = false;
 	swapDesc.SampleDesc.Count = 1;
@@ -256,31 +328,42 @@ void setupWindow(int width, int height, const std::string& title, bool fullscree
 	fullscreenDesc.RefreshRate.Numerator = 60;
 	fullscreenDesc.RefreshRate.Denominator = 1;
 	fullscreenDesc.Scaling = DXGI_MODE_SCALING_STRETCHED;
-	fullscreenDesc.Windowed = !fullscreen;
+	fullscreenDesc.Windowed = true;
 
 	// adjust the window borders away, center the window
 	RECT area = { 0, 0, width, height };
-	DWORD style = fullscreen ? WS_POPUP : (WS_SYSMENU|WS_CAPTION|WS_MINIMIZEBOX);
+	DWORD style = WS_SYSMENU|WS_CAPTION|WS_MINIMIZEBOX|WS_MAXIMIZEBOX;
 
 	AdjustWindowRect(&area, style, false);
-	int adjustedWidth = fullscreen ? width : area.right - area.left, adjustedHeight = fullscreen ? height : area.bottom - area.top;
+	int adjustedWidth = area.right - area.left, adjustedHeight = area.bottom - area.top;
 	int centerX = (GetSystemMetrics(SM_CXSCREEN) - adjustedWidth) / 2, centerY = (GetSystemMetrics(SM_CYSCREEN) - adjustedHeight) / 2;
-	if (fullscreen)
-		centerX = centerY = 0;
 
 	// create the final window and context
 	wnd = CreateWindowA("classy class", title.c_str(), style, centerX, centerY, adjustedWidth, adjustedHeight, nullptr, nullptr, GetModuleHandle(nullptr), nullptr);
 	
-	factory->CreateSwapChainForHwnd(queue, wnd, &swapDesc, &fullscreenDesc, nullptr, &chain);
+	factory->CreateSwapChainForHwnd(queue, wnd, &swapDesc, &fullscreenDesc, nullptr, (IDXGISwapChain1**)&chain);
+
+	if (fullscreen)
+		chain->SetFullscreenState(true, nullptr);
 
 	ShowWindow(wnd, SW_SHOW);
 }
 
 void closeWindow() {
 	// release context, window
-	if(chain) chain->Release();
-	chain = nullptr;
-	ChangeDisplaySettings(nullptr, CDS_FULLSCREEN);
+	if (chain) {
+		chain->SetFullscreenState(false, nullptr);
+		UINT count;
+		chain->GetLastPresentCount(&count);
+		if (fence->GetCompletedValue() != count) {
+			HANDLE fenceEvent = CreateEvent(nullptr, 0, 0, nullptr);
+			fence->SetEventOnCompletion(count, fenceEvent);
+			WaitForSingleObject(fenceEvent, INFINITE);
+			CloseHandle(fenceEvent);
+		}
+		chain->Release();
+		chain = nullptr;
+	}
 	DestroyWindow(wnd);
 	UnregisterClass(TEXT("classy class"), GetModuleHandle(nullptr));
 }
