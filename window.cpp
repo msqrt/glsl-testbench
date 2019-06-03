@@ -16,27 +16,46 @@ IDXGISwapChain4* chain = nullptr;
 ID3D12CommandQueue* queue = nullptr;
 
 ID3D12GraphicsCommandList* list = nullptr;
-ID3D12Fence1* fence = nullptr;
 
-ID3D12CommandAllocator* allocator = nullptr;
+const unsigned fenceCount = 8; // power of 2
+ID3D12Fence1* fences[fenceCount] = { nullptr };
+HANDLE fenceEvents[fenceCount] = { nullptr };
+ID3D12CommandAllocator* allocators[fenceCount] = { nullptr };
+
+ID3D12QueryHeap* queries = nullptr;
+
+ID3D12Resource* verts = nullptr, *timeBuffer[fenceCount] = { nullptr };
 
 ID3D12RootSignature *graphicsRoot = nullptr, *computeRoot = nullptr;
 
+bool fenceUsed[fenceCount];
+
+bool keyHit(UINT vk_code);
 // update the frame onto screen
 void swapBuffers() {
 
 	UINT count;
 	chain->GetLastPresentCount(&count);
 
-	if (fence->GetCompletedValue() != count) {
-		HANDLE fenceEvent = CreateEvent(nullptr, 0, 0, nullptr);
-		fence->SetEventOnCompletion(count, fenceEvent);
-		WaitForSingleObject(fenceEvent, INFINITE);
-		CloseHandle(fenceEvent);
-	}
+	DWORD fenceIndex = 0;
+
+	for (; WaitForSingleObject(fenceEvents[fenceIndex], 0); fenceIndex = (fenceIndex + 1) & (fenceCount-1));
+
+	ID3D12CommandAllocator* const allocator = allocators[fenceIndex];
+
+	D3D12_RANGE range;
+	range.Begin = 0;
+	range.End = sizeof(UINT64) * 2;
+	UINT64* data, freq;
+	timeBuffer[fenceIndex]->Map(0, &range, (void**)&data);
+	queue->GetTimestampFrequency(&freq);
+	if(data[0]!=data[1])
+		printf("%gms\n", double(data[1] - data[0]) / double(freq) * 1000.);
+	timeBuffer[fenceIndex]->Unmap(0, nullptr);
 
 	allocator->Reset();
 	list->Reset(allocator, nullptr);
+	list->EndQuery(queries, D3D12_QUERY_TYPE_TIMESTAMP, 0);
 
 	ID3D12Resource1* backBuffer;
 	chain->GetBuffer(chain->GetCurrentBackBufferIndex(), __uuidof(ID3D12Resource1), (void**)&backBuffer);
@@ -50,7 +69,6 @@ void swapBuffers() {
 	barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_RENDER_TARGET;
 
 	list->ResourceBarrier(1, &barrier);
-
 
 	D3D12_RESOURCE_DESC texDesc = backBuffer->GetDesc();
 
@@ -71,7 +89,6 @@ void swapBuffers() {
 	ID3D12DescriptorHeap* heap;
 	device->CreateDescriptorHeap(&heapDesc, __uuidof(ID3D12DescriptorHeap), (void**)&heap);
 
-
 	D3D12_CPU_DESCRIPTOR_HANDLE view = heap->GetCPUDescriptorHandleForHeapStart();
 
 	D3D12_RENDER_TARGET_VIEW_DESC viewDesc;
@@ -90,6 +107,8 @@ void swapBuffers() {
 	barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_PRESENT;
 
 	list->ResourceBarrier(1, &barrier);
+	list->EndQuery(queries, D3D12_QUERY_TYPE_TIMESTAMP, 1);
+	list->ResolveQueryData(queries, D3D12_QUERY_TYPE_TIMESTAMP, 0, 2, timeBuffer[fenceIndex], 0);
 	list->Close();
 
 	heap->Release();
@@ -97,7 +116,8 @@ void swapBuffers() {
 
 	queue->ExecuteCommandLists(1, (ID3D12CommandList**)&list);
 	chain->Present(0, DXGI_PRESENT_RESTART);
-	queue->Signal(fence, count+1);
+	queue->Signal(fences[fenceIndex], count+1);
+	fences[fenceIndex]->SetEventOnCompletion(count+1, fenceEvents[fenceIndex]);
 }
 
 void setTitle(const std::string& title) {
@@ -270,27 +290,62 @@ void setupD3D() {
 	queueDesc.NodeMask = 0;
 	device->CreateCommandQueue(&queueDesc, __uuidof(ID3D12CommandQueue), (void**)&queue);
 
-	device->CreateFence(0, D3D12_FENCE_FLAG_NONE, __uuidof(ID3D12Fence1), (void**)&fence);
-	fence->Signal(0);
+	for (int i = 0; i < fenceCount; ++i) {
+		device->CreateFence(0, D3D12_FENCE_FLAG_NONE, __uuidof(ID3D12Fence1), (void**)&fences[i]);
+		fences[i]->Signal(0);
 
-	device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, __uuidof(ID3D12CommandAllocator), (void**)&allocator);
-	
-	device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, allocator, nullptr, __uuidof(ID3D12GraphicsCommandList), (void**)&list);
+		fenceEvents[i] = CreateEvent(nullptr, 0, 0, nullptr);
+		fences[i]->SetEventOnCompletion(0, fenceEvents[i]);
+
+		device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, __uuidof(ID3D12CommandAllocator), (void**)&allocators[i]);
+	}
+	device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, allocators[0], nullptr, __uuidof(ID3D12GraphicsCommandList), (void**)&list);
 	list->Close();
+
+	D3D12_QUERY_HEAP_DESC queryDesc;
+	queryDesc.Count = 2;
+	queryDesc.NodeMask = 0;
+	queryDesc.Type = D3D12_QUERY_HEAP_TYPE_TIMESTAMP;
+
+	device->CreateQueryHeap(&queryDesc, __uuidof(ID3D12QueryHeap), (void**)&queries);
+	
+	D3D12_HEAP_PROPERTIES heapProps;
+	heapProps.Type = D3D12_HEAP_TYPE_READBACK;
+	heapProps.CPUPageProperty = D3D12_CPU_PAGE_PROPERTY_UNKNOWN;
+	heapProps.MemoryPoolPreference = D3D12_MEMORY_POOL_UNKNOWN;
+	heapProps.CreationNodeMask = 0;
+	heapProps.VisibleNodeMask = 0;
+
+	D3D12_RESOURCE_DESC resourceDesc;
+	resourceDesc.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER;
+	resourceDesc.Alignment = D3D12_DEFAULT_RESOURCE_PLACEMENT_ALIGNMENT;
+	resourceDesc.DepthOrArraySize = resourceDesc.Height = resourceDesc.MipLevels = resourceDesc.SampleDesc.Count = 1;
+	resourceDesc.SampleDesc.Quality = 0;
+	resourceDesc.Format = DXGI_FORMAT_UNKNOWN;
+	resourceDesc.Width = sizeof(UINT64) * 2;
+	resourceDesc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
+	resourceDesc.Flags = D3D12_RESOURCE_FLAG_NONE;
+
+	for(int i = 0; i<fenceCount; ++i)
+		device->CreateCommittedResource(&heapProps, D3D12_HEAP_FLAG_NONE, &resourceDesc, D3D12_RESOURCE_STATE_COPY_DEST, nullptr, __uuidof(ID3D12Resource), (void**)&timeBuffer[i]);
 }
 
 void closeD3D() {
-	if (fence) {
-		HANDLE fenceEvent = CreateEvent(nullptr, 0, 0, nullptr);
-		queue->Signal(fence, 1);
-		if (fence->GetCompletedValue() < 1) {
-			fence->SetEventOnCompletion(1, fenceEvent);
-			WaitForSingleObject(fenceEvent, INFINITE);
+	if (fences[0]) {
+		for (int i = 0; i < fenceCount; ++i) {
+			CloseHandle(fenceEvents[i]);
+			fences[i]->Release();
+			fences[i] = nullptr;
+			allocators[i]->Release();
+			allocators[i] = nullptr;
+			timeBuffer[i]->Release();
+			timeBuffer[i] = nullptr;
 		}
-		CloseHandle(fenceEvent);
-		fence->Release();
-		fence = nullptr;
 	}
+	if (list) list->Release();
+	list = nullptr;
+	if (queries) queries->Release();
+	queries = nullptr;
 	if (queue) queue->Release();
 	queue = nullptr;
 	if (factory) factory->Release();
@@ -353,14 +408,8 @@ void closeWindow() {
 	// release context, window
 	if (chain) {
 		chain->SetFullscreenState(false, nullptr);
-		UINT count;
-		chain->GetLastPresentCount(&count);
-		if (fence->GetCompletedValue() != count) {
-			HANDLE fenceEvent = CreateEvent(nullptr, 0, 0, nullptr);
-			fence->SetEventOnCompletion(count, fenceEvent);
-			WaitForSingleObject(fenceEvent, INFINITE);
-			CloseHandle(fenceEvent);
-		}
+		for(int i = 0; i<fenceCount; ++i)
+			WaitForSingleObject(fenceEvents[i], INFINITE);
 		chain->Release();
 		chain = nullptr;
 	}
