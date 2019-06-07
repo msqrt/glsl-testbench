@@ -75,8 +75,8 @@ void swapBuffers() {
 	D3D12_VIEWPORT port;
 	port.TopLeftX = 0;
 	port.TopLeftY = 0;
-	port.Width = texDesc.Width;
-	port.Height = texDesc.Height;
+	port.Width = (float)texDesc.Width;
+	port.Height = (float)texDesc.Height;
 	port.MinDepth = .0f;
 	port.MaxDepth = 1.f;
 
@@ -187,7 +187,7 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 	case WM_SYSKEYDOWN:
 	case WM_KEYDOWN:
 		wParam = mapExtended(wParam, lParam);
-		if (!keyDown(wParam))
+		if (!keyDown(UINT(wParam)))
 			down[downptr++] = hit[hitptr++] = wParam;
 		if (wParam == 'V' && (keyDown(VK_LCONTROL) || keyDown(VK_RCONTROL))) {
 			if (OpenClipboard(nullptr)) {
@@ -251,6 +251,7 @@ std::wstring getMonitorName(HMONITOR monitor) {
 			return std::wstring(name.monitorFriendlyDeviceName);
 		}
 	}
+	return L"";
 }
 
 void setupD3D() {
@@ -261,7 +262,7 @@ void setupD3D() {
 		DXGI_ADAPTER_DESC3 adapterDesc;
 		adapter->GetDesc3(&adapterDesc);
 		if (adapterDesc.Flags&DXGI_ADAPTER_FLAG_SOFTWARE) continue; // not interested
-		printf("device %d:\n%ls\n%d %d MB VRAM\n", i, adapterDesc.Description, adapterDesc.DedicatedVideoMemory / (1024 * 1024 * 1000), (adapterDesc.DedicatedVideoMemory / (1024 * 1024)) % 1000);
+		printf("device %d:\n%ls\n%zd %zd MB VRAM\n", i, adapterDesc.Description, adapterDesc.DedicatedVideoMemory / (1024 * 1024 * 1000), (adapterDesc.DedicatedVideoMemory / (1024 * 1024)) % 1000);
 		IDXGIOutput6* output;
 		for (int j = 0; adapter->EnumOutputs(j, (IDXGIOutput**)&output) != DXGI_ERROR_NOT_FOUND; ++j) {
 			DXGI_OUTPUT_DESC1 outputDesc;
