@@ -121,4 +121,5 @@ struct Texture {
 	inline ~Texture() { glDeleteTextures(1, &object); }
 };
 Texture<GL_TEXTURE_2D> loadImage(const std::string& path);
+Texture<GL_TEXTURE_2D> loadImage(const std::wstring& path);
 template<GLenum target> void bindTexture(const std::string& name, Texture<target>& texture) { bindTexture(name, target, texture); }

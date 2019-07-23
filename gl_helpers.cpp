@@ -255,24 +255,28 @@ uniform_matrix(niformMatrix4x3fv)
 #include <locale>
 #include <codecvt>
 
-Texture<GL_TEXTURE_2D> loadImage(const std::string& path) {
+Texture<GL_TEXTURE_2D> loadImage(const std::wstring& path) {
 	using namespace Gdiplus;
 	ULONG_PTR token;
 	GdiplusStartup(&token, &GdiplusStartupInput(), nullptr);
 
 	Texture<GL_TEXTURE_2D> result;
 	{
-		Image image(std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>>().from_bytes(path).c_str());
+		Image image(path.c_str());
 		Rect r(0, 0, image.GetWidth(), image.GetHeight());
 		BitmapData data;
 		((Bitmap*)&image)->LockBits(&r, ImageLockModeRead, PixelFormat24bppRGB, &data);
 
 		glBindTexture(GL_TEXTURE_2D, result);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, image.GetWidth(), image.GetHeight(), 0, GL_BGR, GL_UNSIGNED_BYTE, data.Scan0);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_SRGB8, image.GetWidth(), image.GetHeight(), 0, GL_BGR, GL_UNSIGNED_BYTE, data.Scan0);
 		glGenerateMipmap(GL_TEXTURE_2D);
 
 		((Bitmap*)&image)->UnlockBits(&data);
 	}
 	GdiplusShutdown(token);
 	return result;
+}
+
+Texture<GL_TEXTURE_2D> loadImage(const std::string& path) {
+	return loadImage(std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>>().from_bytes(path));
 }
