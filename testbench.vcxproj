@@ -151,7 +151,11 @@
     <None Include="shaders\marchshowfrag.glsl" />
     <None Include="shaders\marchshowvert.glsl" />
     <None Include="shaders\marchtrace.glsl" />
+    <None Include="shaders\p2gFrag.glsl" />
+    <None Include="shaders\p2gGeom.glsl" />
+    <None Include="shaders\p2gVert.glsl" />
     <None Include="shaders\particleFrag.glsl" />
+    <None Include="shaders\particleSimulate.glsl" />
     <None Include="shaders\particleVert.glsl" />
     <None Include="shaders\simulate.glsl" />
     <None Include="shaders\sort.glsl" />
