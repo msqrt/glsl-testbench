@@ -1,300 +1,311 @@
 
 #version 450
 
-layout(local_size_x = 16, local_size_y = 16) in;
+layout(local_size_x = 8, local_size_y = 8, local_size_z = 8) in;
 
-layout(rgba32f) uniform image2D fluidVolume, densityImage, fluidMass;
-layout(rg32f) uniform image2D velocity, velDifference, boundaryVelocity;
-layout(r32f) uniform image2D pressure, divergenceImage;
-uniform sampler2D oldVelocity, oldDensity, oldPressure, divergence, fluidVol, fluidRelVol;
+layout(rgba32f) uniform image3D fluidVolume, densityImage, shade;
+layout(rgba32f) uniform image3D velocity, velDifference, boundaryVelocity;
+layout(r32f) uniform image3D pressure, divergenceImage;
+uniform sampler3D oldVelocity, oldDensity, oldPressure, divergence, fluidVol, fluidRelVol;
 
-uniform int mode;
+uniform int mode, size;
 
-uniform float dt;
-
-uniform float phase;
-
-uniform float t;
+uniform float dt, t, dx;
 
 
-float length1(vec2 x) {
-	return abs(x.x)+abs(x.y);
+float solidDist(vec3 uv, float eval_t) {
+	uv -= vec3(.5);
+	return min(min(.45-abs(uv.z), .45-abs(uv.x)), min(length(uv-vec3(-.5, -.5, -.5))-.3, .45-abs(uv.y)));
 }
 
-
-float solidDist(vec2 uv, float eval_t) {
-	//float walls = 1e8;//min(uv.x-.01, 1.-uv.x-.01);
-	float angle = .0;//-.1*eval_t;
-	vec2 cs = vec2(cos(angle), sin(angle));
-	uv = mat2(cs.x,cs.y,-cs.y,cs.x)*(uv-vec2(.5));
-	
-	//return max(.4-length(uv), length(uv)-.5);
-	//return min(.45-abs(uv.x), uv.y+.45);//, max(.2-length(uv), length(uv)-.3)));
-	return min(.45-abs(uv.x), min(length(uv-vec2(-.2, -.45))-.05, uv.y+.45));//, max(.2-length(uv), length(uv)-.3)));
-	
-	//vec2 d = abs(uv)-vec2(.02, .2);
-	//return length(max(d,.0))+min(max(d.x,d.y),0.);
-}
-
-float volume(vec2 uv) {
-	float dx = .5/float(textureSize(oldDensity,0).x);
-	float diag = sqrt(2.*dx*dx);
-	float x = smoothstep(-diag, diag, solidDist(uv, t));
-	if(x>.0) x = max(x,.1);
+float volume(vec3 uv) {
+	float diag = dx;
+	float x = smoothstep(.0, diag, solidDist(uv, t));
+	if(x>.0) x = max(x,.02);
 	return x;
 }
 
-vec2 solidGrad(vec2 uv) {
+vec3 solidGrad(vec3 uv) {
 	const float eps = 1e-4;
-	vec2 res = vec2(solidDist(uv+vec2(eps,.0),t),solidDist(uv+vec2(.0, eps),t))
-		-vec2(solidDist(uv+vec2(-eps,.0),t),solidDist(uv+vec2(.0, -eps),t));
+	vec3 res = vec3(solidDist(uv+vec3(eps,.0,.0),t),solidDist(uv+vec3(.0,eps,.0),t),solidDist(uv+vec3(.0,.0,eps),t))
+		-vec3(solidDist(uv-vec3(eps,.0,.0),t),solidDist(uv-vec3(.0,eps,.0),t),solidDist(uv-vec3(.0,.0,eps),t));
 	float l = length(res);
 	if(l>.0) res /= l;
 	return res;
 }
 
-vec2 solidVel(vec2 uv) {
-return vec2(.0);
-	const float eps = 1e-4;
-	vec2 g = solidGrad(uv);
-	vec2 v = -g * (solidDist(uv,t+eps)-solidDist(uv,t-eps))/(2.*eps);
-	return v;
-}
-
-const float density = .0001;
-const float air_density = .0;
+const float density = .00001;
 
 void main() {
-	ivec2 coord = ivec2(gl_GlobalInvocationID.xy);
-	if(coord==ivec2(200))
-		enablePrintf();
-	ivec2 size = ivec2(gl_WorkGroupSize.xy*gl_NumWorkGroups.xy);
-	const float dx = 1./float(size.x);
-	vec2 uv = (vec2(gl_GlobalInvocationID.xy)+vec2(.5))/vec2(size);
+	ivec3 coord = ivec3(gl_GlobalInvocationID.xyz);
+
+	vec3 uv = (vec3(gl_GlobalInvocationID.xyz)+vec3(.5))*dx;
 	if(mode == 0) { // init
-		uv -= vec2(.5);
+		uv -= vec3(.5);
 		imageStore(velocity, coord, vec4(.0, .0,.0,.0));
 		imageStore(pressure, coord, vec4(.0));
 		imageStore(densityImage, coord, vec4(.0));
 	} else if(mode == 1) { // reset
 		imageStore(velocity, coord, vec4(.0, .0,.0,.0));
-		imageStore(densityImage, coord, vec4(air_density));
+		imageStore(densityImage, coord, vec4(.0));
 	} else if(mode==2) { // apply forces, set up boundary conditions
-		vec2 uv_x = uv-vec2(.5*dx,.0);
-		vec2 uv_y = uv-vec2(.0,.5*dx);
+		vec3 uv_x = uv-vec3(.5*dx,.0,.0);
+		vec3 uv_y = uv-vec3(.0,.5*dx,.0);
+		vec3 uv_z = uv-vec3(.0,.0,.5*dx);
 
-		vec3 fluidVol = vec3(volume(uv_x), volume(uv_y), volume(uv));
-		//fluidVol = max(fluidVol, 1.-clamp((texelFetch(oldDensity, coord, 0).xyz-vec3(air_density))*100., vec3(.0), vec3(1.)));
-		imageStore(fluidVolume, coord, vec4(fluidVol, .0));
+		vec4 fluidVol = vec4(volume(uv_x), volume(uv_y), volume(uv_z), volume(uv));
+		imageStore(fluidVolume, coord, fluidVol);
 
-		float vel_x = solidVel(uv_x).x;
-		float vel_y = solidVel(uv_y).y;
-		imageStore(boundaryVelocity, coord, vec4(vel_x, vel_y, .0, .0));
-		
 		vec4 vel = texelFetch(oldVelocity, coord, 0);
-		vec3 dens = texelFetch(oldDensity, coord, 0).xyz;
-		//if(fluidVol.z==.0) vel.xy = vec2(.0);
-		//else
-		{
-			for(int i = 0; i<2; ++i)
-				if(dens[i] != .0)
-					vel[i] /= dens[i];
-				else
-					vel[i] = .0;
-			//if(dens.x != .0 || dens.y != .0)
-		}
+		vec4 dens = texelFetch(oldDensity, coord, 0);
+		for(int i = 0; i<3; ++i)
+			if(dens[i] != .0)
+				vel[i] /= dens[i];
+			else
+				vel[i] = .0;
 
 		imageStore(velocity, coord, vel);
-
+		for(int i = 0; i<4; ++i)
+		for(int j = 0; j<4; ++j)
+		for(int k = 0; k<4; ++k)
+		imageStore(shade, coord+ivec3(i,j,k)*64, vec4(.0));
 	} else if(mode==6) { // velocity flood fill
-		vec3 dens = texelFetch(oldDensity, coord, 0).xyz;
-		vec2 closest_vel = vec2(.0);
-		vec2 closest = vec2(100.);
-		vec2 visc = vec2(.0);
+		vec4 dens = texelFetch(oldDensity, coord, 0);
+		vec3 closest_vel = vec3(.0);
+		vec3 closest = vec3(100.);
+		vec3 visc = vec3(.0);
 		float viscw = .0;
-		for(int i = 0; i<5; ++i) {
-			for(int j = 0; j<5; ++j) {
-				ivec2 pcoord = coord+ivec2(i-2, j-2);
-				if(pcoord.x>=0&&pcoord.y>=0&&pcoord.x<size.x&&pcoord.y<size.y) {
-					float d = length(vec2(i-2, j-2));
-					vec2 dens_p = texelFetch(oldDensity, pcoord,0).xy;
-					vec2 possvel = texelFetch(oldVelocity, pcoord, 0).xy;
-					float w = exp(-d*.5);
-					visc += w*possvel;
-					viscw += w;
-					if(dens_p.x>.0 && d<closest.x) {
-						closest.x = d;
-						closest_vel.x = possvel.x;
-					}
-					if(dens_p.y>.0 && d<closest.y) {
-						closest.y = d;
-						closest_vel.y = possvel.y;
+		for(int i = 0; i<3; ++i) {
+			for(int j = 0; j<3; ++j) {
+				for(int k = 0; k<3; ++k) {
+					ivec3 pcoord = coord+ivec3(i-1, j-1, k-1);
+					if(pcoord.x>=0&&pcoord.y>=0&&pcoord.z>=0&&pcoord.x<size&&pcoord.y<size&&pcoord.z<size) {
+						float d = length(vec3(i-1, j-1, k-1));
+						vec3 dens_p = texelFetch(oldDensity, pcoord,0).xyz;
+						vec3 possvel = texelFetch(oldVelocity, pcoord, 0).xyz;
+						float w = exp(-d*.5);
+						visc += w*possvel;
+						viscw += w;
+						if(dens_p.x>.0 && d<closest.x) {
+							closest.x = d;
+							closest_vel.x = possvel.x;
+						}
+						if(dens_p.y>.0 && d<closest.y) {
+							closest.y = d;
+							closest_vel.y = possvel.y;
+						}
+						if(dens_p.z>.0 && d<closest.z) {
+							closest.z = d;
+							closest_vel.z = possvel.z;
+						}
 					}
 				}
 			}
 		}
 		closest_vel.y -= .25*dt;
-		closest_vel -= dt*(closest_vel-visc/viscw);
-		imageStore(velocity, coord, vec4(closest_vel,.0,.0));
+		//closest_vel -= .05*dt*(closest_vel-visc/viscw);
+		imageStore(velocity, coord, vec4(closest_vel,.0));
 	} else if(mode==3) { // div preprocess
-		vec2 vol_pos = vec2(
-			imageLoad(fluidVolume, coord+ivec2(1,0)).z,
-			imageLoad(fluidVolume, coord+ivec2(0,1)).z
+		vec3 vol_pos = vec3(
+			imageLoad(fluidVolume, coord+ivec3(1,0,0)).w,
+			imageLoad(fluidVolume, coord+ivec3(0,1,0)).w,
+			imageLoad(fluidVolume, coord+ivec3(0,0,1)).w
 		);
-		vec3 vol = vec3(
-			imageLoad(fluidVolume,coord-ivec2(1,0)).z,
-			imageLoad(fluidVolume,coord-ivec2(0,1)).z,
-			imageLoad(fluidVolume,coord).z
+		vec4 vol = vec4(
+			imageLoad(fluidVolume,coord-ivec3(1,0,0)).w,
+			imageLoad(fluidVolume,coord-ivec3(0,1,0)).w,
+			imageLoad(fluidVolume,coord-ivec3(0,0,1)).w,
+			imageLoad(fluidVolume,coord).w
 		);
-		vec2 dens_pos = vec2(
-			texelFetch(oldDensity,coord+ivec2(1,0),0).z,
-			texelFetch(oldDensity,coord+ivec2(0,1),0).z
+		vec3 dens_pos = vec3(
+			texelFetch(oldDensity, coord+ivec3(1,0,0),0).w,
+			texelFetch(oldDensity, coord+ivec3(0,1,0),0).w,
+			texelFetch(oldDensity, coord+ivec3(0,0,1),0).w
 		);
-		vec3 dens_neg = vec3(
-			texelFetch(oldDensity,coord-ivec2(1,0),0).z,
-			texelFetch(oldDensity,coord-ivec2(0,1),0).z,
-			texelFetch(oldDensity,coord,0).z
+		vec4 dens_neg = vec4(
+			texelFetch(oldDensity,coord-ivec3(1,0,0),0).w,
+			texelFetch(oldDensity,coord-ivec3(0,1,0),0).w,
+			texelFetch(oldDensity,coord-ivec3(0,0,1),0).w,
+			texelFetch(oldDensity,coord,0).w
 		);
-		//if(vol.z == .0 || dens_neg.z==.0)
+		//if(vol.w == .0 || dens_neg.w==.0)
 		//	imageStore(pressure, coord, vec4(.0));
-		vec2 diff_pos = vec2(
-			texelFetch(oldVelocity, coord+ivec2(1,0), 0).x,//*vol_pos.x,
-			texelFetch(oldVelocity, coord+ivec2(0,1), 0).y//*vol_pos.y
+		vec3 diff_pos = vec3(
+			texelFetch(oldVelocity, coord+ivec3(1,0,0), 0).x*imageLoad(fluidVolume, coord+ivec3(1,0,0)).x,
+			texelFetch(oldVelocity, coord+ivec3(0,1,0), 0).y*imageLoad(fluidVolume, coord+ivec3(0,1,0)).y,
+			texelFetch(oldVelocity, coord+ivec3(0,0,1), 0).z*imageLoad(fluidVolume, coord+ivec3(0,0,1)).z
 		);
-		vec2 diff_neg = texelFetch(oldVelocity, coord, 0).xy;//*vol.xy;
+		vec3 diff_neg = texelFetch(oldVelocity, coord, 0).xyz*imageLoad(fluidVolume,coord).xyz;
+
 		if(vol_pos.x == .0) diff_pos.x = .0;
 		if(vol_pos.y == .0) diff_pos.y = .0;
+		if(vol_pos.z == .0) diff_pos.z = .0;
+
 		if(vol.x == .0) diff_neg.x = .0;
 		if(vol.y == .0) diff_neg.y = .0;
-		vec2 diff = diff_pos-diff_neg;
+		if(vol.z == .0) diff_neg.z = .0;
 
-		//if(coord.x==0||coord.x==size.x-2||dens_pos.x == .0||dens_neg.x == .0) diff.x = .0;
-		//if(coord.y==0||coord.y==size.y-2||dens_pos.y == .0||dens_neg.y == .0) diff.y = .0;
+		vec3 diff = diff_pos-diff_neg;
 
-		if(coord.x==0||coord.x==size.x-2) diff.x = .0;
-		if(coord.y==0||coord.y==size.y-2) diff.y = .0;
+		if(coord.x==0||coord.x==size-2) diff.x = .0;
+		if(coord.y==0||coord.y==size-2) diff.y = .0;
+		if(coord.z==0||coord.z==size-2) diff.z = .0;
 
-		vec2 vel_pos = vec2(
-			imageLoad(boundaryVelocity, coord+ivec2(1,0)).x,
-			imageLoad(boundaryVelocity, coord+ivec2(0,1)).y
-		);
-		vec2 vel_neg = imageLoad(boundaryVelocity, coord).xy;
+		float div = density*(dx/dt) * (-(diff.x+diff.y+diff.z));
 
-		vec2 vol_correct = vel_pos*(vol_pos-vol.zz)-vel_neg*(vol.xy-vol.zz);
-		//float div = dens.z*dx/(dt) * ((vol_correct.x+vol_correct.y)-(diff.x+diff.y));
-		float div = density*(dx/dt) * (-(diff.x+diff.y));
-		//if(vol.z>.0&&dens_neg.z>.0)
-		float corr = .0;
-		if(coord.x<size.x-1 && texelFetch(oldDensity, coord+ivec2(1,0),0).z>.0)
-			corr += texelFetch(oldDensity, coord+ivec2(1,0),0).x-1.;
-		if(coord.y<size.y-1 && texelFetch(oldDensity, coord+ivec2(0,1),0).z>.0)
-			corr += texelFetch(oldDensity, coord+ivec2(0,1),0).y-1.;
-		if(coord.x>0 && texelFetch(oldDensity, coord-ivec2(1,0),0).z>.0)
-			corr += texelFetch(oldDensity, coord-ivec2(1,0),0).x-1.;
-		if(coord.y>0 && texelFetch(oldDensity, coord-ivec2(0,1),0).z>.0)
-			corr += texelFetch(oldDensity, coord-ivec2(0,1),0).y-1.;
-		//div += .0000001*density*corr;
+		if(dens_neg.w>.0) {
+			float corr = .0;
+			float target_density = 4.;
+			if(coord.x<size-1 && texelFetch(oldDensity, coord+ivec3(1,0,0),0).w>.0)
+				corr += texelFetch(oldDensity, coord+ivec3(1,0,0),0).x-target_density;
+			if(coord.y<size-1 && texelFetch(oldDensity, coord+ivec3(0,1,0),0).w>.0)
+				corr += texelFetch(oldDensity, coord+ivec3(0,1,0),0).y-target_density;
+			if(coord.z<size-1 && texelFetch(oldDensity, coord+ivec3(0,0,1),0).w>.0)
+				corr += texelFetch(oldDensity, coord+ivec3(0,0,1),0).z-target_density;
+			if(coord.x>0 && texelFetch(oldDensity, coord-ivec3(1,0,0),0).w>.0)
+				corr += texelFetch(oldDensity, coord-ivec3(1,0,0),0).x-target_density;
+			if(coord.y>0 && texelFetch(oldDensity, coord-ivec3(0,1,0),0).w>.0)
+				corr += texelFetch(oldDensity, coord-ivec3(0,1,0),0).y-target_density;
+			if(coord.z>0 && texelFetch(oldDensity, coord-ivec3(0,0,1),0).w>.0)
+				corr += texelFetch(oldDensity, coord-ivec3(0,0,1),0).z-target_density;
+			div += .00005*density*corr;
+		}
 		imageStore(divergenceImage, coord, vec4(div));
-		imageStore(fluidMass, coord, vec4(vol, .0));
 
 	} else if(mode==4) { // pressure iteration
-		vec3 vol_neg = vec3(
-			texelFetch(fluidRelVol,coord-ivec2(1,0),0).z,
-			texelFetch(fluidRelVol,coord-ivec2(0,1),0).z,
-			texelFetch(fluidRelVol,coord,0).z
+		vec4 vol_neg = vec4(
+			texelFetch(fluidRelVol,coord-ivec3(1,0,0),0).w,
+			texelFetch(fluidRelVol,coord-ivec3(0,1,0),0).w,
+			texelFetch(fluidRelVol,coord-ivec3(0,0,1),0).w,
+			texelFetch(fluidRelVol,coord,0).w
 		);
-		vec3 dens_neg = vec3(
-			texelFetch(oldDensity,coord-ivec2(1,0),0).z,
-			texelFetch(oldDensity,coord-ivec2(0,1),0).z,
-			texelFetch(oldDensity,coord,0).z
+		vec4 dens_neg = vec4(
+			texelFetch(oldDensity,coord-ivec3(1,0,0),0).w,
+			texelFetch(oldDensity,coord-ivec3(0,1,0),0).w,
+			texelFetch(oldDensity,coord-ivec3(0,0,1),0).w,
+			texelFetch(oldDensity,coord,0).w
 		);
-		if(coord.x<size.x-1 && coord.y<size.y-1 && vol_neg.z>.0 && dens_neg.z>.0) {
-			vec2 vol_pos = vec2(
-				texelFetch(fluidRelVol,coord+ivec2(1,0),0).z,
-				texelFetch(fluidRelVol,coord+ivec2(0,1),0).z
+		if(coord.x<size-1 && coord.y<size-1 && coord.z<size-1 && vol_neg.w>.0 && dens_neg.w>.0) {
+			vec3 vol_pos = vec3(
+				texelFetch(fluidRelVol,coord+ivec3(1,0,0),0).w,
+				texelFetch(fluidRelVol,coord+ivec3(0,1,0),0).w,
+				texelFetch(fluidRelVol,coord+ivec3(0,0,1),0).w
 			);
-			vec2 dens_pos = vec2(
-				texelFetch(oldDensity,coord+ivec2(1,0),0).z,
-				texelFetch(oldDensity,coord+ivec2(0,1),0).z
+			vec3 dens_pos = vec3(
+				texelFetch(oldDensity,coord+ivec3(1,0,0),0).w,
+				texelFetch(oldDensity,coord+ivec3(0,1,0),0).w,
+				texelFetch(oldDensity,coord+ivec3(0,0,1),0).w
 			);
 			vec2 p = vec2(.0);
-			if(vol_neg.x>.0) {
-				p.y += 1.;
-				if(coord.x>0) {
-					if(dens_neg.x>.0){
-						p += texelFetch(oldPressure, coord-ivec2(1,0), 0).x;
-					}
+			p.y += texelFetch(fluidRelVol, coord, 0).x;
+			if(coord.x>0) {
+				if(dens_neg.x>.0){
+					p.x += texelFetch(oldPressure, coord-ivec3(1,0,0), 0).x * texelFetch(fluidRelVol, coord, 0).x;
 				}
 			}
-			if(vol_neg.y>.0) {
-				p.y += 1.;
-				if(coord.y>0) {
-					if(dens_neg.y>.0){
-						p += texelFetch(oldPressure, coord-ivec2(0,1), 0).x;
-					}
+			p.y += texelFetch(fluidRelVol, coord, 0).y;
+			if(coord.y>0) {
+				if(dens_neg.y>.0){
+					p.x += texelFetch(oldPressure, coord-ivec3(0,1,0), 0).x * texelFetch(fluidRelVol, coord, 0).y;
 				}
 			}
-			if(vol_pos.x>.0) {
-				p.y += 1.;
-				if(coord.x<size.x-2) {
-					if(dens_pos.x>.0){
-						p += texelFetch(oldPressure, coord+ivec2(1,0), 0).x;
-					}
+			p.y += texelFetch(fluidRelVol, coord, 0).z;
+			if(coord.z>0) {
+				if(dens_neg.z>.0){
+					p.x += texelFetch(oldPressure, coord-ivec3(0,0,1), 0).x * texelFetch(fluidRelVol, coord, 0).z;
 				}
 			}
-			if(vol_pos.y>.0) {
-				p.y += 1.;
-				if(coord.y<size.y-2) {
-					if(dens_pos.y>.0) {
-						p += texelFetch(oldPressure, coord+ivec2(0,1), 0).x;
-					}
+			p.y += texelFetch(fluidRelVol, coord+ivec3(1,0,0), 0).x;
+			if(coord.x<size-2) {
+				if(dens_pos.x>.0){
+					p.x += texelFetch(oldPressure, coord+ivec3(1,0,0), 0).x*texelFetch(fluidRelVol, coord+ivec3(1,0,0), 0).x;
+				}
+			}
+			p.y += texelFetch(fluidRelVol, coord+ivec3(0,1,0), 0).y;
+			if(coord.y<size-2) {
+				if(dens_pos.y>.0) {
+					p.x += texelFetch(oldPressure, coord+ivec3(0,1,0), 0).x*texelFetch(fluidRelVol, coord+ivec3(0,1,0), 0).y;
+				}
+			}
+			p.y += texelFetch(fluidRelVol, coord+ivec3(0,0,1), 0).z;
+			if(coord.z<size-2) {
+				if(dens_pos.z>.0) {
+					p.x += texelFetch(oldPressure, coord+ivec3(0,0,1), 0).x*texelFetch(fluidRelVol, coord+ivec3(0,0,1), 0).z;
 				}
 			}
 			p += vec2(texelFetch(divergence, coord, 0).x, .0);
-			//if(p.y==.0) p = vec2(.0,1.);
+			if(p.y==.0) p = vec2(.0,1.);
 			float new = mix(texelFetch(oldPressure, coord, 0).x, p.x/p.y, .6);
-			//if(vol_neg.z==.0)
+			//if(vol_neg.w<1.0)
 				new = max(.0, new);
 			imageStore(pressure, coord, vec4(new));
 		}
 
 	} else if(mode==5) { // apply pressures
-		vec3 dens = texelFetch(oldDensity,coord,0).xyz;
-		vec2 scale = vec2(dt/(density*dx));
-		vec2 baseVel = texelFetch(oldVelocity, coord, 0).xy;
-		vec2 off_press = vec2(.0);
+		vec4 dens = texelFetch(oldDensity,coord,0);
+		vec3 scale = vec3(dt/(density*dx));
+		vec3 baseVel = texelFetch(oldVelocity, coord, 0).xyz;
+		vec3 off_press = vec3(.0);
 
-		vec3 vol_neg = vec3(
-			texelFetch(fluidRelVol,coord-ivec2(1,0),0).z,
-			texelFetch(fluidRelVol,coord-ivec2(0,1),0).z,
-			texelFetch(fluidRelVol,coord,0).z
+		vec4 vol_neg = vec4(
+			texelFetch(fluidRelVol,coord-ivec3(1,0,0),0).w,
+			texelFetch(fluidRelVol,coord-ivec3(0,1,0),0).w,
+			texelFetch(fluidRelVol,coord-ivec3(0,0,1),0).w,
+			texelFetch(fluidRelVol,coord,0).w
 		);
-		vec3 dens_neg = vec3(
-			texelFetch(oldDensity,coord-ivec2(1,0),0).z,
-			texelFetch(oldDensity,coord-ivec2(0,1),0).z,
-			texelFetch(oldDensity,coord,0).z
+		vec4 dens_neg = vec4(
+			texelFetch(oldDensity,coord-ivec3(1,0,0),0).w,
+			texelFetch(oldDensity,coord-ivec3(0,1,0),0).w,
+			texelFetch(oldDensity,coord-ivec3(0,0,1),0).w,
+			texelFetch(oldDensity,coord,0).w
 		);
 
-		if(coord.x>0 && vol_neg.x>.0) off_press.x = texelFetch(oldPressure, coord-ivec2(1,0), 0).x;
-		if(coord.y>0 && vol_neg.y>.0) off_press.y = texelFetch(oldPressure, coord-ivec2(0,1), 0).x;
-		
-		vec2 vel = baseVel - scale * (texelFetch(oldPressure, coord, 0).xx-off_press);
-		
-		
-		//if(dens_neg.x>.0)
-		//	baseVel.x -= 2.*dt*(dens_neg.x-dens_neg.z);
-		//if(dens_neg.y>.0)
-		//	baseVel.y -= 2.*dt*(dens_neg.y-dens_neg.z);
+		if(dens_neg.w==.0||dens_neg.x==.0) {
+			vec3 y = vec3(dens_neg.x, texelFetch(oldDensity,coord,0).x, dens_neg.w);
+			mat2x3 m;
+			m[0] = vec3(1.);
+			m[1] = vec3(-.5,.0,.5);
+			vec2 b = inverse(transpose(m)*m)*transpose(m)*y;
+			scale.x *= clamp(-b.y/b.x+.5, .0, 1.);
+		}
+		if(dens_neg.w==.0||dens_neg.y==.0) {
+			vec3 y = vec3(dens_neg.y, texelFetch(oldDensity,coord,0).y, dens_neg.w);
+			mat2x3 m;
+			m[0] = vec3(1.);
+			m[1] = vec3(-.5,.0,.5);
+			vec2 b = inverse(transpose(m)*m)*transpose(m)*y;
+			scale.y *= clamp(-b.y/b.x+.5, .0, 1.);
+		}
+		if(dens_neg.w==.0||dens_neg.z==.0) {
+			vec3 y = vec3(dens_neg.z, texelFetch(oldDensity,coord,0).z, dens_neg.w);
+			mat2x3 m;
+			m[0] = vec3(1.);
+			m[1] = vec3(-.5,.0,.5);
+			vec2 b = inverse(transpose(m)*m)*transpose(m)*y;
+			scale.z *= clamp(-b.y/b.x+.5, .0, 1.);
+		}
 
-		if(vol_neg.z==.0) vel = min(vel, vec2(.0));
-
-		if(vol_neg.x==.0 && coord.x>0) vel.x = max(vel.x, .0);
-		if(vol_neg.y==.0 && coord.y>0) vel.y = max(vel.y, .0);
+		if(coord.x>0 && vol_neg.x>.0) off_press.x = texelFetch(oldPressure, coord-ivec3(1,0,0), 0).x;
+		if(coord.y>0 && vol_neg.y>.0) off_press.y = texelFetch(oldPressure, coord-ivec3(0,1,0), 0).x;
+		if(coord.z>0 && vol_neg.z>.0) off_press.z = texelFetch(oldPressure, coord-ivec3(0,0,1), 0).x;
 		
-		//if(coord.x==.0||coord.x==size.x-1) baseVel = vel;
-		//if(coord.y==.0||coord.y==size.y-1) baseVel = vel;
+		vec3 vel = baseVel - scale * (texelFetch(oldPressure, coord, 0).xxx-off_press);
+		
+		if(vol_neg.w<1.0) vel = min(vel, vec3(.0));
 
-		imageStore(velDifference, coord, vec4(vel+(vel-baseVel), .0, .0));
-		imageStore(velocity, coord, vec4(vel, .0, .0));
+		if(vol_neg.x<1.0 && coord.x>0) vel.x = max(vel.x, .0);
+		if(vol_neg.y<1.0 && coord.y>0) vel.y = max(vel.y, .0);
+		if(vol_neg.z<1.0 && coord.z>0) vel.z = max(vel.z, .0);
+		
+		imageStore(velDifference, coord, vec4(vel+(vel-baseVel), .0));
+		imageStore(velocity, coord, vec4(vel, .0));
+	} else if (mode==7) {
+		ivec2 pos = ivec2(gl_LocalInvocationIndex%256, gl_LocalInvocationIndex/256+2*gl_WorkGroupID.x);
+		vec3 col = vec3(1., .7, .4);
+		vec3 dens = vec3(1., .9, .6);
+		for(int i = 0; i<256; ++i) {
+			dens = clamp(vec3(.001, .0018, .002)+dens * clamp(1.-3.*imageLoad(shade, ivec3(pos,255-i).xzy).xxx, .0, 1.), .0, 1.);
+			imageStore(shade, ivec3(pos,255-i).xzy, vec4(dens,1.));
+		}
 	}
 }

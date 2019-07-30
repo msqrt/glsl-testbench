@@ -1,25 +1,24 @@
 
 #version 450
 
-in vec2 uv;
-in vec2 vel;
-in mat2 aff;
-
-in flat int write;
-layout(std430) buffer posBuffer {vec2 particle_pos[];};
-layout(std430) buffer velBuffer {vec2 particle_vel[];};
+in vec3 pos;
+in vec3 vel;
+in mat3 aff;
 
 out vec4 density;
-out vec2 velocity;
+out vec3 velocity;
 
-float bilin_kernel(vec2 p) {
-	return max(1.-abs(p.x),.0)*max(1.-abs(p.y),.0);
+uniform int res;
+
+float bilin_kernel(vec3 p) {
+	return max(1.-abs(p.x),.0)*max(1.-abs(p.y),.0)*max(1.-abs(p.z),.0);
 }
 
 void main() {
-	vec3 w = vec3(bilin_kernel(uv+vec2(.5, .0)), bilin_kernel(uv+vec2(.0, .5)), bilin_kernel(uv));
-	density = vec4(w,.0);
-	velocity = w.xy*vel.xy;
-	velocity.x -= w.x*dot(uv+vec2(.5,.0), aff[0]);
-	velocity.y -= w.y*dot(uv+vec2(.0,.5), aff[1]);
+	vec3 uv = (pos*float(res)-vec3(gl_FragCoord.xy, float(gl_Layer)+.5));
+	density = vec4(bilin_kernel(uv+vec3(.5, .0, .0)), bilin_kernel(uv+vec3(.0, .5, .0)), bilin_kernel(uv+vec3(.0, .0, .5)), bilin_kernel(uv));
+	velocity = density.xyz*vel.xyz;
+	velocity.x -= density.x*dot(uv+vec3(.5,.0,.0), aff[0]);
+	velocity.y -= density.y*dot(uv+vec3(.0,.5,.0), aff[1]);
+	velocity.z -= density.z*dot(uv+vec3(.0,.0,.5), aff[2]);
 }
