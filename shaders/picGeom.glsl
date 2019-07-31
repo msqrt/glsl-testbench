@@ -23,7 +23,7 @@ void main() {
 		uv = vec2(float(i%2), float(i/2));
 		vec4 p = cpos;
 		ps = pos.xyz;
-		p.xy += (uv-vec2(.5))*.006;
+		p.xy += (uv-vec2(.5))*.004;
 		gl_Position = camToClip * p;
 		EmitVertex();
 	}

@@ -12,16 +12,39 @@ uniform int mode, size;
 
 uniform float dt, t, dx;
 
+uniform int scene, frame;
+uniform int strobo;
+
+const vec3 spherecenters[4] = vec3[4](vec3(-.2, -.2, -.2),vec3(.28, .2, -.3),vec3(.0, .28, .0),vec3(.2, -.3, .1));
+
 
 float solidDist(vec3 uv, float eval_t) {
 	uv -= vec3(.5);
-	return min(min(.45-abs(uv.z), .45-abs(uv.x)), min(length(uv-vec3(-.5, -.5, -.5))-.3, .45-abs(uv.y)));
+	float box = min(min(.45-abs(uv.z), .45-abs(uv.x)), .45-abs(uv.y));
+	if(scene==0) {
+		return min(length(uv-vec3(-.5, -.5, -.5))-.3, box);
+	}
+	if(scene==1||scene==2) {
+		return box;
+	}
+	if(scene==3) {
+		return min(box,.1*(sin(uv.y*35.-uv.z*22.)+sin(uv.x*35.+uv.y*29.)+sin(uv.z*45.-uv.x*4.))+.6-5.*abs(uv.y));
+	}
+	if(scene==4) {
+		return min(box,min(min(length(uv.xz-vec2(-.1,-.24))-.1,length(uv.xz-vec2(-.1,.24))-.1),length(uv.xz-vec2(.3, .0))-.1));
+	}
+	if(scene==5) {
+		float s = .0;
+		for(int i = 0; i<4; ++i)
+			s = max(s, .2-length(uv-spherecenters[i]));
+		return s;
+	}
 }
 
 float volume(vec3 uv) {
 	float diag = dx;
 	float x = smoothstep(.0, diag, solidDist(uv, t));
-	if(x>.0) x = max(x,.02);
+	//if(x>.0) x = max(x,.02);
 	return x;
 }
 
@@ -102,7 +125,10 @@ void main() {
 				}
 			}
 		}
-		closest_vel.y -= .25*dt;
+		if(scene==5)
+			closest_vel.xz -= 2.*dt*vec2(cos(float(frame)*.05), sin(float(frame)*.05));
+		else
+			closest_vel.y -= .25*dt;
 		//closest_vel -= .05*dt*(closest_vel-visc/viscw);
 		imageStore(velocity, coord, vec4(closest_vel,.0));
 	} else if(mode==3) { // div preprocess
@@ -301,11 +327,21 @@ void main() {
 		imageStore(velocity, coord, vec4(vel, .0));
 	} else if (mode==7) {
 		ivec2 pos = ivec2(gl_LocalInvocationIndex%256, gl_LocalInvocationIndex/256+2*gl_WorkGroupID.x);
-		vec3 col = vec3(1., .7, .4);
-		vec3 dens = vec3(1., .9, .6);
+		vec3 col = vec3(1., .9, .8);
+		vec3 amb = vec3(.0005, .0014, .002)*2.;
+		if(strobo == 1) {
+			if((frame%6)<1){
+				col *= vec3(10.,9.,8.);
+				amb *= .05;
+			}
+			else {
+				col*=.01;
+			}
+		}
+		vec3 dens = vec3(1.);
 		for(int i = 0; i<256; ++i) {
-			dens = clamp(vec3(.001, .0018, .002)+dens * clamp(1.-3.*imageLoad(shade, ivec3(pos,255-i).xzy).xxx, .0, 1.), .0, 1.);
-			imageStore(shade, ivec3(pos,255-i).xzy, vec4(dens,1.));
+			dens = clamp(amb+ dens * clamp(1.-5.*imageLoad(shade, ivec3(pos,255-i).xzy).xxx, .0, 1.), .0, 1.);
+			imageStore(shade, ivec3(pos,255-i).xzy, vec4(col*dens,1.));
 		}
 	}
 }
