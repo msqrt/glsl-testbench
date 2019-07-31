@@ -141,13 +141,16 @@ float solidDist(vec3 uv, float eval_t) {
 	if(scene==0) {
 		return min(length(uv-vec3(-.5, -.5, -.5))-.3, box);
 	}
-	if(scene==1||scene==2) {
+	if(scene==1) {
+		return .45-abs(uv.x);
+	}
+	if(scene==2) {
 		return box;
 	}
-	if(scene==3) {
-		return min(box,.1*(sin(uv.y*35.-uv.z*22.)+sin(uv.x*35.+uv.y*29.)+sin(uv.z*45.-uv.x*4.))+.6-5.*abs(uv.y));
+	if(scene==3||scene==6||scene==8) {
+		return min(box,.05*(2.*sin(uv.x*2.15-uv.z*3.2)+1.5*sin(uv.x*23.+uv.z*30.)+sin(uv.z*45.-uv.x*41.))+.4-3.*abs(uv.y));
 	}
-	if(scene==4) {
+	if(scene==4||scene==7) {
 		return min(box,min(min(length(uv.xz-vec2(-.1,-.24))-.1,length(uv.xz-vec2(-.1,.24))-.1),length(uv.xz-vec2(.3, .0))-.1));
 	}
 	if(scene==5) {
@@ -157,6 +160,7 @@ float solidDist(vec3 uv, float eval_t) {
 		return s;
 	}
 }
+
 
 void main() {
 	int index = int(gl_GlobalInvocationID.x);
@@ -171,38 +175,38 @@ void main() {
 		
 		vec3 pos;
 		
-		if(frame>0) {
-			pos = particle_pos[index].xyz;
+		pos = particle_pos[index].xyz;
 
-			if(pos.x<.0||pos.y<.0||pos.z<.0||pos.x>=63./64.||pos.y>=63./64.||pos.z>=63./64.) {
-				vec3 vel = particle_vel[index].xyz-vec3(.0,.25*dt,.0);
-				pos += dt*vel;
-				particle_pos[index] = vec4(pos,.0);
-				particle_vel[index] = vec4(vel,.0);
-			} else {
-				vec3 new_vel = eval_vel(pos);
-				vec3 veld = eval_vel_diff(pos);
-				mat3 m = eval_affine(pos);
-				mat3 md = eval_affine_diff(pos);
+		if(pos.x<.0||pos.y<.0||pos.z<.0||pos.x>=63./64.||pos.y>=63./64.||pos.z>=63./64.) {
+			vec3 vel = particle_vel[index].xyz-vec3(.0,.25*dt,.0);
+			pos += dt*vel;
+			particle_pos[index] = vec4(pos,.0);
+			particle_vel[index] = vec4(vel,.0);
+		} else {
+			vec3 new_vel = eval_vel(pos);
+			vec3 veld = eval_vel_diff(pos);
+			mat3 m = eval_affine(pos);
+			mat3 md = eval_affine_diff(pos);
 
-				vec3 k1 = eval_vel(pos);
-				vec3 k2 = eval_vel(pos+.5*dt*k1);
-				vec3 k3 = eval_vel(pos+.75*dt*k2);
+			vec3 k1 = eval_vel(pos);
+			vec3 k2 = eval_vel(pos+.5*dt*k1);
+			vec3 k3 = eval_vel(pos+.75*dt*k2);
 
-				pos += (2.*k1+3.*k2+4.*k3)*dt/9.;
+			pos += (2.*k1+3.*k2+4.*k3)*dt/9.;
 
-				particle_pos[index] = vec4(pos,.0);
+			particle_pos[index] = vec4(pos,.0);
 
-				//particle_vel[index] = vec4(new_vel,.0);
-				//for(int i = 0; i<3; ++i)
-				//	affine[index*3+i] = vec4(m[i],.0);
-				particle_vel[index] = vec4(veld,.0);
-				for(int i = 0; i<3; ++i)
-					affine[index*3+i] = vec4(md[i],.0);
-			}
-		} else { // inits
+			//particle_vel[index] = vec4(new_vel,.0);
+			//for(int i = 0; i<3; ++i)
+			//	affine[index*3+i] = vec4(m[i],.0);
+			particle_vel[index] = vec4(veld,.0);
+			for(int i = 0; i<3; ++i)
+				affine[index*3+i] = vec4(md[i],.0);
+		}
+	} else if(mode == 2) {
+		if(frame==0) {
 			if(scene == 0) {
-				int w = int(pow(float(particle_pos.length()), 1./3.));
+				int w = int(pow(float(256*1024), 1./3.));
 				vec3 uv = vec3(index/(w*w), (index/w)%w, index%w)/float(w);
 				particle_pos[index] = vec4(vec3(.4,.2,.4)+uv*vec3(.45,.4, .45), .0);
 				particle_vel[index] = vec4(.0);
@@ -229,7 +233,20 @@ void main() {
 				particle_pos[index] = vec4(spherecenters[sphere]+vec3(.42)+uv*.14, .0);
 				particle_vel[index] = vec4(.0);
 			}
+			for(int i = 0; i<3; ++i)
+				affine[index*3+i] = vec4(.0);
+		} else {
+			particle_pos[index] = particle_pos[index+256*1024*(scene+1)];
+			particle_vel[index] = particle_vel[index+256*1024*(scene+1)];
+			for(int i = 0; i<3; ++i)
+				affine[index*3+i] = affine[index*3+i+3*256*1024*(scene+1)];
 		}
+	} else if(mode == 3) {
+		particle_pos[index+256*1024*(scene+1)] = particle_pos[index];
+		particle_vel[index+256*1024*(scene+1)] = particle_vel[index];
+		for(int i = 0; i<3; ++i)
+			affine[index*3+i+3*256*1024*(scene+1)] = affine[index*3+i];
+	} else if(mode == 4) {
 		if(scene == 1) {
 			if(index>=(frame+1)*80)
 				particle_pos[index] = vec4(1e8);
@@ -238,23 +255,23 @@ void main() {
 				float ang = 2.4*r+1.9*float(frame);
 				r = sqrt(r/80.)*.01;
 				vec4 pos = vec4(.92+.01*cos(ang*1924.9), .5-r*cos(ang), .5-r*sin(ang), 1.);
-				vec4 vel = vec4(-.8+.1*sin(float(index)*491.), .5+.1*cos(float(index)*1999.), .0, .0)*.5;
-				if((index%2)==1) {pos.x = 1.-pos.x; pos.y-=.02; vel.x = -vel.x;}
+				vec4 vel = vec4(-.7, .4, .0, .0)*.5;
+				if((index%2)==1) {pos.x = 1.-pos.x; pos.y-=.03; vel.x = -vel.x;}
 				particle_pos[index] = pos;
 				particle_vel[index] = vel;
 			}
-		} else if(scene == 3) {
+		} else if(scene == 3||scene==6||scene==8) {
 			if(index>=(frame+1)*64)
 				particle_pos[index] = vec4(1e8);
 			else if(index>=frame*64) {
 				float r = float(index-frame*64);
 				float ang = 2.4*r+1.9*float(frame);
-				vec4 pos = vec4(.07, .5+.01*cos(ang*14.125), .07+(1.-.07*2.)*r/64.+cos(ang*1942.129)*.01, 1.);
+				vec4 pos = vec4(.07, .5+.0025*cos(ang*14.125), .07+(1.-.07*2.)*r/64.+cos(ang*1942.129)*.001, 1.);
 				vec4 vel = vec4(.02, .0, .0, .0);
 				particle_pos[index] = pos;
 				particle_vel[index] = vel;
 			}
-		} else if(scene == 4) {
+		} else if(scene == 4||scene==7) {
 			if(index>=(frame+1)*128)
 				particle_pos[index] = vec4(1e8);
 			else if(index>=frame*128) {

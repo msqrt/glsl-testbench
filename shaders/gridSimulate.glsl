@@ -24,13 +24,16 @@ float solidDist(vec3 uv, float eval_t) {
 	if(scene==0) {
 		return min(length(uv-vec3(-.5, -.5, -.5))-.3, box);
 	}
-	if(scene==1||scene==2) {
+	if(scene==1) {
+		return .45-abs(uv.x);
+	}
+	if(scene==2) {
 		return box;
 	}
-	if(scene==3) {
-		return min(box,.1*(sin(uv.y*35.-uv.z*22.)+sin(uv.x*35.+uv.y*29.)+sin(uv.z*45.-uv.x*4.))+.6-5.*abs(uv.y));
+	if(scene==3||scene==6||scene==8) {
+		return min(box,.05*(2.*sin(uv.x*2.15-uv.z*4.2)+1.5*sin(uv.x*23.+uv.z*30.)+sin(uv.z*45.-uv.x*41.))+.4-3.*abs(uv.y));
 	}
-	if(scene==4) {
+	if(scene==4||scene==7) {
 		return min(box,min(min(length(uv.xz-vec2(-.1,-.24))-.1,length(uv.xz-vec2(-.1,.24))-.1),length(uv.xz-vec2(.3, .0))-.1));
 	}
 	if(scene==5) {
@@ -57,7 +60,7 @@ vec3 solidGrad(vec3 uv) {
 	return res;
 }
 
-const float density = .00001;
+const float density = .0000001;
 
 void main() {
 	ivec3 coord = ivec3(gl_GlobalInvocationID.xyz);
@@ -71,6 +74,7 @@ void main() {
 	} else if(mode == 1) { // reset
 		imageStore(velocity, coord, vec4(.0, .0,.0,.0));
 		imageStore(densityImage, coord, vec4(.0));
+		imageStore(velDifference, coord, vec4(.0));
 	} else if(mode==2) { // apply forces, set up boundary conditions
 		vec3 uv_x = uv-vec3(.5*dx,.0,.0);
 		vec3 uv_y = uv-vec3(.0,.5*dx,.0);
@@ -126,7 +130,7 @@ void main() {
 			}
 		}
 		if(scene==5)
-			closest_vel.xz -= 2.*dt*vec2(cos(float(frame)*.05), sin(float(frame)*.05));
+			closest_vel.xz -= 8.*dt*vec2(cos(float(frame)*.0862), .1*sin(float(frame)*.0862));
 		else
 			closest_vel.y -= .25*dt;
 		//closest_vel -= .05*dt*(closest_vel-visc/viscw);
@@ -155,7 +159,8 @@ void main() {
 			texelFetch(oldDensity,coord,0).w
 		);
 		//if(vol.w == .0 || dens_neg.w==.0)
-		//	imageStore(pressure, coord, vec4(.0));
+		if(frame==0)
+			imageStore(pressure, coord, vec4(.0));
 		vec3 diff_pos = vec3(
 			texelFetch(oldVelocity, coord+ivec3(1,0,0), 0).x*imageLoad(fluidVolume, coord+ivec3(1,0,0)).x,
 			texelFetch(oldVelocity, coord+ivec3(0,1,0), 0).y*imageLoad(fluidVolume, coord+ivec3(0,1,0)).y,
@@ -330,17 +335,14 @@ void main() {
 		vec3 col = vec3(1., .9, .8);
 		vec3 amb = vec3(.0005, .0014, .002)*2.;
 		if(strobo == 1) {
-			if((frame%6)<1){
-				col *= vec3(10.,9.,8.);
-				amb *= .05;
-			}
-			else {
-				col*=.01;
-			}
+			float stroboflash = 10.0*max(0.,-.5+cos(0.5+t*105./60.*20.*3.141));
+			
+			col = max(vec3(.05), col * stroboflash);
+			amb /= min(vec3(1.),max(vec3(.2),4.*stroboflash));
 		}
 		vec3 dens = vec3(1.);
 		for(int i = 0; i<256; ++i) {
-			dens = clamp(amb+ dens * clamp(1.-5.*imageLoad(shade, ivec3(pos,255-i).xzy).xxx, .0, 1.), .0, 1.);
+			dens = clamp(amb + dens * clamp(1.-5.*imageLoad(shade, ivec3(pos,255-i).xzy).xxx, .0, 1.), .0, 1.);
 			imageStore(shade, ivec3(pos,255-i).xzy, vec4(col*dens,1.));
 		}
 	}
