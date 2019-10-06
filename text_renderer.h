@@ -57,7 +57,7 @@ struct TextRenderer : public IDWriteTextRenderer {
 struct Font {
 	Font(const std::wstring& name) : fontName(name) {
 		DWriteCreateFactory(DWRITE_FACTORY_TYPE_SHARED, __uuidof(IDWriteFactory4), reinterpret_cast<IUnknown**>(&renderer.factory));
-		program = createProgram("shaders/blitVert.glsl", "", "", "", "shaders/blitFrag.glsl");
+		program = createProgram("shaders/textVert.glsl", "", "", "", "shaders/textFrag.glsl");
 	}
 	~Font() {
 		renderer.factory->Release();

@@ -12,6 +12,7 @@
 
 void setupGL(int width, int height, const std::string& title, bool fullscreen, bool show);
 void closeGL();
+bool loop();
 bool glOpen();
 void swapBuffers();
 void setTitle(const std::string& title);

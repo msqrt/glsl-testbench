@@ -132,6 +132,21 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 	return DefWindowProc(hwnd, uMsg, wParam, lParam);
 }
 
+bool loop() {
+	bool result = true;
+	MSG msg;
+	while (PeekMessage(&msg, 0, 0, 0, PM_REMOVE)) {
+		TranslateMessage(&msg);
+		DispatchMessage(&msg);
+		switch (msg.message) {
+			case WM_QUIT:
+				result = false;
+				break;
+		}
+	}
+	return result;
+}
+
 void APIENTRY glDebugCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar * message, void *) {
 
 	// format the message nicely

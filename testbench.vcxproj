@@ -76,7 +76,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <LanguageStandard>stdcpp14</LanguageStandard>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -85,7 +85,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <LanguageStandard>stdcpp14</LanguageStandard>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -97,7 +97,7 @@
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>C:\Users\frans\Documents\Visual Studio 2017\Projects\testbench;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <LanguageStandard>stdcpp14</LanguageStandard>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -113,7 +113,7 @@
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>C:\Users\frans\Documents\Visual Studio 2017\Projects\testbench;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <LanguageStandard>stdcpp14</LanguageStandard>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -125,7 +125,7 @@
     <ClCompile Include="loadgl\loadgl46.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="math_helpers.cpp" />
-    <ClCompile Include="playground.cpp" />
+    <ClCompile Include="playground\playground.cpp" />
     <ClCompile Include="text_renderer.cpp" />
     <ClCompile Include="window.cpp" />
   </ItemGroup>
@@ -140,37 +140,13 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\blitFrag.glsl" />
-    <None Include="shaders\blitFragLinear.glsl" />
-    <None Include="shaders\blitFragSubpixel.glsl" />
     <None Include="shaders\blitVert.glsl" />
-    <None Include="shaders\bookkeep.glsl" />
-    <None Include="shaders\boxFrag.glsl" />
-    <None Include="shaders\boxVert.glsl" />
-    <None Include="shaders\cubeFrag.glsl" />
-    <None Include="shaders\cubeVert.glsl" />
-    <None Include="shaders\gridBlitFrag.glsl" />
-    <None Include="shaders\gridBlitVert.glsl" />
-    <None Include="shaders\gridSimulate.glsl" />
-    <None Include="shaders\init.glsl" />
-    <None Include="shaders\marchshowfrag.glsl" />
-    <None Include="shaders\marchshowvert.glsl" />
-    <None Include="shaders\marchtrace.glsl" />
-    <None Include="shaders\p2gFrag.glsl" />
-    <None Include="shaders\p2gGeom.glsl" />
-    <None Include="shaders\p2gVert.glsl" />
-    <None Include="shaders\particleFrag.glsl" />
-    <None Include="shaders\particleSimulate.glsl" />
-    <None Include="shaders\particleVert.glsl" />
-    <None Include="shaders\simulate.glsl" />
+    <None Include="shaders\objFrag.glsl" />
+    <None Include="shaders\objGeom.glsl" />
+    <None Include="shaders\objVert.glsl" />
     <None Include="shaders\sort.glsl" />
-    <None Include="shaders\splatFrag.glsl" />
-    <None Include="shaders\splatVert.glsl" />
-    <None Include="shaders\split.glsl" />
-    <None Include="shaders\trace\blitFrag.glsl" />
-    <None Include="shaders\trace\blitVert.glsl" />
-    <None Include="shaders\trace\splatFrag.glsl" />
-    <None Include="shaders\trace\splatVert.glsl" />
-    <None Include="shaders\trace\trace.glsl" />
+    <None Include="shaders\textFrag.glsl" />
+    <None Include="shaders\textVert.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

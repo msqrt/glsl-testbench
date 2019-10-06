@@ -34,3 +34,5 @@ pienempiä:
 		tosi kiva näissä olis se, että irtois erilleen shaderin alustus ja tekstuuribindi (nyt shaderia perustaessa pitää asetella uniformit valmiiks)
 	namespace:
 		vois olla hyvä ehkä määritellä
+	warningit:
+		näitä on aika törkee kasa, pitää siivoilla pois ennen pitkää
