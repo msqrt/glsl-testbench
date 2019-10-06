@@ -1,6 +1,10 @@
 ﻿
 #include "text_renderer.h"
 
+#pragma comment(lib, "dwrite.lib")
+#pragma comment(lib, "d2d1.lib")
+#pragma comment(lib, "winmm.lib")
+
 struct GeometrySink : public ID2D1GeometrySink {
 	std::vector<std::array<D2D1_POINT_2F, 4>>& cubicSplines;
 	std::vector<std::array<D2D1_POINT_2F, 3>>& quadraticSplines;
