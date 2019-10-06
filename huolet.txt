@@ -1,0 +1,36 @@
+isoja:
+	kontekstin hanskaus:
+		haluis olla v‰h‰n niinku singleton jotta RAII pelaa kunnolla (bufferit yms tuhottas oikein)
+		C-henkisen APIn vois tietty vaan piilottaa main_crt:hen, mutta sen konfigurointi on v‰h‰ nihkeet‰ sit (reso ja fullscreen yms)
+	gl-objektit globaaleina:
+		liittyy ylemp‰‰n, gl-objekteja ei voi tietenk‰‰n luoda ennen kuin konteksti on pystyss‰, globaalit ei siis toimi
+		helpohko ratkaisu olis luoda objekti laiskasti vasta kun sen arvoa oikeasti tarvitaan
+	Framebufferit:
+		framebuffer on v‰h‰n kˆkkˆ abstraktio, haluis vaan sanoa ett‰ t‰‰ tekstuuri pistet‰‰n ny kiinni tohon ulostuloon
+		haluis sek‰ d3d-henkisen "asetetaan kaikki t‰ss‰ yhdess‰ funktiokutsussa" ett‰ gl-henkisen "saa lis‰ill‰ miten huvittaa"
+		vaatis jonkun resetFBO()-tyyppisen jutun
+	SDL:
+		windows only on v‰h‰ nolo herran vuonna 2019, pit‰is tehd‰ ainakin vaihtoehtoinen putki yleisluontoiseen k‰yttˆˆn
+	blogi/sivu:
+		tarkotushan ois innostaa tyyppej‰ koodailee """oikeeta""" gl‰‰, pit‰s kirjottaa muutamasta hauskasta keissist‰ hekumallinen case study
+		esmes shadertoyn k‰ytˆksen uudelleenkirjottaminen vois olla passeli esimerkki, ei veis paljoa koodia ja vois n‰ytt‰‰ ett‰ laajentelu k‰y helposti
+	glsl-makro 2.0:
+		on ainakin periaatteessa teht‰viss‰ fiksu systeemi jolla voi kirjottaa glsl:t suoraan cpp-filun sis‰‰n ilman ett‰ rivinumerot hukkuu;
+		makro tekee obun jossa on rivi ja filun nimi sit ku shaderia alustetaan ni stringi heitet‰‰n m‰keen ja k‰yd‰‰n lukemassa cpp-filusta kyseinen paikka.
+		valitettavasti pient‰ parsinnan vaivaa t‰m‰ teett‰‰. jos k‰ytt‰‰ laskuria eik‰ rivinumeroa, voi kans uudelleenladata lennosta.
+		(viel‰ hauska laajennus: virheilmot kommentteina rivien loppuun)
+		t‰ll‰ sais sellasen pieni-cpp-filu-vastaa-pient‰-ohjelmaa -jutun jonka kanssa ei tarttis tapella ihan hulluna ymp‰ristˆn kanssa jos haluu jakaa jonkun pienen kokeilun
+
+pienempi‰:
+	gl-objektiluokasta CRTP:
+		sais jotain vektorista bufferiksi ja stringist‰ tekstuuriksi -konstruointeja helpommin
+	bindierrorit:
+		nyt jos yritt‰‰ bindata jotain mit‰ ei ole, se vaan skipataan hiljaa -- ik‰v‰ typojen kannalta
+		jos antaa siit‰ valua gl-errorin niin tulee ongelmia jos ei k‰yt‰ kaikkea bindattua (glsl-reflektio ei palauta muuttujia joita ei oikeasti k‰ytet‰ ohjelmassa.....)
+		^ semirelevantti kun testailee juttuja ja asettaa tekstuuriluvun tilalle vakioarvon tms
+	bindless textures:
+		ois teoriassa kiva, mutta ei miss‰‰n core-versiossa
+		pit‰is kans v‰h‰n selvitell‰ ett‰ miten t‰sm‰lleen n‰‰ sais istutettua tollaseen yksinkertaseen tsydeemiin (aina residenttej‰ ainakin, mutta miten sampler statet?)
+		tosi kiva n‰iss‰ olis se, ett‰ irtois erilleen shaderin alustus ja tekstuuribindi (nyt shaderia perustaessa pit‰‰ asetella uniformit valmiiks)
+	namespace:
+		vois olla hyv‰ ehk‰ m‰‰ritell‰

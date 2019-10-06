@@ -155,8 +155,8 @@ float solidDist(vec3 uv, float eval_t) {
 	}
 	if(scene==5) {
 		float s = .0;
-		for(int i = 0; i<4; ++i)
-			s = max(s, .2-length(uv-spherecenters[i]));
+		for(int i = 0; i<1; ++i)
+			s = max(s, .35-length(uv));
 		return s;
 	}
 }
@@ -230,7 +230,7 @@ void main() {
 				int vindex = index%(64*1024);
 				int w = int(pow(float(64*1024), 1./3.));
 				vec3 uv = vec3(vindex/(w*w), (vindex/w)%w, vindex%w)/float(w);
-				particle_pos[index] = vec4(spherecenters[sphere]+vec3(.42)+uv*.14, .0);
+				particle_pos[index] = vec4(vec3(.40)+uv*.2, .0);
 				particle_vel[index] = vec4(.0);
 			}
 			for(int i = 0; i<3; ++i)
@@ -259,6 +259,8 @@ void main() {
 				if((index%2)==1) {pos.x = 1.-pos.x; pos.y-=.03; vel.x = -vel.x;}
 				particle_pos[index] = pos;
 				particle_vel[index] = vel;
+				for(int i = 0; i<3; ++i)
+					affine[index*3+i] = vec4(.0);
 			}
 		} else if(scene == 3||scene==6||scene==8) {
 			if(index>=(frame+1)*64)
@@ -270,6 +272,8 @@ void main() {
 				vec4 vel = vec4(.02, .0, .0, .0);
 				particle_pos[index] = pos;
 				particle_vel[index] = vel;
+				for(int i = 0; i<3; ++i)
+					affine[index*3+i] = vec4(.0);
 			}
 		} else if(scene == 4||scene==7) {
 			if(index>=(frame+1)*128)
@@ -281,6 +285,8 @@ void main() {
 				vec4 vel = vec4(.1, .0, .0, .0);
 				particle_pos[index] = pos;
 				particle_vel[index] = vel;
+				for(int i = 0; i<3; ++i)
+					affine[index*3+i] = vec4(.0);
 			}
 		}
 	}

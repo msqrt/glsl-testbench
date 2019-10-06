@@ -8,38 +8,50 @@
 #include "loadgl/glext.h"
 #include "loadgl/loadgl46.h"
 
+// GPU timing object
 struct TimeStamp {
-	GLuint synchronousObject, available = GL_FALSE;
-	GLint64 synchronous, asynchronous;
+	// todo: move construct, etc? might want map of string to stamp for global use
+	GLint64 asynchronous;
+	GLuint synchronousObject;
+	mutable GLuint available = GL_FALSE;
+	mutable GLint64 synchronous;
 	TimeStamp() {
+		// create GPU query
 		glCreateQueries(GL_TIMESTAMP, 1, &synchronousObject);
-		glGetInteger64v(GL_TIMESTAMP, &asynchronous);
 		glQueryCounter(synchronousObject, GL_TIMESTAMP);
+		// query CPU counter directly
+		glGetInteger64v(GL_TIMESTAMP, &asynchronous);
 	}
-	inline void check() {
-		if (available == GL_TRUE)
-			return;
-		while (available == GL_FALSE)
+	void check() const {
+		while (available == GL_FALSE) {
 			glGetQueryObjectuiv(synchronousObject, GL_QUERY_RESULT_AVAILABLE, &available);
-		glGetQueryObjecti64v(synchronousObject, GL_QUERY_RESULT, &synchronous);
+			if(available == GL_TRUE)
+				glGetQueryObjecti64v(synchronousObject, GL_QUERY_RESULT, &synchronous);
+		}
+	}
+	// latency between CPU call and GPU execution, in ms
+	double latency() const {
+		check();
+		return double(synchronous - asynchronous)*1.0e-6;
 	}
 	~TimeStamp() {
 		glDeleteQueries(1, &synchronousObject);
 	}
 };
 
-// ms
-inline double latency(TimeStamp& stamp) {
-	stamp.check();
-	return double(stamp.synchronous - stamp.asynchronous)*1.0e-6;
+// GPU time between two stamps, ms
+inline double operator-(const TimeStamp& end, const TimeStamp& begin) {
+	begin.check();
+	end.check();
+	return double(end.synchronous - begin.synchronous)*1.0e-6;
 }
 
-// ms
-inline double elapsedTime(TimeStamp& begin, TimeStamp& end) {
-	end.check();
-	if (begin.available != GL_TRUE) {
-		begin.available = GL_TRUE;
-		glGetQueryObjecti64v(begin.synchronousObject, GL_QUERY_RESULT, &begin.synchronous);
-	}
-	return double(end.synchronous - begin.synchronous)*1.0e-6;
+// GPU time between two stamps, ms
+inline double gpuTime(const TimeStamp& begin, const TimeStamp& end) {
+	return end - begin;
+}
+
+// CPU-side time between two stamps, ms
+inline double driverTime(const TimeStamp& begin, const TimeStamp& end) {
+	return double(end.asynchronous - begin.asynchronous)*1.0e-6;
 }

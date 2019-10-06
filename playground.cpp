@@ -235,7 +235,7 @@ int main_smoke() {
 			}
 		printf("max %d at %d\n", maximum, maxi);*/
 		swapBuffers();
-		prevTime = elapsedTime(start, end);
+		prevTime = end - start;
 
 		glClearColor(.0f, .0f, .0f, 1.f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -458,13 +458,13 @@ int main_particles() {
 
 		TimeStamp end;
 
-		prevTime = elapsedTime(start6, end);
+		prevTime = end - start6;
 		font.drawText(
-			std::to_wstring(elapsedTime(start, start2)) + L"\n" +
-			std::to_wstring(elapsedTime(start2, start3)) + L"\n" +
-			std::to_wstring(elapsedTime(start3, start4)) + L"\n" +
-			std::to_wstring(elapsedTime(start4, start5)) + L"\n" +
-			std::to_wstring(elapsedTime(start5, start6)) + L"\n" +
+			std::to_wstring(start2- start) + L"\n" +
+			std::to_wstring(start3 - start2) + L"\n" +
+			std::to_wstring(start4 - start3) + L"\n" +
+			std::to_wstring(start5 - start4) + L"\n" +
+			std::to_wstring(start6 - start5) + L"\n" +
 			std::to_wstring(prevTime) + L"ms", 5.f, 5.f, 15.f, screenw - 5);
 
 		/*std::vector<uint> getter(N * 8);
@@ -661,7 +661,7 @@ int main_bones() {
 
 		TimeStamp end;
 
-		prevTime = elapsedTime(start, end);
+		prevTime = end - start;
 		font.drawText(std::to_wstring(prevTime) + L"ms", 5.f, 5.f, 15.f, screenw - 5);
 
 
@@ -877,7 +877,7 @@ int main_bvh() {
 		glUniformMatrix4fv("toClip", 1, false, toClip);
 		glDrawArrays(GL_LINES, 0, N * 24 * 2);
 
-		std::wstring kek = L"⏱: " + std::to_wstring(elapsedTime(a, b));// L"factory->CreateTextLayout\n✌️🧐\n⏱: " + std::to_wstring(prevElapsed) + L"ms\nps. " + std::to_wstring(renderer.points.size()*2*sizeof(float)) + L" BYTES\n🐎🐍🏋🌿🍆🔥👏\nThere is no going back. This quality of font rendering is the new norm 😂";
+		std::wstring kek = L"⏱: " + std::to_wstring(b-a);// L"factory->CreateTextLayout\n✌️🧐\n⏱: " + std::to_wstring(prevElapsed) + L"ms\nps. " + std::to_wstring(renderer.points.size()*2*sizeof(float)) + L" BYTES\n🐎🐍🏋🌿🍆🔥👏\nThere is no going back. This quality of font rendering is the new norm 😂";
 
 		swapBuffers();
 	}
@@ -1062,12 +1062,12 @@ int main_trace() {
 		glUseProgram(blit);
 		glUniform1i("frame", frame);
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-		bindTexture("result", GL_TEXTURE_2D, result);
+		bindTexture("result", result);
 		glDrawArrays(GL_TRIANGLES, 0, 3);
 
 		TimeStamp b;
 
-		font.drawText(L"⏱: " + std::to_wstring(elapsedTime(a, b)), 5.f, 5.f, 15.f, screenw - 10, screenh - 10);
+		font.drawText(L"⏱: " + std::to_wstring(b-a), 5.f, 5.f, 15.f, screenw - 10, screenh - 10);
 
 		swapBuffers();
 

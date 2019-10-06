@@ -38,8 +38,8 @@ float solidDist(vec3 uv, float eval_t) {
 	}
 	if(scene==5) {
 		float s = .0;
-		for(int i = 0; i<4; ++i)
-			s = max(s, .2-length(uv-spherecenters[i]));
+		for(int i = 0; i<1; ++i)
+			s = max(s, .35-length(uv));
 		return s;
 	}
 }
@@ -130,7 +130,7 @@ void main() {
 			}
 		}
 		if(scene==5)
-			closest_vel.xz -= 8.*dt*vec2(cos(float(frame)*.0862), .1*sin(float(frame)*.0862));
+			closest_vel.xz -= 8.*dt*vec2(cos(float(frame)*.0431), .1*sin(float(frame)*.0431));
 		else
 			closest_vel.y -= .25*dt;
 		//closest_vel -= .05*dt*(closest_vel-visc/viscw);
@@ -332,18 +332,12 @@ void main() {
 		imageStore(velocity, coord, vec4(vel, .0));
 	} else if (mode==7) {
 		ivec2 pos = ivec2(gl_LocalInvocationIndex%256, gl_LocalInvocationIndex/256+2*gl_WorkGroupID.x);
-		vec3 col = vec3(1., .9, .8);
-		vec3 amb = vec3(.0005, .0014, .002)*2.;
-		if(strobo == 1) {
-			float stroboflash = 10.0*max(0.,-.5+cos(0.5+t*105./60.*20.*3.141));
-			
-			col = max(vec3(.05), col * stroboflash);
-			amb /= min(vec3(1.),max(vec3(.2),4.*stroboflash));
-		}
+		vec3 col = vec3(1., .9, .9);
+		vec3 amb = vec3(.0, .08, .09)*.05;
 		vec3 dens = vec3(1.);
 		for(int i = 0; i<256; ++i) {
-			dens = clamp(amb + dens * clamp(1.-5.*imageLoad(shade, ivec3(pos,255-i).xzy).xxx, .0, 1.), .0, 1.);
-			imageStore(shade, ivec3(pos,255-i).xzy, vec4(col*dens,1.));
+			dens = clamp(amb + dens * clamp(1.-4.*imageLoad(shade, ivec3(pos,255-i).xzy).xxx, .0, 1.), .0, 1.);
+			imageStore(shade, ivec3(pos,255-i).xzy, vec4(col * dens,1.));
 		}
 	}
 }

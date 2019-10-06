@@ -18,12 +18,12 @@ const int GL_WINDOW_ATTRIBUTES[] = {
 
 const int GL_CONTEXT_ATTRIBUTES[] = {
 	WGL_CONTEXT_MAJOR_VERSION_ARB, 4,
-	WGL_CONTEXT_MINOR_VERSION_ARB, 5,
+	WGL_CONTEXT_MINOR_VERSION_ARB, 6,
 	WGL_CONTEXT_PROFILE_MASK_ARB, WGL_CONTEXT_CORE_PROFILE_BIT_ARB,
 	//WGL_CONTEXT_FLAGS_ARB, WGL_CONTEXT_DEBUG_BIT_ARB,
 0 };
 
-HWND wnd;
+HWND wnd = nullptr;
 HDC dc;
 HGLRC rc;
 
@@ -63,6 +63,10 @@ bool keyHit(UINT vk_code) {
 		if (vk_code == hit[i])
 			return true;
 	return false;
+}
+
+void resetHits() {
+	hitptr = 0;
 }
 
 inline WPARAM mapExtended(WPARAM wParam, LPARAM lParam) {
@@ -122,7 +126,7 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 		if (downptr > 0) downptr--;
 		return 0;
 	case WM_KILLFOCUS:
-		hitptr = downptr = 0;
+	//	hitptr = downptr = 0;
 		return 0;
 	}
 	return DefWindowProc(hwnd, uMsg, wParam, lParam);
@@ -165,7 +169,9 @@ void APIENTRY glDebugCallback(GLenum source, GLenum type, GLuint id, GLenum seve
 GLuint vertexArray;
 GLenum* drawBuffers;
 
-void setupGL(int width, int height, const std::string& title, bool fullscreen) {
+void setupGL(int width, int height, const std::string& title, bool fullscreen, bool show) {
+
+	if (glOpen()) return;
 
 	WNDCLASSEX windowClass = { 0 };
 	windowClass.cbSize = sizeof(windowClass);
@@ -199,7 +205,7 @@ void setupGL(int width, int height, const std::string& title, bool fullscreen) {
 
 	// adjust the window borders away, center the window
 	RECT area = { 0, 0, width, height };
-	DWORD style = (fullscreen ? WS_POPUP : (WS_SYSMENU|WS_CAPTION|WS_MINIMIZEBOX)) | WS_VISIBLE;
+	const DWORD style = (fullscreen ? WS_POPUP : (WS_SYSMENU|WS_CAPTION|WS_MINIMIZEBOX)) | ((fullscreen||show)?WS_VISIBLE:0);
 	if (fullscreen) {
 		DEVMODE mode = { 0 };
 		mode.dmSize = sizeof(mode);
@@ -262,6 +268,8 @@ void setupGL(int width, int height, const std::string& title, bool fullscreen) {
 }
 
 void closeGL() {
+	if (!glOpen()) return;
+
 	glBindVertexArray(0);
 	glDeleteVertexArrays(1, &vertexArray);
 
@@ -271,6 +279,19 @@ void closeGL() {
 	wglDeleteContext(rc);
 	ReleaseDC(wnd, dc);
 	DestroyWindow(wnd);
+	wnd = nullptr;
 	UnregisterClass(TEXT("classy class"), GetModuleHandle(nullptr));
 	_CrtDumpMemoryLeaks();
+}
+
+bool glOpen() {
+	return wnd != nullptr;
+}
+
+void showWindow() {
+	ShowWindow(wnd, SW_SHOW);
+}
+
+void hideWindow() {
+	ShowWindow(wnd, SW_HIDE);
 }

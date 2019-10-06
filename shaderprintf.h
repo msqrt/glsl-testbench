@@ -199,7 +199,7 @@ inline std::string addPrintToSource(std::string source) {
 	size_t version = source.find("#version");
 	size_t extension = source.rfind("#extension"); // extensions also need to be defined before actual code
 	if (extension != std::string::npos)	version = max(extension, version);
-	size_t lineAfterVersion = 2, bufferInsertOffset = 0;
+	size_t lineAfterVersion = 1, bufferInsertOffset = 0;
 
 	if (version != std::string::npos) {
 

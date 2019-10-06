@@ -12,114 +12,88 @@ GLuint createProgram(const std::string& computePath);
 GLuint createProgram(const std::string& vertexPath, const std::string& controlPath, const std::string& evaluationPath, const std::string& geometryPath, const std::string& fragmentPath);
 
 void bindBuffer(const std::string& name, GLuint buffer);
-
-void bindTexture(const std::string& name, GLenum target, GLuint texture);
+void bindTexture(const std::string& name, GLuint texture);
+// todo: can perhaps get the access, format by reflection?
 void bindImage(const std::string& name, GLint level, GLuint texture, GLenum access, GLenum format);
 void bindImageLayer(const std::string& name, GLint level, GLint layer, GLuint texture, GLenum access, GLenum format);
 
-void bindOutputTexture(const std::string& name, GLuint texture, GLint level);
-void bindOutputRenderbuffer(const std::string& name, GLuint renderbuffer, GLint level);
+void bindOutputTexture(const std::string& name, GLuint texture, GLint level = 0);
+void bindOutputRenderbuffer(const std::string& name, GLuint renderbuffer, GLint level = 0);
 
-void glUniform1i(const std::string& name, GLint value);
-void glUniform2i(const std::string& name, GLint value1, GLint value2);
-void glUniform3i(const std::string& name, GLint value1, GLint value2, GLint value3);
-void glUniform4i(const std::string& name, GLint value1, GLint value2, GLint value3, GLint value4);
+// todo: should the RAII classes be separated into another header? someone might want to use only one of the two
+// not to be used directly ( todo: put these out of sight into a different header after finalized )
+namespace detail {
 
-void glUniform1ui(const std::string& name, GLuint value);
-void glUniform2ui(const std::string& name, GLuint value1, GLuint value2);
-void glUniform3ui(const std::string& name, GLuint value1, GLuint value2, GLuint value3);
-void glUniform4ui(const std::string& name, GLuint value1, GLuint value2, GLuint value3, GLuint value4);
+	// Generic RAII lifetime handler for GLuint-based objects; in principle, very close to unique pointers (with GLuint playing the role of a raw pointer).
+	// todo: make this CRTP instead? could be prettier, allow add special constructors more easily
+	template<GLuint(create)(void), void(destroy)(GLuint)>
+	struct GLObject {
+	public:
+		inline GLObject() { object = create(); }
+		inline ~GLObject() { if(object!=0) destroy(object); }
+		inline GLObject(const GLuint other) { object = other; }
+		inline GLObject& operator=(const GLuint other) { if (object != 0) destroy(object); object = other; return *this; }
+		inline GLObject(GLObject && other) { std::swap(object, other.object); }
+		inline GLObject& operator=(GLObject && other) { std::swap(object, other.object); return *this; }
+		inline operator GLuint() const { return object; }
+		inline operator bool() const { return object != 0; }
+	protected:
+		GLuint object = 0;
+	};
 
-void glUniform1f(const std::string& name, GLfloat value);
-void glUniform2f(const std::string& name, GLfloat value1, GLfloat value2);
-void glUniform3f(const std::string& name, GLfloat value1, GLfloat value2, GLfloat value3);
-void glUniform4f(const std::string& name, GLfloat value1, GLfloat value2, GLfloat value3, GLfloat value4);
+	// create/destroy functions for each type
+	inline GLuint createProgram() { return GLuint(0); }
+	inline void destroyProgram(GLuint o) { glDeleteProgram(o); }
+	
+	inline GLuint createFramebuffer() { GLuint o; glCreateFramebuffers(1, &o); return o; }
+	inline void destroyFramebuffer(GLuint o) { glDeleteFramebuffers(1, &o); }
 
-#define uniform_v(func, type) void glU##func(const std::string& name, GLsizei count, const type* value);
-uniform_v(niform1iv, GLint)
-uniform_v(niform2iv, GLint)
-uniform_v(niform3iv, GLint)
-uniform_v(niform4iv, GLint)
+	inline GLuint createBuffer() { GLuint o; glCreateBuffers(1, &o); return o; }
+	inline void destroyBuffer(GLuint o) { glDeleteBuffers(1, &o); }
 
-uniform_v(niform1uiv, GLuint)
-uniform_v(niform2uiv, GLuint)
-uniform_v(niform3uiv, GLuint)
-uniform_v(niform4uiv, GLuint)
+	template<GLenum target>
+	inline GLuint createTexture() { GLuint o; glCreateTextures(target, 1, &o); return o; }
+	inline void destroyTexture(GLuint o) { glDeleteTextures(1, &o); }
 
-uniform_v(niform1fv, GLfloat)
-uniform_v(niform2fv, GLfloat)
-uniform_v(niform3fv, GLfloat)
-uniform_v(niform4fv, GLfloat)
-#undef uniform_v
+	template<GLenum target>
+	inline GLuint createRenderbuffer() { GLuint o; glCreateRenderbuffers(target, 1, &o); return o; }
+	inline void destroyRenderbuffer(GLuint o) { glDeleteRenderbuffers(1, &o); }
+}
 
-#define uniform_matrix(func) void glU##func(const std::string& name, GLsizei count, GLboolean transpose, const GLfloat *value);
-uniform_matrix(niformMatrix2fv)
-uniform_matrix(niformMatrix3fv)
-uniform_matrix(niformMatrix4fv)
-uniform_matrix(niformMatrix2x3fv)
-uniform_matrix(niformMatrix3x2fv)
-uniform_matrix(niformMatrix2x4fv)
-uniform_matrix(niformMatrix4x2fv)
-uniform_matrix(niformMatrix3x4fv)
-uniform_matrix(niformMatrix4x3fv)
-#undef uniform_matrix
+// GLObject should be used via these aliases:
+using Program = detail::GLObject<detail::createProgram, detail::destroyProgram>;
+using Framebuffer = detail::GLObject <detail::createFramebuffer, detail::destroyFramebuffer>;
+using Buffer = detail::GLObject < detail::createBuffer, detail::destroyBuffer>;
+template<GLenum target> using Texture = detail::GLObject < detail::createTexture<target>, detail::destroyTexture>;
+template<GLenum target> using Renderbuffer = detail::GLObject < detail::createRenderbuffer<target>, detail::destroyRenderbuffer>;
 
-struct Program {
-	GLuint object = 0;
-	inline Program() {}
-	inline Program(const GLuint & other) { object = other; } // hurr
-	inline Program& operator=(const GLuint & other) { object = other; return *this; } // durr, thanks language for requiring copying code
-	inline Program& operator=(Program& other) {
-		std::swap(object, other.object);
-		return *this;
-	}
-	inline operator GLuint() { return object; }
-	inline operator bool() { return object != 0; }
-	inline ~Program() { glDeleteProgram(object); }
-};
-
-struct Framebuffer {
-	GLuint object = 0;
-	inline Framebuffer() { glCreateFramebuffers(1, &object); }
-	inline Framebuffer(const GLuint & other) { object = other; }
-	inline Framebuffer& operator=(Framebuffer & other) {
-		glDeleteFramebuffers(1, &object);
-		std::swap(object, other.object);
-		return *this;
-	}
-	inline Framebuffer(Framebuffer && other) { *this = other; }
-	inline operator GLuint() { return object; }
-	inline ~Framebuffer() { glDeleteFramebuffers(1, &object); }
-};
-
-struct Buffer {
-	GLuint object = 0;
-	inline Buffer() { glCreateBuffers(1, &object); }
-	inline Buffer(const GLuint & other) { object = other; }
-	inline Buffer& operator=(Buffer & other) {
-		glDeleteBuffers(1, &object);
-		std::swap(object, other.object);
-		return *this;
-	}
-	inline Buffer(Buffer && other) { *this = other; }
-	inline operator GLuint() { return object; }
-	inline ~Buffer() { glDeleteBuffers(1, &object); }
-};
-
-template <GLenum target>
-struct Texture {
-	GLuint object = 0;
-	inline Texture() { glCreateTextures(target, 1, &object); }
-	inline Texture(const GLuint & other) { object = other; }
-	inline Texture& operator=(Texture & other) {
-		glDeleteTextures(1, &object);
-		std::swap(object, other.object);
-		return *this;
-	}
-	inline Texture(Texture && other) { *this = other; }
-	inline operator GLuint() { return object; }
-	inline ~Texture() { glDeleteTextures(1, &object); }
-};
 Texture<GL_TEXTURE_2D> loadImage(const std::string& path);
 Texture<GL_TEXTURE_2D> loadImage(const std::wstring& path);
-template<GLenum target> void bindTexture(const std::string& name, Texture<target>& texture) { bindTexture(name, target, texture); }
+
+// todo: stringviews?
+#define uniform_copy(postfix, postfix_v, type)\
+void glUniform1##postfix(const std::string& name, type value);\
+void glUniform2##postfix(const std::string& name, type value1, type value2);\
+void glUniform3##postfix(const std::string& name, type value1, type value2, type value3);\
+void glUniform4##postfix(const std::string& name, type value1, type value2, type value3, type value4);\
+void glUniform1##postfix_v(const std::string& name, GLsizei count, const type* value);\
+void glUniform2##postfix_v(const std::string& name, GLsizei count, const type* value);\
+void glUniform3##postfix_v(const std::string& name, GLsizei count, const type* value);\
+void glUniform4##postfix_v(const std::string& name, GLsizei count, const type* value);
+
+uniform_copy(i, iv, GLint)
+uniform_copy(ui, uiv, GLuint)
+uniform_copy(f, fv, GLfloat)
+#undef uniform_copy
+
+#define uniform_matrix_copy(func) void glUniformMatrix##func(const std::string& name, GLsizei count, GLboolean transpose, const GLfloat *value);
+uniform_matrix_copy(2fv)
+uniform_matrix_copy(3fv)
+uniform_matrix_copy(4fv)
+uniform_matrix_copy(2x3fv)
+uniform_matrix_copy(3x2fv)
+uniform_matrix_copy(2x4fv)
+uniform_matrix_copy(4x2fv)
+uniform_matrix_copy(3x4fv)
+uniform_matrix_copy(4x3fv)
+#undef uniform_matrix_copy

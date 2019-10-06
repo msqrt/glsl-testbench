@@ -16,7 +16,7 @@ void lookAt(float* cameraToWorld, float camx, float camy, float camz, float atx,
 
 void setupProjection(float* projection, float fov, float w_over_h, float nearPlane, float farPlane) {
 	for (int i = 0; i < 16; ++i) projection[i] = .0f;
-	const float right = nearPlane * w_over_h * atan(fov / 2.0f), bottom = nearPlane * atan(fov / 2.0f);
+	const float right = nearPlane * w_over_h * tan(fov / 2.0f), bottom = nearPlane * tan(fov / 2.0f);
 	projection[0] = nearPlane / right;
 	projection[5] = nearPlane / bottom;
 	projection[10] = -(farPlane + nearPlane) / (farPlane - nearPlane);
