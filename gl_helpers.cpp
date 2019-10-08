@@ -167,6 +167,20 @@ void bindImageLayer(const std::string& name, GLint level, GLint layer, GLuint te
 	//printf("layer %d of image %s bound to image unit %d!\n", layer, name.c_str(), unit);
 }
 
+void viewportFromTexture(GLuint texture, GLint level) {
+	GLint width, height;
+	glGetTextureLevelParameteriv(texture, level, GL_TEXTURE_WIDTH, &width);
+	glGetTextureLevelParameteriv(texture, level, GL_TEXTURE_HEIGHT, &height);
+	glViewport(0, 0, width, height);
+}
+
+void viewportFromRenderbuffer(GLuint renderbuffer) {
+	GLint width, height;
+	glGetRenderbufferParameteriv(renderbuffer, GL_RENDERBUFFER_WIDTH, &width);
+	glGetRenderbufferParameteriv(renderbuffer, GL_RENDERBUFFER_HEIGHT, &height);
+	glViewport(0, 0, width, height);
+}
+
 // sets the drawbuffers based on bound attachments.
 std::vector<GLenum> drawBuffers;
 void setDrawBuffers() {
@@ -189,22 +203,30 @@ void bindOutputTexture(const std::string& name, GLuint texture, GLint level) {
 	if (location < 0) return;
 	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + location, texture, level);
 	setDrawBuffers();
-	GLint width, height;
-	glGetTextureLevelParameteriv(texture, level, GL_TEXTURE_WIDTH, &width);
-	glGetTextureLevelParameteriv(texture, level, GL_TEXTURE_HEIGHT, &height);
-	glViewport(0, 0, width, height);
+	viewportFromTexture(texture, level);
 	//printf("texture %s bound to fragment output %d!\n", name.c_str(), location);
 }
 
-void bindOutputRenderbuffer(const std::string& name, GLuint renderbuffer, GLint level) {
+void bindOutputRenderbuffer(const std::string& name, GLuint renderbuffer) {
 	GLint location = glGetProgramResourceLocation(currentProgram(), GL_PROGRAM_OUTPUT, name.c_str());
 	if (location < 0) return;
-	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + location, renderbuffer, level);
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + location, GL_RENDERBUFFER, renderbuffer);
 	setDrawBuffers();
-	GLint width, height;
-	glGetRenderbufferParameteriv(renderbuffer, GL_RENDERBUFFER_WIDTH, &width);
-	glGetRenderbufferParameteriv(renderbuffer, GL_RENDERBUFFER_HEIGHT, &height);
-	glViewport(0, 0, width, height);
+	viewportFromRenderbuffer(renderbuffer);
+	//printf("renderbuffer %s bound to fragment output %d!\n", name.c_str(), location);
+}
+
+void bindOutputDepthTexture(GLuint texture, GLint level) {
+	glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, texture, level);
+	setDrawBuffers();
+	viewportFromTexture(texture, level);
+	//printf("texture %s bound to fragment output %d!\n", name.c_str(), location);
+}
+
+void bindOutputDepthRenderbuffer(GLuint renderbuffer) {
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, renderbuffer);
+	setDrawBuffers();
+	viewportFromRenderbuffer(renderbuffer);
 	//printf("renderbuffer %s bound to fragment output %d!\n", name.c_str(), location);
 }
 

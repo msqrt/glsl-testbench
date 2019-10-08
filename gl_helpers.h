@@ -18,7 +18,9 @@ void bindImage(const std::string& name, GLint level, GLuint texture, GLenum acce
 void bindImageLayer(const std::string& name, GLint level, GLint layer, GLuint texture, GLenum access, GLenum format);
 
 void bindOutputTexture(const std::string& name, GLuint texture, GLint level = 0);
-void bindOutputRenderbuffer(const std::string& name, GLuint renderbuffer, GLint level = 0);
+void bindOutputRenderbuffer(const std::string& name, GLuint renderbuffer);
+void bindOutputDepthTexture(GLuint texture, GLint level = 0);
+void bindOutputDepthRenderbuffer(GLuint renderbuffer);
 
 // todo: should the RAII classes be separated into another header? someone might want to use only one of the two
 // not to be used directly ( todo: put these out of sight into a different header after finalized )
