@@ -9,6 +9,8 @@ isoja:
 		framebuffer on vähän kökkö abstraktio, haluis vaan sanoa että tää tekstuuri pistetään ny kiinni tohon ulostuloon
 		haluis sekä d3d-henkisen "asetetaan kaikki tässä yhdessä funktiokutsussa" että gl-henkisen "saa lisäillä miten huvittaa"
 		vaatis jonkun resetFBO()-tyyppisen jutun
+	gl-tilakone:
+		enablet yms statet RAII-objekteilla jotka osaa revertata muutokset scopen lopussa? tms ratkaisu vois olla näppärä
 	SDL:
 		windows only on vähä nolo herran vuonna 2019, pitäis tehdä ainakin vaihtoehtoinen putki yleisluontoiseen käyttöön
 	blogi/sivu:
