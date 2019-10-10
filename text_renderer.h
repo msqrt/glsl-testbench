@@ -16,7 +16,7 @@ struct TextRenderer : public IDWriteTextRenderer {
 	IDWriteFactory* backupFactory = nullptr;
 	std::vector<D2D1_POINT_2F> points;
 
-	// these are added in pairs; pointIndices refers to the elements to be rendered with the current color
+	// these are added in pairs; pointIndices refers to the elements to be rendered with the current color (pointIndices[0]...pointIndices[1] are cubic splines of the color etc)
 	std::vector<std::array<uint32_t, 4>> pointIndices;
 	std::vector<DWRITE_COLOR_F> colors;
 
@@ -25,13 +25,13 @@ struct TextRenderer : public IDWriteTextRenderer {
 	std::vector<std::pair<uint32_t, uint32_t>> colorRanges;
 
 	// this is an index to the colorRanges buffer
-	std::map<std::pair<float, UINT16>, unsigned> glyphToOffset;
+	std::map<UINT16, unsigned> glyphToOffset;
 
 	// copied from boundingboxes/colorRanges
 	std::vector<std::pair<D2D1_POINT_2F, D2D1_POINT_2F>> currentBounds;
 	std::vector<std::pair<uint32_t, uint32_t>> currentRanges;
 
-	bool valid = false;
+	bool glyphCacheValid = false;
 
 	Buffer pointBuffer, colorBuffer, indexBuffer, boundBuffer, rangeBuffer;
 
@@ -67,7 +67,7 @@ struct Font {
 		if (renderer.backupFactory)
 			renderer.backupFactory->Release();
 	}
-	void drawText(const std::wstring& text, float x, float y, float size, float maxwidth = 1e8f, float maxheight = 1e8f);
+	void drawText(const std::wstring& text, float x, float y, float size, std::array<float, 3> color = {1.f, 1.f, 1.f}, float maxwidth = 1e8f, float maxheight = 1e8f);
 private:
 	std::wstring fontName;
 	TextRenderer renderer;

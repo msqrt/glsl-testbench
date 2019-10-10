@@ -6,42 +6,50 @@
 #pragma comment(lib, "winmm.lib")
 
 struct GeometrySink : public ID2D1GeometrySink {
-	std::vector<std::array<D2D1_POINT_2F, 4>>& cubicSplines;
-	std::vector<std::array<D2D1_POINT_2F, 3>>& quadraticSplines;
-	std::vector<std::array<D2D1_POINT_2F, 2>>& lines;
+	std::vector<std::array<D2D1_POINT_2F, 4>> cubicSplines;
+	std::vector<std::array<D2D1_POINT_2F, 3>> quadraticSplines;
+	std::vector<std::array<D2D1_POINT_2F, 2>> lines;
 
-	GeometrySink(
-		std::vector<std::array<D2D1_POINT_2F, 4>>& cubicSplines,
-		std::vector<std::array<D2D1_POINT_2F, 3>>& quadraticSplines,
-		std::vector<std::array<D2D1_POINT_2F, 2>>& lines) :
-		cubicSplines(cubicSplines),
-		quadraticSplines(quadraticSplines),
-		lines(lines)
-	{ }
-
-	D2D1_POINT_2F previous;
+	D2D1_POINT_2F previousPoint, firstPoint;
 	void AddBeziers(const D2D1_BEZIER_SEGMENT *points, UINT32 count) override {
 		for (int i = 0; i < count; ++i)
-			cubicSplines.push_back({ previous, points[i].point1, points[i].point2, previous = points[i].point3 });
+			cubicSplines.push_back({ previousPoint, points[i].point1, points[i].point2, previousPoint = points[i].point3 });
 	}
 	void AddQuadraticBeziers(const D2D1_QUADRATIC_BEZIER_SEGMENT* points, UINT32 count) override {
 		for (int i = 0; i < count; ++i)
-			quadraticSplines.push_back({ previous, points[i].point1, previous = points[i].point2 });
+			quadraticSplines.push_back({ previousPoint, points[i].point1, previousPoint = points[i].point2 });
 	}
 	void AddLines(const D2D1_POINT_2F *points, UINT32 count) override {
 		for (int i = 0; i < count; ++i)
-			lines.push_back({ previous, previous = points[i] });
+			lines.push_back({ previousPoint, previousPoint = points[i] });
 	}
 	void AddArc(const D2D1_ARC_SEGMENT* arc) override { printf("arcs not implemented!\n"); }
 	void AddLine(const D2D1_POINT_2F point) override { AddLines(&point, 1); }
 	void AddQuadraticBezier(const D2D1_QUADRATIC_BEZIER_SEGMENT *point) override { AddQuadraticBeziers(point, 1); }
 	void AddBezier(const D2D1_BEZIER_SEGMENT *point) override { AddBeziers(point, 1); }
-	D2D1_POINT_2F beginPoint;
-	void BeginFigure(D2D1_POINT_2F start, D2D1_FIGURE_BEGIN begin) override { beginPoint = previous = start; }
-	void EndFigure(D2D1_FIGURE_END end) override { AddLines(&beginPoint, 1); }
+	void BeginFigure(D2D1_POINT_2F start, D2D1_FIGURE_BEGIN begin) override { firstPoint = previousPoint = start; }
+	void EndFigure(D2D1_FIGURE_END end) override { if(end==D2D1_FIGURE_END_CLOSED) AddLines(&firstPoint, 1); }
 	HRESULT Close() override { return S_OK; }
 	void SetFillMode(D2D1_FILL_MODE fill) override {}
 	void SetSegmentFlags(D2D1_PATH_SEGMENT flags) override {}
+
+	// stores control points and returns the index ranges
+	std::array<uint32_t, 4> EmitControlPoints(std::vector<D2D1_POINT_2F>& points) {
+
+		std::array<uint32_t, 4> inds;
+		inds[0] = (uint32_t)points.size();
+		for (auto& a : cubicSplines) for (auto& p : a) points.push_back(p);
+		
+		inds[1] = (uint32_t)points.size();
+		for (auto& a : quadraticSplines) for (auto& p : a) points.push_back(p);
+		
+		inds[2] = (uint32_t)points.size();
+		for (auto& a : lines) for (auto& p : a) points.push_back(p);
+		
+		inds[3] = (uint32_t)points.size();
+		return inds;
+	}
+
 	HRESULT STDMETHODCALLTYPE QueryInterface(REFIID riid, _COM_Outptr_ void __RPC_FAR *__RPC_FAR *ppvObject) override {
 		if (!ppvObject) return E_INVALIDARG;
 		*ppvObject = NULL;
@@ -64,11 +72,11 @@ struct GeometrySink : public ID2D1GeometrySink {
 };
 
 size_t TextRenderer::updateBuffers() {
-	if (!valid) {
+	if (!glyphCacheValid) {
 		glNamedBufferData(pointBuffer, points.size() * sizeof(D2D1_POINT_2F), points.data(), GL_STATIC_DRAW);
 		glNamedBufferData(colorBuffer, colors.size() * sizeof(DWRITE_COLOR_F), colors.data(), GL_STATIC_DRAW);
 		glNamedBufferData(indexBuffer, pointIndices.size() * 4 * sizeof(uint32_t), pointIndices.data(), GL_STATIC_DRAW);
-		valid = true;
+		glyphCacheValid = true;
 	}
 	glNamedBufferData(boundBuffer, currentBounds.size() * 2 * sizeof(D2D1_POINT_2F), currentBounds.data(), GL_STREAM_DRAW);
 	glNamedBufferData(rangeBuffer, currentRanges.size() * 2 * sizeof(uint32_t), currentRanges.data(), GL_STREAM_DRAW);
@@ -80,45 +88,29 @@ size_t TextRenderer::updateBuffers() {
 
 HRESULT TextRenderer::DrawGlyphRun(void*, FLOAT baseX, FLOAT baseY, DWRITE_MEASURING_MODE mode, DWRITE_GLYPH_RUN const* run, DWRITE_GLYPH_RUN_DESCRIPTION const* runDesc, IUnknown*) {
 	
-
-	std::vector<std::array<D2D1_POINT_2F, 4>> cubicSplines;
-	std::vector<std::array<D2D1_POINT_2F, 3>> quadraticSplines;
-	std::vector<std::array<D2D1_POINT_2F, 2>> lines;
-
-	GeometrySink sink(cubicSplines, quadraticSplines, lines);
-
 	HRESULT result = DWRITE_E_NOCOLOR;
 	if (factory) {
-		IDWriteColorGlyphRunEnumerator1* enumerator;
+		IDWriteColorGlyphRunEnumerator1* enumerator = nullptr;
 		result = factory->TranslateColorGlyphRun(D2D1_POINT_2F{ baseX, baseY }, run, runDesc, DWRITE_GLYPH_IMAGE_FORMATS_TRUETYPE | DWRITE_GLYPH_IMAGE_FORMATS_COLR | DWRITE_GLYPH_IMAGE_FORMATS_CFF, mode, nullptr, 0, &enumerator);
-		if (result != DWRITE_E_NOCOLOR)
+		if (enumerator)
 			enumerator->Release();
 	}
 	if (result == DWRITE_E_NOCOLOR) {
 		for (int i = 0; i < run->glyphCount; ++i) {
 			UINT16 glyph = run->glyphIndices[i];
-			auto glyphIterator = glyphToOffset.find(std::make_pair(run->fontEmSize, glyph));
+			auto glyphIterator = glyphToOffset.find(glyph);
 			std::pair<unsigned, unsigned> range;
 			D2D1_POINT_2F low, high;
 			if (glyphIterator == glyphToOffset.end()) {
 				//printf("%d, %g\n", run->glyphIndices[i], baseX);
-				glyphIterator = glyphToOffset.insert(glyphIterator, std::make_pair(std::make_pair(run->fontEmSize, glyph), unsigned(colorRanges.size())));
+				glyphIterator = glyphToOffset.insert(glyphIterator, std::make_pair(glyph, unsigned(colorRanges.size())));
 
-				cubicSplines.clear();
-				quadraticSplines.clear();
-				lines.clear();
-
+				GeometrySink sink;
 				run->fontFace->GetGlyphRunOutline(run->fontEmSize, &glyph, nullptr, nullptr, 1, run->isSideways, run->bidiLevel, &sink);
 
-				std::array<uint32_t, 4> inds;
-				inds[0] = (uint32_t)points.size();
-				for (auto& a : cubicSplines) for (auto& p : a) points.push_back(p);
-				inds[1] = (uint32_t)points.size();
-				for (auto& a : quadraticSplines) for (auto& p : a) points.push_back(p);
-				inds[2] = (uint32_t)points.size();
-				for (auto& a : lines) for (auto& p : a) points.push_back(p);
-				inds[3] = (uint32_t)points.size();
+				std::array<uint32_t, 4> inds = sink.EmitControlPoints(points);
 
+				// if we actually have geometry
 				if (inds[3] > inds[0]) {
 					low = high = points[inds[0]];
 					for (int j = inds[0] + 1; j < inds[3]; ++j) {
@@ -134,13 +126,12 @@ HRESULT TextRenderer::DrawGlyphRun(void*, FLOAT baseX, FLOAT baseY, DWRITE_MEASU
 					}
 					pointIndices.push_back(inds);
 					colors.push_back(DWRITE_COLOR_F{ -1.0f, .0f, .0f, .0f });
-					valid = false;
+					glyphCacheValid = false;
 					range = std::make_pair(uint32_t(colors.size() - 1), uint32_t(colors.size()));
 				}
-				else {
-					low.x = low.y = high.x = high.y = .0f;
-					range = std::make_pair(uint32_t(colors.size()), uint32_t(colors.size()));
-				}
+				else
+					range = std::make_pair(0,0);
+
 				boundingBoxes.push_back(std::make_pair(low, high));
 				colorRanges.push_back(range);
 			}
@@ -163,13 +154,13 @@ HRESULT TextRenderer::DrawGlyphRun(void*, FLOAT baseX, FLOAT baseY, DWRITE_MEASU
 	else {
 		for (int i = 0; i < run->glyphCount; ++i) {
 			UINT16 glyph = run->glyphIndices[i];
-			auto glyphIterator = glyphToOffset.find(std::make_pair(run->fontEmSize, glyph));
+			auto glyphIterator = glyphToOffset.find(glyph);
 
 			std::pair<unsigned, unsigned> range;
 			D2D1_POINT_2F low, high;
 			if (glyphIterator == glyphToOffset.end()) {
 
-				glyphIterator = glyphToOffset.insert(glyphIterator, std::make_pair(std::make_pair(run->fontEmSize, glyph), unsigned(colorRanges.size())));
+				glyphIterator = glyphToOffset.insert(glyphIterator, std::make_pair(glyph, unsigned(colorRanges.size())));
 
 				range.first = colors.size();
 
@@ -179,39 +170,23 @@ HRESULT TextRenderer::DrawGlyphRun(void*, FLOAT baseX, FLOAT baseY, DWRITE_MEASU
 
 				IDWriteColorGlyphRunEnumerator1* enumerator;
 				factory->TranslateColorGlyphRun(D2D1_POINT_2F{ baseX, baseY }, &tmpRun, runDesc, DWRITE_GLYPH_IMAGE_FORMATS_TRUETYPE | DWRITE_GLYPH_IMAGE_FORMATS_COLR | DWRITE_GLYPH_IMAGE_FORMATS_CFF, mode, nullptr, 0, &enumerator);
-				//printf("SNIB\n");
-				BOOL hasRun = TRUE;
-				//enumerator->MoveNext(&hasRun);
-				//enumerator->MoveNext(&hasRun);
-
+				
 				while (true) {
 
+					BOOL hasRun;
 					enumerator->MoveNext(&hasRun);
 					if (!hasRun) break;
+
 					DWRITE_COLOR_GLYPH_RUN1 const* colorRun;
 					enumerator->GetCurrentRun(&colorRun);
-					if (colorRun->runColor.a == .0f) continue;
+					if (colorRun->runColor.a == .0f) continue; // full alpha? probably not a thing
 
 					colors.push_back(colorRun->runColor);
 
-					cubicSplines.clear();
-					quadraticSplines.clear();
-					lines.clear();
-
-					auto desc = colorRun->glyphRunDescription;
-
+					GeometrySink sink;
 					colorRun->glyphRun.fontFace->GetGlyphRunOutline(colorRun->glyphRun.fontEmSize, colorRun->glyphRun.glyphIndices, colorRun->glyphRun.glyphAdvances, colorRun->glyphRun.glyphOffsets, colorRun->glyphRun.glyphCount, colorRun->glyphRun.isSideways, colorRun->glyphRun.bidiLevel, &sink);
 
-					std::array<uint32_t, 4> inds;
-					inds[0] = (uint32_t)points.size();
-					for (auto& a : cubicSplines) for (auto& p : a) points.push_back(p);
-					inds[1] = (uint32_t)points.size();
-					for (auto& a : quadraticSplines) for (auto& p : a) points.push_back(p);
-					inds[2] = (uint32_t)points.size();
-					for (auto& a : lines) for (auto& p : a) points.push_back(p);
-					inds[3] = (uint32_t)points.size();
-
-					pointIndices.push_back(inds);
+					pointIndices.push_back(sink.EmitControlPoints(points));
 				}
 
 				enumerator->Release();
@@ -232,7 +207,7 @@ HRESULT TextRenderer::DrawGlyphRun(void*, FLOAT baseX, FLOAT baseY, DWRITE_MEASU
 					points[j].y -= low.y;
 				}
 
-				valid = false;
+				glyphCacheValid = false;
 
 				boundingBoxes.push_back(std::make_pair(low, high));
 				colorRanges.push_back(range);
@@ -294,7 +269,6 @@ HRESULT STDMETHODCALLTYPE TextRenderer::QueryInterface(REFIID riid, _COM_Outptr_
 	return E_NOINTERFACE;
 }
 
-ULONG counter = 1;
 ULONG STDMETHODCALLTYPE TextRenderer::AddRef(void) {
 	return InterlockedIncrement(&counter);
 }
@@ -305,7 +279,7 @@ ULONG STDMETHODCALLTYPE TextRenderer::Release(void) {
 	return result;
 }
 
-void Font::drawText(const std::wstring& text, float x, float y, float size, float maxwidth, float maxheight) {
+void Font::drawText(const std::wstring& text, float x, float y, float size, std::array<float,3> color, float maxwidth, float maxheight) {
 
 	if (renderer.factory) {
 		IDWriteTextFormat3* format;
@@ -357,7 +331,7 @@ void Font::drawText(const std::wstring& text, float x, float y, float size, floa
 		bindBuffer("inds", renderer.indexBuffer);
 		bindBuffer("bounds", renderer.boundBuffer);
 		bindBuffer("ranges", renderer.rangeBuffer);
-		glUniform3f("textColor", 1.f, 1.f, 1.f);
+		glUniform3fv("textColor", 1, color.data());
 		glDrawArrays(GL_TRIANGLES, 0, count * 6);
 
 		if (depthTesting)
