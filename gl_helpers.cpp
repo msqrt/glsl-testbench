@@ -184,7 +184,7 @@ void viewportFromRenderbuffer(GLuint renderbuffer) {
 }
 
 // sets the drawbuffers based on bound attachments.
-std::vector<GLenum> drawBuffers;
+static std::vector<GLenum> drawBuffers;
 void setDrawBuffers() {
 	if (drawBuffers.size() == 0) {
 		int bufferCount;

@@ -10,7 +10,9 @@ layout(triangles) in;
 layout(triangle_strip, max_vertices = 3) out;
 
 in vec3 world_position[];
+in vec2 uv_coord[];
 out vec3 albedo, position, normal_varying;
+out vec2 uv_varying;
 
 uniform int res;
 
@@ -26,6 +28,7 @@ void main() {
 	for (int i = 0; i < 3; ++i) {
 		normal_varying = normal;
 		position = world_position[i];
+		uv_varying = uv_coord[i];
 		gl_Position = pos[i];
 		EmitVertex();
 	}
