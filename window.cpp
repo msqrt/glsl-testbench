@@ -150,7 +150,7 @@ bool loop() {
 void APIENTRY glDebugCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar * message, void *) {
 
 	// format the message nicely
-	auto output = std::string("GLDEBUG: OpenGL ");
+	auto output = std::string("OpenGL ");
 
 	switch (type) {
 	case GL_DEBUG_TYPE_ERROR:					output += "error";							break;
@@ -159,7 +159,7 @@ void APIENTRY glDebugCallback(GLenum source, GLenum type, GLuint id, GLenum seve
 	case GL_DEBUG_TYPE_OTHER:					output += "issue";							break;
 	case GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR:		output += "undefined behavior";				break;
 	case GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR:		output += "deprecated behavior";			break;
-	default:									output += "unknown issue";					break;
+	default:									output += "issue(?)";						break;
 	}
 	switch (source) {
 	case GL_DEBUG_SOURCE_API:																break;

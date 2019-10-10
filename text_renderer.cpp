@@ -87,7 +87,7 @@ HRESULT TextRenderer::DrawGlyphRun(void*, FLOAT baseX, FLOAT baseY, DWRITE_MEASU
 
 	GeometrySink sink(cubicSplines, quadraticSplines, lines);
 
-	HRESULT result = factory->TranslateColorGlyphRun(D2D1_POINT_2F{ baseX, baseY }, run, runDesc, DWRITE_GLYPH_IMAGE_FORMATS_TRUETYPE | DWRITE_GLYPH_IMAGE_FORMATS_COLR | DWRITE_GLYPH_IMAGE_FORMATS_CFF, mode, nullptr, 0, &enumerator);
+	HRESULT result = DWRITE_E_NOCOLOR;// factory->TranslateColorGlyphRun(D2D1_POINT_2F{ baseX, baseY }, run, runDesc, DWRITE_GLYPH_IMAGE_FORMATS_TRUETYPE | DWRITE_GLYPH_IMAGE_FORMATS_COLR | DWRITE_GLYPH_IMAGE_FORMATS_CFF, mode, nullptr, 0, &enumerator);
 	if (result == DWRITE_E_NOCOLOR) {
 		for (int i = 0; i < run->glyphCount; ++i) {
 			UINT16 glyph = run->glyphIndices[i];
@@ -154,7 +154,7 @@ HRESULT TextRenderer::DrawGlyphRun(void*, FLOAT baseX, FLOAT baseY, DWRITE_MEASU
 				baseX += run->glyphAdvances[i];
 		}
 	}
-	else {
+	/*else {
 		enumerator->Release();
 		for (int i = 0; i < run->glyphCount; ++i) {
 			UINT16 glyph = run->glyphIndices[i];
@@ -247,7 +247,7 @@ HRESULT TextRenderer::DrawGlyphRun(void*, FLOAT baseX, FLOAT baseY, DWRITE_MEASU
 			if (run->glyphAdvances)
 				baseX += run->glyphAdvances[i]; // let's hope the bw and color fonts have the same advances
 		}
-	}
+	}*/
 	return S_OK;
 }
 
@@ -301,10 +301,11 @@ ULONG STDMETHODCALLTYPE TextRenderer::Release(void) {
 
 void Font::drawText(const std::wstring& text, float x, float y, float size, float maxwidth, float maxheight) {
 
-	IDWriteTextFormat3* format;
-	renderer.factory->CreateTextFormat(fontName.c_str(), nullptr, nullptr, 0, size, L"", &format);
+	IDWriteTextFormat* format;
+	//renderer.factory->CreateTextFormat(fontName.c_str(), nullptr, nullptr, 0, size, L"", &format);
+	renderer.factory->CreateTextFormat(fontName.c_str(), nullptr, DWRITE_FONT_WEIGHT_NORMAL, DWRITE_FONT_STYLE_NORMAL, DWRITE_FONT_STRETCH_NORMAL, size, L"", &format);
 
-	IDWriteTextLayout4* layout;
+	IDWriteTextLayout* layout;
 	renderer.factory->CreateTextLayout(text.c_str(), text.length(), format, maxwidth, maxheight, (IDWriteTextLayout**)&layout);
 
 	layout->Draw(nullptr, &renderer, x, y);

@@ -12,7 +12,7 @@
 // too bad GDI doesn't support emoji 😂 gotta deal with DW
 struct TextRenderer : public IDWriteTextRenderer {
 
-	IDWriteFactory7* factory;
+	IDWriteFactory* factory;
 	std::vector<D2D1_POINT_2F> points;
 
 	// these are added in pairs; pointIndices refers to the elements to be rendered with the current color
@@ -56,7 +56,7 @@ struct TextRenderer : public IDWriteTextRenderer {
 
 struct Font {
 	Font(const std::wstring& name) : fontName(name) {
-		DWriteCreateFactory(DWRITE_FACTORY_TYPE_SHARED, __uuidof(IDWriteFactory4), reinterpret_cast<IUnknown**>(&renderer.factory));
+		DWriteCreateFactory(DWRITE_FACTORY_TYPE_SHARED, __uuidof(IDWriteFactory), reinterpret_cast<IUnknown**>(&renderer.factory));
 		program = createProgram("shaders/textVert.glsl", "", "", "", "shaders/textFrag.glsl");
 	}
 	~Font() {

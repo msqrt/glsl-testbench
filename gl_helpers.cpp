@@ -121,6 +121,8 @@ GLuint currentProgram() {
 }
 
 // generic buffer binder for block-type buffers (shader storage, uniform)
+// TODO: is this necessary? how often do you change between these?
+// would it be confusing to have bindBuffer and bindUniformBuffer? should we have bindStorageBuffer?
 void bindBuffer(const std::string& name, GLuint buffer) {
 	const GLuint program = currentProgram();
 	GLuint index = glGetProgramResourceIndex(program, GL_SHADER_STORAGE_BLOCK, name.c_str());
