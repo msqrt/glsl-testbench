@@ -79,7 +79,7 @@ size_t TextRenderer::updateBuffers() {
 }
 
 HRESULT TextRenderer::DrawGlyphRun(void*, FLOAT baseX, FLOAT baseY, DWRITE_MEASURING_MODE mode, DWRITE_GLYPH_RUN const* run, DWRITE_GLYPH_RUN_DESCRIPTION const* runDesc, IUnknown*) {
-	IDWriteColorGlyphRunEnumerator1* enumerator;
+	
 
 	std::vector<std::array<D2D1_POINT_2F, 4>> cubicSplines;
 	std::vector<std::array<D2D1_POINT_2F, 3>> quadraticSplines;
@@ -87,7 +87,13 @@ HRESULT TextRenderer::DrawGlyphRun(void*, FLOAT baseX, FLOAT baseY, DWRITE_MEASU
 
 	GeometrySink sink(cubicSplines, quadraticSplines, lines);
 
-	HRESULT result = DWRITE_E_NOCOLOR;// factory->TranslateColorGlyphRun(D2D1_POINT_2F{ baseX, baseY }, run, runDesc, DWRITE_GLYPH_IMAGE_FORMATS_TRUETYPE | DWRITE_GLYPH_IMAGE_FORMATS_COLR | DWRITE_GLYPH_IMAGE_FORMATS_CFF, mode, nullptr, 0, &enumerator);
+	HRESULT result = DWRITE_E_NOCOLOR;
+	if (factory) {
+		IDWriteColorGlyphRunEnumerator1* enumerator;
+		result = factory->TranslateColorGlyphRun(D2D1_POINT_2F{ baseX, baseY }, run, runDesc, DWRITE_GLYPH_IMAGE_FORMATS_TRUETYPE | DWRITE_GLYPH_IMAGE_FORMATS_COLR | DWRITE_GLYPH_IMAGE_FORMATS_CFF, mode, nullptr, 0, &enumerator);
+		if (result != DWRITE_E_NOCOLOR)
+			enumerator->Release();
+	}
 	if (result == DWRITE_E_NOCOLOR) {
 		for (int i = 0; i < run->glyphCount; ++i) {
 			UINT16 glyph = run->glyphIndices[i];
@@ -154,8 +160,7 @@ HRESULT TextRenderer::DrawGlyphRun(void*, FLOAT baseX, FLOAT baseY, DWRITE_MEASU
 				baseX += run->glyphAdvances[i];
 		}
 	}
-	/*else {
-		enumerator->Release();
+	else {
 		for (int i = 0; i < run->glyphCount; ++i) {
 			UINT16 glyph = run->glyphIndices[i];
 			auto glyphIterator = glyphToOffset.find(std::make_pair(run->fontEmSize, glyph));
@@ -172,6 +177,7 @@ HRESULT TextRenderer::DrawGlyphRun(void*, FLOAT baseX, FLOAT baseY, DWRITE_MEASU
 				tmpRun.glyphIndices = &glyph;
 				tmpRun.glyphCount = 1;
 
+				IDWriteColorGlyphRunEnumerator1* enumerator;
 				factory->TranslateColorGlyphRun(D2D1_POINT_2F{ baseX, baseY }, &tmpRun, runDesc, DWRITE_GLYPH_IMAGE_FORMATS_TRUETYPE | DWRITE_GLYPH_IMAGE_FORMATS_COLR | DWRITE_GLYPH_IMAGE_FORMATS_CFF, mode, nullptr, 0, &enumerator);
 				//printf("SNIB\n");
 				BOOL hasRun = TRUE;
@@ -247,7 +253,7 @@ HRESULT TextRenderer::DrawGlyphRun(void*, FLOAT baseX, FLOAT baseY, DWRITE_MEASU
 			if (run->glyphAdvances)
 				baseX += run->glyphAdvances[i]; // let's hope the bw and color fonts have the same advances
 		}
-	}*/
+	}
 	return S_OK;
 }
 
@@ -301,14 +307,30 @@ ULONG STDMETHODCALLTYPE TextRenderer::Release(void) {
 
 void Font::drawText(const std::wstring& text, float x, float y, float size, float maxwidth, float maxheight) {
 
-	IDWriteTextFormat* format;
-	//renderer.factory->CreateTextFormat(fontName.c_str(), nullptr, nullptr, 0, size, L"", &format);
-	renderer.factory->CreateTextFormat(fontName.c_str(), nullptr, DWRITE_FONT_WEIGHT_NORMAL, DWRITE_FONT_STYLE_NORMAL, DWRITE_FONT_STRETCH_NORMAL, size, L"", &format);
+	if (renderer.factory) {
+		IDWriteTextFormat3* format;
+		renderer.factory->CreateTextFormat(fontName.c_str(), nullptr, nullptr, 0, size, L"", &format);
 
-	IDWriteTextLayout* layout;
-	renderer.factory->CreateTextLayout(text.c_str(), text.length(), format, maxwidth, maxheight, (IDWriteTextLayout**)&layout);
+		IDWriteTextLayout4* layout;
+		renderer.factory->CreateTextLayout(text.c_str(), text.length(), format, maxwidth, maxheight, (IDWriteTextLayout**)&layout);
 
-	layout->Draw(nullptr, &renderer, x, y);
+		layout->Draw(nullptr, &renderer, x, y);
+
+		format->Release();
+		layout->Release();
+	}
+	else {
+		IDWriteTextFormat* format;
+		renderer.backupFactory->CreateTextFormat(fontName.c_str(), nullptr, DWRITE_FONT_WEIGHT_NORMAL, DWRITE_FONT_STYLE_NORMAL, DWRITE_FONT_STRETCH_NORMAL, size, L"", &format);
+		IDWriteTextLayout* layout;
+		renderer.backupFactory->CreateTextLayout(text.c_str(), text.length(), format, maxwidth, maxheight, &layout);
+
+		layout->Draw(nullptr, &renderer, x, y);
+
+		format->Release();
+		layout->Release();
+	}
+
 	size_t count = renderer.updateBuffers();
 
 	if (count > 0) {
@@ -344,7 +366,4 @@ void Font::drawText(const std::wstring& text, float x, float y, float size, floa
 			glDisable(GL_BLEND);
 		glBlendFunc(orig_sfactor, orig_dfactor);
 	}
-
-	format->Release();
-	layout->Release();
 }
