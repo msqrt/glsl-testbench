@@ -96,7 +96,7 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 	case WM_SYSKEYDOWN:
 	case WM_KEYDOWN:
 		wParam = mapExtended(wParam, lParam);
-		if (!keyDown(wParam))
+		if (!keyDown((UINT)wParam))
 			down[downptr++] = hit[hitptr++] = wParam;
 		if (wParam == 'V' && (keyDown(VK_LCONTROL) || keyDown(VK_RCONTROL))) {
 			if (OpenClipboard(nullptr)) {

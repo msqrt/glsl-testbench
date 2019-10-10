@@ -22,7 +22,7 @@ const GLenum locationProperty = GL_LOCATION;
 void assignUnits(const GLuint program, const GLenum* types, const GLint typeCount) {
 	GLint unit = 0, location, type, count;
 	glGetProgramInterfaceiv(program, GL_UNIFORM, GL_ACTIVE_RESOURCES, &count);
-	for (unsigned i = 0; i < count; ++i) {
+	for (int i = 0; i < count; ++i) {
 		glGetProgramResourceiv(program, GL_UNIFORM, i, 1, &typeProperty, sizeof(type), nullptr, &type);
 		if (isOfType((GLenum)type, types, typeCount)) {
 			glGetProgramResourceiv(program, GL_UNIFORM, i, 1, &locationProperty, sizeof(location), nullptr, &location);
@@ -196,7 +196,7 @@ void setDrawBuffers() {
 		glGetFramebufferAttachmentParameteriv(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_FRAMEBUFFER_ATTACHMENT_OBJECT_TYPE, &type);
 		drawBuffers[i] = (type != GL_NONE) ? (GL_COLOR_ATTACHMENT0 + i) : GL_NONE;
 	}
-	glDrawBuffers(drawBuffers.size(), drawBuffers.data());
+	glDrawBuffers((GLsizei)drawBuffers.size(), drawBuffers.data());
 }
 
 // the bind point is chosen to also be the attachment for convenience.

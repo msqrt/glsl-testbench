@@ -12,15 +12,15 @@ struct GeometrySink : public ID2D1GeometrySink {
 
 	D2D1_POINT_2F previousPoint, firstPoint;
 	void AddBeziers(const D2D1_BEZIER_SEGMENT *points, UINT32 count) override {
-		for (int i = 0; i < count; ++i)
+		for (UINT32 i = 0; i < count; ++i)
 			cubicSplines.push_back({ previousPoint, points[i].point1, points[i].point2, previousPoint = points[i].point3 });
 	}
 	void AddQuadraticBeziers(const D2D1_QUADRATIC_BEZIER_SEGMENT* points, UINT32 count) override {
-		for (int i = 0; i < count; ++i)
+		for (UINT32 i = 0; i < count; ++i)
 			quadraticSplines.push_back({ previousPoint, points[i].point1, previousPoint = points[i].point2 });
 	}
 	void AddLines(const D2D1_POINT_2F *points, UINT32 count) override {
-		for (int i = 0; i < count; ++i)
+		for (UINT32 i = 0; i < count; ++i)
 			lines.push_back({ previousPoint, previousPoint = points[i] });
 	}
 	void AddArc(const D2D1_ARC_SEGMENT* arc) override { printf("arcs not implemented!\n"); }
@@ -95,7 +95,7 @@ HRESULT TextRenderer::DrawGlyphRun(void*, FLOAT baseX, FLOAT baseY, DWRITE_MEASU
 		if (enumerator)
 			enumerator->Release();
 	}
-	for (int i = 0; i < run->glyphCount; ++i) {
+	for (UINT32 i = 0; i < run->glyphCount; ++i) {
 		UINT16 glyph = run->glyphIndices[i];
 		auto glyphIterator = glyphToOffset.find(glyph);
 		// glyph missing from cache
@@ -115,14 +115,14 @@ HRESULT TextRenderer::DrawGlyphRun(void*, FLOAT baseX, FLOAT baseY, DWRITE_MEASU
 				if (inds[3] > inds[0]) {
 					D2D1_POINT_2F low, high;
 					low = high = points[inds[0]];
-					for (int j = inds[0] + 1; j < inds[3]; ++j) {
+					for (uint32_t j = inds[0] + 1; j < inds[3]; ++j) {
 						D2D1_POINT_2F p = points[j];
 						if (p.x < low.x) low.x = p.x;
 						if (p.y < low.y) low.y = p.y;
 						if (p.x > high.x) high.x = p.x;
 						if (p.y > high.y) high.y = p.y;
 					}
-					for (int j = inds[0]; j < inds[3]; ++j) {
+					for (UINT32 j = inds[0]; j < inds[3]; ++j) {
 						points[j].x -= low.x;
 						points[j].y -= low.y;
 					}
@@ -141,7 +141,7 @@ HRESULT TextRenderer::DrawGlyphRun(void*, FLOAT baseX, FLOAT baseY, DWRITE_MEASU
 			else {
 
 				std::pair<unsigned, unsigned> range;
-				range.first = colors.size();
+				range.first = uint32_t(colors.size());
 
 				DWRITE_GLYPH_RUN tmpRun = *run;
 				tmpRun.glyphIndices = &glyph;
@@ -169,18 +169,18 @@ HRESULT TextRenderer::DrawGlyphRun(void*, FLOAT baseX, FLOAT baseY, DWRITE_MEASU
 
 				enumerator->Release();
 
-				range.second = colors.size();
+				range.second = uint32_t(colors.size());
 
 				D2D1_POINT_2F low, high;
 				low = high = points[pointIndices[range.first][0]];
-				for (int j = pointIndices[range.first][0] + 1; j < pointIndices[range.second - 1][3]; ++j) {
+				for (uint32_t j = pointIndices[range.first][0] + 1; j < pointIndices[range.second - 1][3]; ++j) {
 					D2D1_POINT_2F p = points[j];
 					if (p.x < low.x) low.x = p.x;
 					if (p.y < low.y) low.y = p.y;
 					if (p.x > high.x) high.x = p.x;
 					if (p.y > high.y) high.y = p.y;
 				}
-				for (int j = pointIndices[range.first][0]; j < pointIndices[range.second - 1][3]; ++j) {
+				for (uint32_t j = pointIndices[range.first][0]; j < pointIndices[range.second - 1][3]; ++j) {
 					points[j].x -= low.x;
 					points[j].y -= low.y;
 				}
@@ -267,7 +267,7 @@ void Font::drawText(const std::wstring& text, float x, float y, float size, std:
 		renderer.factory->CreateTextFormat(fontName.c_str(), nullptr, nullptr, 0, size, L"", &format);
 
 		IDWriteTextLayout4* layout;
-		renderer.factory->CreateTextLayout(text.c_str(), text.length(), format, maxwidth, maxheight, (IDWriteTextLayout**)&layout);
+		renderer.factory->CreateTextLayout(text.c_str(), (UINT32)text.length(), format, maxwidth, maxheight, (IDWriteTextLayout**)&layout);
 
 		layout->Draw(nullptr, &renderer, x, y);
 
@@ -278,7 +278,7 @@ void Font::drawText(const std::wstring& text, float x, float y, float size, std:
 		IDWriteTextFormat* format;
 		renderer.backupFactory->CreateTextFormat(fontName.c_str(), nullptr, DWRITE_FONT_WEIGHT_NORMAL, DWRITE_FONT_STYLE_NORMAL, DWRITE_FONT_STRETCH_NORMAL, size, L"", &format);
 		IDWriteTextLayout* layout;
-		renderer.backupFactory->CreateTextLayout(text.c_str(), text.length(), format, maxwidth, maxheight, &layout);
+		renderer.backupFactory->CreateTextLayout(text.c_str(), (UINT32)text.length(), format, maxwidth, maxheight, &layout);
 
 		layout->Draw(nullptr, &renderer, x, y);
 
@@ -305,7 +305,7 @@ void Font::drawText(const std::wstring& text, float x, float y, float size, std:
 
 		GLint viewport[4];
 		glGetIntegerv(GL_VIEWPORT, viewport);
-		glUniform2f("screenSize", viewport[2]-viewport[0], viewport[3]-viewport[1]);
+		glUniform2f("screenSize", float(viewport[2]-viewport[0]), float(viewport[3]-viewport[1]));
 
 		bindBuffer("points", renderer.pointBuffer);
 		bindBuffer("cols", renderer.colorBuffer);
@@ -313,7 +313,7 @@ void Font::drawText(const std::wstring& text, float x, float y, float size, std:
 		bindBuffer("bounds", renderer.boundBuffer);
 		bindBuffer("ranges", renderer.rangeBuffer);
 		glUniform3fv("textColor", 1, color.data());
-		glDrawArrays(GL_TRIANGLES, 0, count * 6);
+		glDrawArrays(GL_TRIANGLES, 0, (GLsizei)count * 6);
 
 		if (depthTesting)
 			glEnable(GL_DEPTH_TEST);

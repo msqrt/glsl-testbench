@@ -56,16 +56,13 @@ struct TextRenderer : public IDWriteTextRenderer {
 };
 
 struct Font {
-	Font(const std::wstring& name) : fontName(name) {
+	Font(const std::wstring& name) : fontName(name), program(createProgram("shaders/textVert.glsl", "", "", "", "shaders/textFrag.glsl")) {
 		if(S_OK != DWriteCreateFactory(DWRITE_FACTORY_TYPE_SHARED, __uuidof(IDWriteFactory7), reinterpret_cast<IUnknown**>(&renderer.factory)))
 			DWriteCreateFactory(DWRITE_FACTORY_TYPE_SHARED, __uuidof(IDWriteFactory), reinterpret_cast<IUnknown**>(&renderer.backupFactory));
-		program = createProgram("shaders/textVert.glsl", "", "", "", "shaders/textFrag.glsl");
 	}
 	~Font() {
-		if(renderer.factory)
-			renderer.factory->Release();
-		if (renderer.backupFactory)
-			renderer.backupFactory->Release();
+		if(renderer.factory) renderer.factory->Release();
+		if (renderer.backupFactory) renderer.backupFactory->Release();
 	}
 	void drawText(const std::wstring& text, float x, float y, float size, std::array<float, 3> color = {1.f, 1.f, 1.f}, float maxwidth = 1e8f, float maxheight = 1e8f);
 private:
