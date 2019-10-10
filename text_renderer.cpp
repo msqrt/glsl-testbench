@@ -95,15 +95,16 @@ HRESULT TextRenderer::DrawGlyphRun(void*, FLOAT baseX, FLOAT baseY, DWRITE_MEASU
 		if (enumerator)
 			enumerator->Release();
 	}
-	if (result == DWRITE_E_NOCOLOR) {
-		for (int i = 0; i < run->glyphCount; ++i) {
-			UINT16 glyph = run->glyphIndices[i];
-			auto glyphIterator = glyphToOffset.find(glyph);
-			std::pair<unsigned, unsigned> range;
-			D2D1_POINT_2F low, high;
-			if (glyphIterator == glyphToOffset.end()) {
-				//printf("%d, %g\n", run->glyphIndices[i], baseX);
-				glyphIterator = glyphToOffset.insert(glyphIterator, std::make_pair(glyph, unsigned(colorRanges.size())));
+	for (int i = 0; i < run->glyphCount; ++i) {
+		UINT16 glyph = run->glyphIndices[i];
+		auto glyphIterator = glyphToOffset.find(glyph);
+		// glyph missing from cache
+		if (glyphIterator == glyphToOffset.end()) {
+
+			glyphIterator = glyphToOffset.insert(glyphIterator, std::make_pair(glyph, unsigned(colorRanges.size())));
+			glyphCacheValid = false;
+
+			if (result == DWRITE_E_NOCOLOR) {
 
 				GeometrySink sink;
 				run->fontFace->GetGlyphRunOutline(run->fontEmSize, &glyph, nullptr, nullptr, 1, run->isSideways, run->bidiLevel, &sink);
@@ -112,6 +113,7 @@ HRESULT TextRenderer::DrawGlyphRun(void*, FLOAT baseX, FLOAT baseY, DWRITE_MEASU
 
 				// if we actually have geometry
 				if (inds[3] > inds[0]) {
+					D2D1_POINT_2F low, high;
 					low = high = points[inds[0]];
 					for (int j = inds[0] + 1; j < inds[3]; ++j) {
 						D2D1_POINT_2F p = points[j];
@@ -126,42 +128,19 @@ HRESULT TextRenderer::DrawGlyphRun(void*, FLOAT baseX, FLOAT baseY, DWRITE_MEASU
 					}
 					pointIndices.push_back(inds);
 					colors.push_back(DWRITE_COLOR_F{ -1.0f, .0f, .0f, .0f });
-					glyphCacheValid = false;
-					range = std::make_pair(uint32_t(colors.size() - 1), uint32_t(colors.size()));
-				}
-				else
-					range = std::make_pair(0,0);
+					std::pair<unsigned, unsigned> range = std::make_pair(uint32_t(colors.size() - 1), uint32_t(colors.size()));
 
-				boundingBoxes.push_back(std::make_pair(low, high));
-				colorRanges.push_back(range);
+					boundingBoxes.push_back(std::make_pair(low, high));
+					colorRanges.push_back(range);
+				}
+				else {
+					boundingBoxes.push_back(std::make_pair(D2D1_POINT_2F{}, D2D1_POINT_2F{}));
+					colorRanges.push_back(std::make_pair(0, 0));
+				}
 			}
 			else {
-				unsigned offset = glyphIterator->second;
-				low = boundingBoxes[offset].first;
-				high = boundingBoxes[offset].second;
-				range = colorRanges[offset];
-			}
-			low.x += baseX; low.y += baseY;
-			high.x += baseX; high.y += baseY;
-			if (range.second > range.first) {
-				currentBounds.push_back(std::make_pair(low, high));
-				currentRanges.push_back(range);
-			}
-			if (run->glyphAdvances)
-				baseX += run->glyphAdvances[i];
-		}
-	}
-	else {
-		for (int i = 0; i < run->glyphCount; ++i) {
-			UINT16 glyph = run->glyphIndices[i];
-			auto glyphIterator = glyphToOffset.find(glyph);
 
-			std::pair<unsigned, unsigned> range;
-			D2D1_POINT_2F low, high;
-			if (glyphIterator == glyphToOffset.end()) {
-
-				glyphIterator = glyphToOffset.insert(glyphIterator, std::make_pair(glyph, unsigned(colorRanges.size())));
-
+				std::pair<unsigned, unsigned> range;
 				range.first = colors.size();
 
 				DWRITE_GLYPH_RUN tmpRun = *run;
@@ -170,7 +149,7 @@ HRESULT TextRenderer::DrawGlyphRun(void*, FLOAT baseX, FLOAT baseY, DWRITE_MEASU
 
 				IDWriteColorGlyphRunEnumerator1* enumerator;
 				factory->TranslateColorGlyphRun(D2D1_POINT_2F{ baseX, baseY }, &tmpRun, runDesc, DWRITE_GLYPH_IMAGE_FORMATS_TRUETYPE | DWRITE_GLYPH_IMAGE_FORMATS_COLR | DWRITE_GLYPH_IMAGE_FORMATS_CFF, mode, nullptr, 0, &enumerator);
-				
+
 				while (true) {
 
 					BOOL hasRun;
@@ -185,15 +164,14 @@ HRESULT TextRenderer::DrawGlyphRun(void*, FLOAT baseX, FLOAT baseY, DWRITE_MEASU
 
 					GeometrySink sink;
 					colorRun->glyphRun.fontFace->GetGlyphRunOutline(colorRun->glyphRun.fontEmSize, colorRun->glyphRun.glyphIndices, colorRun->glyphRun.glyphAdvances, colorRun->glyphRun.glyphOffsets, colorRun->glyphRun.glyphCount, colorRun->glyphRun.isSideways, colorRun->glyphRun.bidiLevel, &sink);
-
 					pointIndices.push_back(sink.EmitControlPoints(points));
 				}
 
 				enumerator->Release();
 
-				//printf("SNAB\n");
 				range.second = colors.size();
 
+				D2D1_POINT_2F low, high;
 				low = high = points[pointIndices[range.first][0]];
 				for (int j = pointIndices[range.first][0] + 1; j < pointIndices[range.second - 1][3]; ++j) {
 					D2D1_POINT_2F p = points[j];
@@ -211,23 +189,26 @@ HRESULT TextRenderer::DrawGlyphRun(void*, FLOAT baseX, FLOAT baseY, DWRITE_MEASU
 
 				boundingBoxes.push_back(std::make_pair(low, high));
 				colorRanges.push_back(range);
+			}
+		}
 
-			}
-			else {
-				unsigned offset = glyphIterator->second;
-				low = boundingBoxes[offset].first;
-				high = boundingBoxes[offset].second;
-				range = colorRanges[offset];
-			}
+		unsigned offset = glyphIterator->second;
+		std::pair<unsigned, unsigned> range = colorRanges[offset];
+
+		if (range.second > range.first) {
+			D2D1_POINT_2F low, high;
+			low = boundingBoxes[offset].first;
+			high = boundingBoxes[offset].second;
+
 			low.x += baseX; low.y += baseY;
 			high.x += baseX; high.y += baseY;
-			if (range.second > range.first) {
-				currentBounds.push_back(std::make_pair(low, high));
-				currentRanges.push_back(range);
-			}
-			if (run->glyphAdvances)
-				baseX += run->glyphAdvances[i]; // let's hope the bw and color fonts have the same advances
+
+			// these add the location+glyph to the actually rendered list
+			currentBounds.push_back(std::make_pair(low, high));
+			currentRanges.push_back(range);
 		}
+		if (run->glyphAdvances)
+			baseX += run->glyphAdvances[i];
 	}
 	return S_OK;
 }
