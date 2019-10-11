@@ -132,6 +132,7 @@
   <ItemGroup>
     <ClInclude Include="gl_helpers.h" />
     <ClInclude Include="gl_timing.h" />
+    <ClInclude Include="inline_glsl.h" />
     <ClInclude Include="loadgl\loadgl46.h" />
     <ClInclude Include="math_helpers.h" />
     <ClInclude Include="shaderprintf.h" />
