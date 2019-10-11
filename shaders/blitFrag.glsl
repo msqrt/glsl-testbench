@@ -10,11 +10,11 @@ void main() {
 	vec2 coord = uv * .5 + vec2(.5);
 	
 	if (coord.x < 1. / 4.)
-		color = vec3(abs(-.005 / abs(texture(depth, coord).x-1.)));
+		color = vec3(1.-abs(-.005 / abs(texture(depth, coord).x-1.)));
 	else if (coord.x < 2. / 4.)
-		color = texture(texcoord, coord).xyy; // color = texture(normal, coord).xyz*.5+vec3(.5);
+		color = texture(normal, coord).xyz*.5+vec3(.5);
 	else if (coord.x < 3. / 4.)
-		color = texture(texcoord, coord).xyz;
+		color = vec3(texture(texcoord, coord).xy, .0);
 	else
 		color = texture(albedo, coord).xyz;
 }
