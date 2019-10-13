@@ -7,14 +7,16 @@
 #include "math.hpp"
 #include "text_renderer.h"
 
-#include "inline_glsl.h"
-
 #include <vector>
 #include <random>
 #include <fstream>
 #include <string>
 #include <string_view>
 #include <charconv>
+
+#include <filesystem>
+
+#include "inline_glsl.h"
 
 const int screenw = 1280, screenh = 720;
 
@@ -34,32 +36,7 @@ int main() {
 
 	Program objRender = createProgram("shaders/objVert.glsl", "", "", "shaders/objGeom.glsl", "shaders/objFrag.glsl");
 	
-	Program blit = createProgram(
-		GLSL(460,
-			out vec2 uv;
-			void main() {
-				uv = vec2(gl_VertexID == 1 ? 4. : -1., gl_VertexID == 2 ? 4. : -1.);
-				gl_Position = vec4(uv, -.5, 1.);
-			}
-		)
-		, "", "", "",
-		GLSL(460,
-			uniform sampler2D albedo, normal, depth;
-
-			in vec2 uv;
-			out vec3 color;
-
-			void main() {
-				vec2 coord = uv * .5 + vec2(.5);
-				if (coord.x < 1. / 3.)
-					color = vec3(abs(-.005 / abs(texture(depth, coord).x - 1.)));
-				else if (coord.x < 2. / 3.)
-					color = texture(normal, coord).xyz*.5 + vec3(.5);
-				else
-					color = texture(albedo, coord).xyz;
-			}
-		)
-	);
+	Program blit;
 
 	loadObject();
 
@@ -83,6 +60,8 @@ int main() {
 	LARGE_INTEGER start, frequency;
 	QueryPerformanceCounter(&start);
 	QueryPerformanceFrequency(&frequency);
+
+	auto previous = std::filesystem::last_write_time(std::filesystem::path(__FILE__));
 
 	while (loop()) // stops if esc pressed or window closed
 	{
@@ -121,6 +100,41 @@ int main() {
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glViewport(0, 0, screenw, screenh); // viewport has to be set by hand :/
 
+		std::error_code ec;
+		auto fileModify = std::filesystem::last_write_time(std::filesystem::path(__FILE__), ec);
+		if (!blit || !ec && fileModify > previous) {
+			previous = fileModify;
+			printf("trying\n");
+			Program newBlit = createProgram(
+				GLSL(460,
+					out vec2 uv;
+					void main() {
+						uv = vec2(gl_VertexID == 1 ? 4. : -1., gl_VertexID == 2 ? 4. : -1.);
+						gl_Position = vec4(uv, -.5, 1.);
+					}
+				)
+				, "", "", "",
+				GLSL(460,
+					uniform sampler2D albedo, normal, depth;
+
+					in vec2 uv;
+					out vec3 color;
+
+					void main() {
+						vec2 coord = uv * .5 + vec2(.5);
+						/*if (coord.x < 1. / 3.)
+							color = vec3(abs(-.005 / abs(texture(depth, coord).x - 1.)));
+						else if (coord.x < 2. / 3.)
+							color = texture(normal, coord).xyz*.5 + vec3(.5);
+						else
+							color = texture(albedo, coord).xyz;*/
+						color = texture(albedo,coord).xyz*max(.1, dot(texture(normal, coord).xyz, normalize(vec3(1.))));
+						color = mix(color, vec3(.7, .7, .9), abs(-.005 / abs(texture(depth, coord).x - 1.)));
+					}
+					)
+				);
+			if (newBlit) std::swap(blit, newBlit);
+		}
 		glUseProgram(blit);
 		bindTexture("albedo", albedo);
 		bindTexture("normal", normal);

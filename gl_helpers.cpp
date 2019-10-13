@@ -91,20 +91,16 @@ GLuint createProgram(const std::string& computePath) {
 
 // sort all inline glsl sources; they're evaluated in an undefined order (since they're arguments) but the first differing character will be the index of the GLSL macro in the source code
 std::array<std::string,5> sortInlineSources(std::array<std::string,5>&& paths) {
-	using namespace std;
-	array<int, 5> inds;
+	std::array<int, 5> inds;
 	for (int i = 0; i < 5; ++i)
-		if (paths[i].length() > 0 && paths[i].find('\n') != string::npos)
-			inds[i] = i;
-		else
-			inds[i] = -1;
+		inds[i] = (paths[i].length() > 0 && paths[i].find('\n') != std::string::npos) ? i : -1;
 
-	sort(inds.begin(), inds.end(), [&](int a, int b) {if (a == -1) return false; if (b == -1) return true; return paths[a] < paths[b]; });
+	std::sort(inds.begin(), inds.end(), [&](int a, int b) {if (a == -1) return false; if (b == -1) return true; return paths[a] < paths[b]; });
 
 	auto result = paths;
 	int index = 0;
 	for (auto& path : result)
-		if (path.length() > 0 && path.find('\n') != string::npos)
+		if (path.length() > 0 && path.find('\n') != std::string::npos)
 			path = paths[inds[index++]];
 	return result;
 }
@@ -114,7 +110,7 @@ GLuint createProgram(const std::string& vertexPath, const std::string& controlPa
 	using namespace std;
 
 	const GLuint program = glCreateProgram();
-	const std::array<std::string,5> paths = sortInlineSources({ vertexPath, controlPath, evaluationPath, geometryPath, fragmentPath });
+	const array<string,5> paths = sortInlineSources({ vertexPath, controlPath, evaluationPath, geometryPath, fragmentPath });
 	const GLenum types[] = { GL_VERTEX_SHADER, GL_TESS_CONTROL_SHADER, GL_TESS_EVALUATION_SHADER, GL_GEOMETRY_SHADER, GL_FRAGMENT_SHADER };
 	for (int i = 0; i < 5; ++i) {
 		if (!paths[i].length()) continue;

@@ -8,9 +8,10 @@
 // debug
 #include <iostream>
 
+
 namespace detail {
 	namespace {
-		int glslCounter = 0;
+		constexpr int base = __COUNTER__+1;
 		bool isnamechar(const uint8_t c) { return std::isalnum(c) || c == '_'; }
 	};
 
@@ -22,10 +23,10 @@ namespace detail {
 			return "GLSL(" + std::to_string(index) + ") at " + std::filesystem::path(path).filename().string() + ", line " + std::to_string(macro_line) + "\n" + "#version " + std::to_string(version) + "\n#line " + std::to_string(source_line) + "\n" + src;
 		}
 
-		inlineGLSL(const std::string& path, const int line, const int version, std::string_view given_source, bool printSrc):
+		inlineGLSL(const std::string& path, const int line, const int counter, const int version, std::string_view given_source, bool printSrc):
 			source(formatSource(path,line,version,line,std::string(given_source)))
 		{
-			index = glslCounter++;
+			index = counter - base;
 			using namespace std;
 
 			// can't remove whitespace between letters, but can between letters and other characters
@@ -87,7 +88,7 @@ namespace detail {
 			auto findGlsl = [](const string& path, const string& fileString, int index) {
 				size_t findIndex = 0;
 				while (true) {
-					findIndex = fileString.find("GLSL", findIndex); // prime candidate for init-if for c++17
+					findIndex = fileString.find("GLSL", findIndex);
 					if (findIndex == string::npos) {
 						printf("couldn't locate GLSL string %d in file %s", index, path.c_str());
 						return std::make_pair(string::npos, string::npos);
@@ -152,8 +153,8 @@ namespace detail {
 	};
 }
 
-#define GLSL(version, str) detail::inlineGLSL(__FILE__, __LINE__, version, #str, false)
-#define GLSL_debug_print(version, str) detail::inlineGLSL(__FILE__, __LINE__, version, #str, true)
+#define GLSL(version, str) detail::inlineGLSL(__FILE__, __LINE__, __COUNTER__, version, #str, false)
+#define GLSL_debug_print(version, str) detail::inlineGLSL(__FILE__, __LINE__, __COUNTER__, version, #str, true)
 
 inline void dummyCompile(const std::string& str) {
 	std::cout << str << std::endl;
