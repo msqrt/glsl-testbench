@@ -41,7 +41,7 @@ GLuint createShader(const std::string& path, const GLenum shaderType) {
 	using namespace std;
 
 	// if there are line breaks, this is an inline shader instead of a file. if so, we skip the first line (it contains a name) and compile the rest. otherwise read file as source.
-	size_t search = path.find('\n');
+	const size_t search = path.find('\n');
 	const string source = search != string::npos ? path.substr(search+1) : string(istreambuf_iterator<char>(ifstream(path).rdbuf()), istreambuf_iterator<char>());
 	const GLuint shader = glCreateShader(shaderType);
 	auto source_ptr = (const GLchar*)source.c_str();
