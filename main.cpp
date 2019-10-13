@@ -34,34 +34,32 @@ int main() {
 
 	Program objRender = createProgram("shaders/objVert.glsl", "", "", "shaders/objGeom.glsl", "shaders/objFrag.glsl");
 	
-	auto vert = GLSL(460,
+	Program blit = createProgram(
+		GLSL(460,
+			out vec2 uv;
+			void main() {
+				uv = vec2(gl_VertexID == 1 ? 4. : -1., gl_VertexID == 2 ? 4. : -1.);
+				gl_Position = vec4(uv, -.5, 1.);
+			}
+		)
+		, "", "", "",
+		GLSL(460,
+			uniform sampler2D albedo, normal, depth;
 
-		out vec2 uv;
-		void main() {
-			uv = vec2(gl_VertexID == 1 ? 4. : -1., gl_VertexID == 2 ? 4. : -1.);
-			gl_Position = vec4(uv, -.5, 1.);
-		}
+			in vec2 uv;
+			out vec3 color;
+
+			void main() {
+				vec2 coord = uv * .5 + vec2(.5);
+				if (coord.x < 1. / 3.)
+					color = vec3(abs(-.005 / abs(texture(depth, coord).x - 1.)));
+				else if (coord.x < 2. / 3.)
+					color = texture(normal, coord).xyz*.5 + vec3(.5);
+				else
+					color = texture(albedo, coord).xyz;
+			}
+		)
 	);
-
-	auto frag = GLSL(460,
-
-		uniform sampler2D albedo, normal, depth;
-
-		in vec2 uv;
-		out vec3 color;
-
-		void main() {
-			vec2 coord = uv * .5 + vec2(.5);
-			if (coord.x < 1. / 3.)
-				color = vec3(abs(-.005 / abs(texture(depth, coord).x - 1.)));
-			else if (coord.x < 2. / 3.)
-				color = texture(normal, coord).xyz*.5 + vec3(.5);
-			else
-				color = texture(albedo, coord).xyz;
-		}
-	);
-
-	Program blit = createProgram(vert, "", "", "", frag);
 
 	loadObject();
 

@@ -4,6 +4,8 @@
 
 #include <fstream>
 #include <sstream>
+#include <algorithm>
+#include <array>
 
 // whenever a shader is created, we go through all of its uniforms and assign unit indices for textures and images.
 const GLenum samplerTypes[] = { GL_SAMPLER_1D, GL_SAMPLER_2D, GL_SAMPLER_3D, GL_SAMPLER_CUBE, GL_SAMPLER_1D_SHADOW, GL_SAMPLER_2D_SHADOW, GL_SAMPLER_1D_ARRAY, GL_SAMPLER_2D_ARRAY, GL_SAMPLER_CUBE_MAP_ARRAY, GL_SAMPLER_1D_ARRAY_SHADOW,GL_SAMPLER_2D_ARRAY_SHADOW, GL_SAMPLER_2D_MULTISAMPLE,GL_SAMPLER_2D_MULTISAMPLE_ARRAY, GL_SAMPLER_CUBE_SHADOW, GL_SAMPLER_CUBE_MAP_ARRAY_SHADOW, GL_SAMPLER_BUFFER, GL_SAMPLER_2D_RECT, GL_SAMPLER_2D_RECT_SHADOW, GL_INT_SAMPLER_1D, GL_INT_SAMPLER_2D, GL_INT_SAMPLER_3D, GL_INT_SAMPLER_CUBE, GL_INT_SAMPLER_1D_ARRAY, GL_INT_SAMPLER_2D_ARRAY, GL_INT_SAMPLER_CUBE_MAP_ARRAY, GL_INT_SAMPLER_2D_MULTISAMPLE, GL_INT_SAMPLER_2D_MULTISAMPLE_ARRAY, GL_INT_SAMPLER_BUFFER, GL_INT_SAMPLER_2D_RECT, GL_UNSIGNED_INT_SAMPLER_1D, GL_UNSIGNED_INT_SAMPLER_2D, GL_UNSIGNED_INT_SAMPLER_3D, GL_UNSIGNED_INT_SAMPLER_CUBE, GL_UNSIGNED_INT_SAMPLER_1D_ARRAY, GL_UNSIGNED_INT_SAMPLER_2D_ARRAY, GL_UNSIGNED_INT_SAMPLER_CUBE_MAP_ARRAY, GL_UNSIGNED_INT_SAMPLER_2D_MULTISAMPLE, GL_UNSIGNED_INT_SAMPLER_2D_MULTISAMPLE_ARRAY,GL_UNSIGNED_INT_SAMPLER_BUFFER, GL_UNSIGNED_INT_SAMPLER_2D_RECT };
@@ -87,14 +89,36 @@ GLuint createProgram(const std::string& computePath) {
 	return program;
 }
 
+// sort all inline glsl sources; they're evaluated in an undefined order (since they're arguments) but the first differing character will be the index of the GLSL macro in the source code
+std::array<std::string,5> sortInlineSources(std::array<std::string,5>&& paths) {
+	using namespace std;
+	array<int, 5> inds;
+	for (int i = 0; i < 5; ++i)
+		if (paths[i].length() > 0 && paths[i].find('\n') != string::npos)
+			inds[i] = i;
+		else
+			inds[i] = -1;
+
+	sort(inds.begin(), inds.end(), [&](int a, int b) {if (a == -1) return false; if (b == -1) return true; return paths[a] < paths[b]; });
+
+	auto result = paths;
+	int index = 0;
+	for (auto& path : result)
+		if (path.length() > 0 && path.find('\n') != string::npos)
+			path = paths[inds[index++]];
+	return result;
+}
+
 // creates a graphics program based on shaders for potentially all 5 programmable pipeline stages
 GLuint createProgram(const std::string& vertexPath, const std::string& controlPath, const std::string& evaluationPath, const std::string& geometryPath, const std::string& fragmentPath) {
 	using namespace std;
+
 	const GLuint program = glCreateProgram();
-	std::pair<std::string, GLenum> paths[] = { {vertexPath, GL_VERTEX_SHADER}, {controlPath, GL_TESS_CONTROL_SHADER}, {evaluationPath, GL_TESS_EVALUATION_SHADER}, {geometryPath, GL_GEOMETRY_SHADER}, {fragmentPath, GL_FRAGMENT_SHADER } };
-	for (auto& path : paths) {
-		if (!path.first.length()) continue;
-		GLuint shader = createShader(path.first, path.second);
+	const std::array<std::string,5> paths = sortInlineSources({ vertexPath, controlPath, evaluationPath, geometryPath, fragmentPath });
+	const GLenum types[] = { GL_VERTEX_SHADER, GL_TESS_CONTROL_SHADER, GL_TESS_EVALUATION_SHADER, GL_GEOMETRY_SHADER, GL_FRAGMENT_SHADER };
+	for (int i = 0; i < 5; ++i) {
+		if (!paths[i].length()) continue;
+		GLuint shader = createShader(paths[i], types[i]);
 		glAttachShader(program, shader);
 		glDeleteShader(shader); // deleting here is okay; the shader object is reference-counted with the programs it's attached to
 	}
@@ -107,11 +131,11 @@ GLuint createProgram(const std::string& vertexPath, const std::string& controlPa
 		string log(length + 1, '\0');
 		glGetProgramInfoLog(program, length + 1, &length, &log[0]);
 		printf("log of linking (%s,%s,%s,%s,%s):\n%s\n",
-			getFirstLine(paths[0].first).c_str(),
-			getFirstLine(paths[1].first).c_str(),
-			getFirstLine(paths[2].first).c_str(),
-			getFirstLine(paths[3].first).c_str(),
-			getFirstLine(paths[4].first).c_str(),
+			getFirstLine(vertexPath).c_str(),
+			getFirstLine(controlPath).c_str(),
+			getFirstLine(evaluationPath).c_str(),
+			getFirstLine(geometryPath).c_str(),
+			getFirstLine(fragmentPath).c_str(),
 			log.c_str());
 		glDeleteProgram(program);
 		return 0;
