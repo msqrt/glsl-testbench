@@ -32,11 +32,17 @@ void assignUnits(const GLuint program, const GLenum* types, const GLint typeCoun
 	}
 }
 
+std::string getFirstLine(const std::string& path) {
+	return path.substr(0, path.find('\n'));
+}
+
 // create a single shader object
 GLuint createShader(const std::string& path, const GLenum shaderType) {
 	using namespace std;
-	// read file, set as source
-	const string source = string(istreambuf_iterator<char>(ifstream(path).rdbuf()), istreambuf_iterator<char>());
+
+	// if there are line breaks, this is an inline shader instead of a file. if so, we skip the first line (it contains a name) and compile the rest. otherwise read file as source.
+	size_t search = path.find('\n');
+	const string source = search != string::npos ? path.substr(search+1) : string(istreambuf_iterator<char>(ifstream(path).rdbuf()), istreambuf_iterator<char>());
 	const GLuint shader = glCreateShader(shaderType);
 	auto source_ptr = (const GLchar*)source.c_str();
 
@@ -49,7 +55,7 @@ GLuint createShader(const std::string& path, const GLenum shaderType) {
 		int length; glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &length);
 		string log(length + 1, '\0');
 		glGetShaderInfoLog(shader, length + 1, &length, &log[0]);
-		printf("log of compiling %s:\n%s\n", path.c_str(), log.c_str());
+		printf("log of compiling %s:\n%s\n", getFirstLine(path).c_str(), log.c_str());
 	}
 	return shader;
 }
@@ -69,7 +75,7 @@ GLuint createProgram(const std::string& computePath) {
 		int length; glGetProgramiv(program, GL_INFO_LOG_LENGTH, &length);
 		string log(length + 1, '\0');
 		glGetProgramInfoLog(program, length + 1, &length, &log[0]);
-		printf("log of linking %s:\n%s\n", computePath.c_str(), log.c_str());
+		printf("log of linking %s:\n%s\n", getFirstLine(computePath).c_str(), log.c_str());
 		glDeleteProgram(program);
 		return 0;
 	}
@@ -85,11 +91,10 @@ GLuint createProgram(const std::string& computePath) {
 GLuint createProgram(const std::string& vertexPath, const std::string& controlPath, const std::string& evaluationPath, const std::string& geometryPath, const std::string& fragmentPath) {
 	using namespace std;
 	const GLuint program = glCreateProgram();
-	const std::string paths[] = { vertexPath, controlPath, evaluationPath, geometryPath, fragmentPath };
-	const GLenum types[] = { GL_VERTEX_SHADER, GL_TESS_CONTROL_SHADER, GL_TESS_EVALUATION_SHADER, GL_GEOMETRY_SHADER, GL_FRAGMENT_SHADER };
-	for (int i = 0; i < 5; ++i) {
-		if (!paths[i].length()) continue;
-		GLuint shader = createShader(paths[i], types[i]);
+	std::pair<std::string, GLenum> paths[] = { {vertexPath, GL_VERTEX_SHADER}, {controlPath, GL_TESS_CONTROL_SHADER}, {evaluationPath, GL_TESS_EVALUATION_SHADER}, {geometryPath, GL_GEOMETRY_SHADER}, {fragmentPath, GL_FRAGMENT_SHADER } };
+	for (auto& path : paths) {
+		if (!path.first.length()) continue;
+		GLuint shader = createShader(path.first, path.second);
 		glAttachShader(program, shader);
 		glDeleteShader(shader); // deleting here is okay; the shader object is reference-counted with the programs it's attached to
 	}
@@ -101,7 +106,13 @@ GLuint createProgram(const std::string& vertexPath, const std::string& controlPa
 		int length; glGetProgramiv(program, GL_INFO_LOG_LENGTH, &length);
 		string log(length + 1, '\0');
 		glGetProgramInfoLog(program, length + 1, &length, &log[0]);
-		printf("log of linking (%s,%s,%s,%s,%s):\n%s\n", vertexPath.c_str(), controlPath.c_str(), evaluationPath.c_str(), geometryPath.c_str(), fragmentPath.c_str(), log.c_str());
+		printf("log of linking (%s,%s,%s,%s,%s):\n%s\n",
+			getFirstLine(paths[0].first).c_str(),
+			getFirstLine(paths[1].first).c_str(),
+			getFirstLine(paths[2].first).c_str(),
+			getFirstLine(paths[3].first).c_str(),
+			getFirstLine(paths[4].first).c_str(),
+			log.c_str());
 		glDeleteProgram(program);
 		return 0;
 	}
