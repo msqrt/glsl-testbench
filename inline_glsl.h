@@ -153,8 +153,8 @@ namespace detail {
 	};
 }
 
-#define GLSL(version, str) detail::inlineGLSL(__FILE__, __LINE__, __COUNTER__, version, #str, false)
-#define GLSL_debug_print(version, str) detail::inlineGLSL(__FILE__, __LINE__, __COUNTER__, version, #str, true)
+#define GLSL(version, ...) detail::inlineGLSL(__FILE__, __LINE__, __COUNTER__, version, #__VA_ARGS__, false)
+#define GLSL_debug_print(version, ...) detail::inlineGLSL(__FILE__, __LINE__, __COUNTER__, version, #__VA_ARGS__, true)
 
 inline void dummyCompile(const std::string& str) {
 	std::cout << str << std::endl;
