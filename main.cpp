@@ -26,6 +26,9 @@ std::vector<uint32_t> indices;
 std::vector<uint32_t> material_indices;
 std::vector<float> material_albedo;
 
+void swap_if_ok(Program& old, const GLuint&& replacement) {
+	if (replacement) old = replacement;
+}
 
 int main() {
 
@@ -34,9 +37,7 @@ int main() {
 
 	dummyCompile(GLSL(460, void main() {}));
 
-	Program objRender = createProgram("shaders/objVert.glsl", "", "", "shaders/objGeom.glsl", "shaders/objFrag.glsl");
-	
-	Program blit;
+	Program objRender, blit;
 
 	loadObject();
 
@@ -68,8 +69,95 @@ int main() {
 		LARGE_INTEGER now;
 		QueryPerformanceCounter(&now);
 		float t = float(double(now.QuadPart-start.QuadPart) / double(frequency.QuadPart));
-		
+
+		std::error_code ec;
+		auto fileModify = std::filesystem::last_write_time(std::filesystem::path(__FILE__), ec);
+		const bool reloadShaders = !ec && fileModify > previous;
+		if (ec) {
+			std::cout << ec.message() << std::endl;
+		}
+		if (reloadShaders) previous = fileModify;
 		TimeStamp start;
+
+		if (!objRender || reloadShaders)
+			swap_if_ok(objRender,
+				createProgram(
+		GLSL(460,
+			layout(std430) buffer; // set as default
+
+			buffer positionBuffer{ vec4 position[]; };
+
+			uniform mat4 camToClip;
+			uniform float t;
+
+			out vec3 world_position;
+
+			void main() {
+				vec4 p = position[gl_VertexID];
+				p.xyz *= .0008;
+				world_position = p.xyz;
+				p.z += .12;
+				p.x -= .4;
+				const float c = cos(t*.5), s = sin(t*.5);
+				p.xz = mat2(c, s, -s, c) * p.xz;
+				p.y -= .3;
+				p.z -= .5;
+
+				gl_Position = camToClip * p;
+			}
+		), "", "",
+		GLSL(460,
+			layout(std430) buffer;
+
+			buffer materialIndexBuffer{ uint materialIndex[]; };
+			buffer materialAlbedoBuffer{ vec4 materialAlbedo[]; };
+
+			layout(triangles) in;
+			layout(triangle_strip, max_vertices = 3) out;
+
+			in vec3 world_position[];
+			out vec3 albedo, position, normal_varying;
+
+			uniform int res;
+			uniform float t;
+
+			void main() {
+				vec4 pos[3];
+				for (int i = 0; i < 3; ++i)
+					pos[i] = gl_in[i].gl_Position;
+
+				albedo = materialAlbedo[materialIndex[gl_PrimitiveIDIn]].xyz; // fetch albedo for triangle
+
+				vec3 normal = normalize(cross(world_position[1].xyz - world_position[0].xyz, world_position[2].xyz - world_position[0].xyz));
+
+				vec3 camera_location = vec3(.0, .3, .5);
+				const float c = cos(t*.5), s = sin(t*.5);
+				camera_location.xz = mat2(c, -s, s, c) * camera_location.xz;
+				camera_location += vec3(.4, .0, -.12);
+
+				if (dot(camera_location-world_position[0], normal) < .0) normal = -normal;
+
+				for (int i = 0; i < 3; ++i) {
+					normal_varying = normal;
+					position = world_position[i];
+					gl_Position = pos[i];
+					EmitVertex();
+				}
+				EndPrimitive();
+			}
+		), GLSL(460,
+			in vec3 albedo, position, normal_varying;
+			out vec3 color, normal;
+
+			uniform sampler2D logo;
+
+			void main() {
+				color = vec3(1.) - texture(logo, vec2(.0, 1.) + vec2(1., -1.)*clamp(position.xy*vec2(-2., 2.) - vec2(-1.0, .1), vec2(.0), vec2(1.))).xyz;
+				if (position.z < .46) color = vec3(1.);
+				color *= albedo;
+				normal = normal_varying;
+			}
+		)));
 
 		glUseProgram(objRender);
 
@@ -100,12 +188,10 @@ int main() {
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glViewport(0, 0, screenw, screenh); // viewport has to be set by hand :/
 
-		std::error_code ec;
-		auto fileModify = std::filesystem::last_write_time(std::filesystem::path(__FILE__), ec);
-		if (!blit || !ec && fileModify > previous) {
-			previous = fileModify;
-			printf("trying\n");
-			Program newBlit = createProgram(
+		if (!blit || reloadShaders)
+			swap_if_ok(
+				blit,
+				createProgram(
 				GLSL(460,
 					out vec2 uv;
 					void main() {
@@ -115,30 +201,58 @@ int main() {
 				)
 				, "", "", "",
 				GLSL(460,
-					uniform sampler2D albedo, normal, depth;
 
+					uvec4 rndseed;
+					void jenkins_mix()
+					{
+						rndseed.x -= rndseed.y; rndseed.x -= rndseed.z; rndseed.x ^= rndseed.z >> 13;
+						rndseed.y -= rndseed.z; rndseed.y -= rndseed.x; rndseed.y ^= rndseed.x << 8;
+						rndseed.z -= rndseed.x; rndseed.z -= rndseed.y; rndseed.z ^= rndseed.y >> 13;
+						rndseed.x -= rndseed.y; rndseed.x -= rndseed.z; rndseed.x ^= rndseed.z >> 12;
+						rndseed.y -= rndseed.z; rndseed.y -= rndseed.x; rndseed.y ^= rndseed.x << 16;
+						rndseed.z -= rndseed.x; rndseed.z -= rndseed.y; rndseed.z ^= rndseed.y >> 5;
+						rndseed.x -= rndseed.y; rndseed.x -= rndseed.z; rndseed.x ^= rndseed.z >> 3;
+						rndseed.y -= rndseed.z; rndseed.y -= rndseed.x; rndseed.y ^= rndseed.x << 10;
+						rndseed.z -= rndseed.x; rndseed.z -= rndseed.y; rndseed.z ^= rndseed.y >> 15;
+					}
+					void srand(uint A, uint B, uint C) { rndseed = uvec4(A, B, C, 0); jenkins_mix(); }
+
+					float rand()
+					{
+						if (0 == rndseed.w++ % 3) jenkins_mix();
+						rndseed.xyz = rndseed.yzx;
+						return float(rndseed.x) / pow(2., 32.);
+					}
+
+					uniform sampler2D albedo, normal, depth;
+					uniform float t;
 					in vec2 uv;
 					out vec3 color;
 
 					void main() {
+						srand(floatBitsToUint(t), uint(gl_FragCoord.x)+1u, uint(gl_FragCoord.y)+1u);
 						vec2 coord = uv * .5 + vec2(.5);
-						/*if (coord.x < 1. / 3.)
-							color = vec3(abs(-.005 / abs(texture(depth, coord).x - 1.)));
-						else if (coord.x < 2. / 3.)
-							color = texture(normal, coord).xyz*.5 + vec3(.5);
-						else
-							color = texture(albedo, coord).xyz;*/
-						color = texture(albedo,coord).xyz*max(.1, dot(texture(normal, coord).xyz, normalize(vec3(1.))));
-						color = mix(color, vec3(.7, .7, .9), abs(-.005 / abs(texture(depth, coord).x - 1.)));
+						vec3 n = texture(normal, coord).xyz;
+						color = texture(albedo,coord).xyz*max(.1, dot(n, normalize(vec3(1.))));
+						float curDepth = texture(depth, coord).x;
+						float ang = rand()*2.*3.141592;
+						float off = (1. + sqrt(5.)) * 3.1415926535;
+						int count = 0;
+						for (int i = 0; i < 16; ++i) {
+							ang += off;
+							vec2 offset = .05*float(i) / 15.*vec2(cos(ang), sin(ang));
+							if (texture(depth, coord + offset).x > curDepth-.001) count++;
+						}
+						color *= float(count) / 15.;
+						//color = mix(color, vec3(.7, .7, .9), abs(-.005 / abs(texture(depth, coord).x - 1.)));
 					}
 					)
-				);
-			if (newBlit) std::swap(blit, newBlit);
-		}
+				));
 		glUseProgram(blit);
 		bindTexture("albedo", albedo);
 		bindTexture("normal", normal);
 		bindTexture("depth", depth);
+		glUniform1f("t", t);
 		glDrawArrays(GL_TRIANGLES, 0, 3);
 
 		TimeStamp end;
