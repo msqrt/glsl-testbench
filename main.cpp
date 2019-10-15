@@ -137,7 +137,8 @@ int main() {
 				}
 				EndPrimitive();
 			}
-		), GLSL(460,
+		),
+		GLSL(460,
 			in vec3 albedo, position, normal_varying;
 			out vec3 color, normal;
 
@@ -149,7 +150,8 @@ int main() {
 				color *= albedo;
 				normal = normal_varying;
 			}
-		));
+		)
+		);
 
 		glUseProgram(objRender);
 
@@ -183,62 +185,62 @@ int main() {
 
 		if (reloadRequired(blit))
 			blit = createProgram(
-				GLSL(460,
-					out vec2 uv;
-					void main() {
-						uv = vec2(gl_VertexID == 1 ? 4. : -1., gl_VertexID == 2 ? 4. : -1.);
-						gl_Position = vec4(uv, -.5, 1.);
-					}
-				)
-				, "", "", "",
-				GLSL(460,
+			GLSL(460,
+				out vec2 uv;
+				void main() {
+					uv = vec2(gl_VertexID == 1 ? 4. : -1., gl_VertexID == 2 ? 4. : -1.);
+					gl_Position = vec4(uv, -.5, 1.);
+				}
+			)
+			, "", "", "",
+			GLSL(460,
 
-					uvec4 rndseed;
-					void jenkins_mix()
-					{
-						rndseed.x -= rndseed.y; rndseed.x -= rndseed.z; rndseed.x ^= rndseed.z >> 13;
-						rndseed.y -= rndseed.z; rndseed.y -= rndseed.x; rndseed.y ^= rndseed.x << 8;
-						rndseed.z -= rndseed.x; rndseed.z -= rndseed.y; rndseed.z ^= rndseed.y >> 13;
-						rndseed.x -= rndseed.y; rndseed.x -= rndseed.z; rndseed.x ^= rndseed.z >> 12;
-						rndseed.y -= rndseed.z; rndseed.y -= rndseed.x; rndseed.y ^= rndseed.x << 16;
-						rndseed.z -= rndseed.x; rndseed.z -= rndseed.y; rndseed.z ^= rndseed.y >> 5;
-						rndseed.x -= rndseed.y; rndseed.x -= rndseed.z; rndseed.x ^= rndseed.z >> 3;
-						rndseed.y -= rndseed.z; rndseed.y -= rndseed.x; rndseed.y ^= rndseed.x << 10;
-						rndseed.z -= rndseed.x; rndseed.z -= rndseed.y; rndseed.z ^= rndseed.y >> 15;
-					}
-					void srand(uint A, uint B, uint C) { rndseed = uvec4(A, B, C, 0); jenkins_mix(); }
+				uvec4 rndseed;
+				void jenkins_mix()
+				{
+					rndseed.x -= rndseed.y; rndseed.x -= rndseed.z; rndseed.x ^= rndseed.z >> 13;
+					rndseed.y -= rndseed.z; rndseed.y -= rndseed.x; rndseed.y ^= rndseed.x << 8;
+					rndseed.z -= rndseed.x; rndseed.z -= rndseed.y; rndseed.z ^= rndseed.y >> 13;
+					rndseed.x -= rndseed.y; rndseed.x -= rndseed.z; rndseed.x ^= rndseed.z >> 12;
+					rndseed.y -= rndseed.z; rndseed.y -= rndseed.x; rndseed.y ^= rndseed.x << 16;
+					rndseed.z -= rndseed.x; rndseed.z -= rndseed.y; rndseed.z ^= rndseed.y >> 5;
+					rndseed.x -= rndseed.y; rndseed.x -= rndseed.z; rndseed.x ^= rndseed.z >> 3;
+					rndseed.y -= rndseed.z; rndseed.y -= rndseed.x; rndseed.y ^= rndseed.x << 10;
+					rndseed.z -= rndseed.x; rndseed.z -= rndseed.y; rndseed.z ^= rndseed.y >> 15;
+				}
+				void srand(uint A, uint B, uint C) { rndseed = uvec4(A, B, C, 0); jenkins_mix(); }
 
-					float rand()
-					{
-						if (0 == rndseed.w++ % 3) jenkins_mix();
-						rndseed.xyz = rndseed.yzx;
-						return float(rndseed.x) / pow(2., 32.);
-					}
+				float rand()
+				{
+					if (0 == rndseed.w++ % 3) jenkins_mix();
+					rndseed.xyz = rndseed.yzx;
+					return float(rndseed.x) / pow(2., 32.);
+				}
 
-					uniform sampler2D albedo, normal, depth;
-					uniform float t;
-					in vec2 uv;
-					out vec3 color;
+				uniform sampler2D albedo, normal, depth;
+				uniform float t;
+				in vec2 uv;
+				out vec3 color;
 
-					void main() {
-						srand(floatBitsToUint(t), uint(gl_FragCoord.x)+1u, uint(gl_FragCoord.y)+1u);
-						vec2 coord = uv * .5 + vec2(.5);
-						vec3 n = texture(normal, coord).xyz;
-						color = texture(albedo,coord).xyz*max(.1, dot(n, normalize(vec3(1.))));
-						float curDepth = texture(depth, coord).x;
-						float ang = rand()*2.*3.141592;
-						float off = (1. + sqrt(5.)) * 3.1415926535;
-						int count = 0;
-						for (int i = 0; i < 16; ++i) {
-							ang += off;
-							vec2 offset = .05*float(i) / 15.*vec2(cos(ang), sin(ang));
-							if (texture(depth, coord + offset).x > curDepth-.001) count++;
-						}
-						color *= float(count) / 15.;
-						//color = mix(color, vec3(.7, .7, .9), abs(-.005 / abs(texture(depth, coord).x - 1.)));
+				void main() {
+					srand(floatBitsToUint(t), uint(gl_FragCoord.x)+1u, uint(gl_FragCoord.y)+1u);
+					vec2 coord = uv * .5 + vec2(.5);
+					vec3 n = texture(normal, coord).xyz;
+					color = texture(albedo,coord).xyz*max(.1, dot(n, normalize(vec3(1.))));
+					float curDepth = texture(depth, coord).x;
+					float ang = rand()*2.*3.141592;
+					float off = (1. + sqrt(5.)) * 3.1415926535;
+					int count = 0;
+					for (int i = 0; i < 16; ++i) {
+						ang += off;
+						vec2 offset = .05*float(i) / 15.*vec2(cos(ang), sin(ang));
+						if (texture(depth, coord + offset).x > curDepth-.001) count++;
 					}
-					)
-				);
+					color *= float(count) / 15.;
+					//color = mix(color, vec3(.7, .7, .9), abs(-.005 / abs(texture(depth, coord).x - 1.)));
+				}
+			)
+		);
 		glUseProgram(blit);
 		bindTexture("albedo", albedo);
 		bindTexture("normal", normal);
