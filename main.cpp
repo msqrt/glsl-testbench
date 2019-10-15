@@ -26,16 +26,10 @@ std::vector<uint32_t> indices;
 std::vector<uint32_t> material_indices;
 std::vector<float> material_albedo;
 
-void swap_if_ok(Program& old, const GLuint&& replacement) {
-	if (replacement) old = replacement;
-}
-
 int main() {
 
 	OpenGL context(screenw, screenh, "example");
 	Font font(L"Consolas");
-
-	dummyCompile(GLSL(460, void main() {}));
 
 	Program objRender, blit;
 
@@ -47,7 +41,6 @@ int main() {
 	glNamedBufferStorage(materialIndexBuffer, sizeof(float)*material_indices.size(), material_indices.data(), 0);
 	glNamedBufferStorage(materialAlbedoBuffer, sizeof(float)*material_albedo.size(), material_albedo.data(), 0);
 
-	Framebuffer fbo;
 	Texture<GL_TEXTURE_2D> albedo, normal, depth;
 	glTextureStorage2D(albedo, 1, GL_RGB16F, screenw, screenh);
 	glTextureStorage2D(normal, 1, GL_RGB16F, screenw, screenh);
@@ -79,8 +72,8 @@ int main() {
 		if (reloadShaders) previous = fileModify;
 		TimeStamp start;
 
-		if (!objRender || reloadShaders)
-			swap_if_ok(objRender,
+		if (reloadRequired(objRender))
+			set_if_ok(objRender,
 				createProgram(
 		GLSL(460,
 			layout(std430) buffer; // set as default
@@ -170,6 +163,7 @@ int main() {
 		glUniform1f("t", t);
 		
 		// multiple rendertargets
+		Framebuffer fbo;
 		glBindFramebuffer(GL_FRAMEBUFFER, fbo);
 		bindOutputTexture("color", albedo);
 		bindOutputTexture("normal", normal);
@@ -188,8 +182,8 @@ int main() {
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glViewport(0, 0, screenw, screenh); // viewport has to be set by hand :/
 
-		if (!blit || reloadShaders)
-			swap_if_ok(
+		if (reloadRequired(blit))
+			set_if_ok(
 				blit,
 				createProgram(
 				GLSL(460,

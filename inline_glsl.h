@@ -20,7 +20,7 @@ namespace detail {
 		int index;
 
 		std::string formatSource(const std::string& path, const int macro_line, const int version, const int source_line, const std::string& src) {
-			return "GLSL(" + std::to_string(index) + ") at " + std::filesystem::path(path).filename().string() + ", line " + std::to_string(macro_line) + "\n" + "#version " + std::to_string(version) + "\n#line " + std::to_string(source_line) + "\n" + src;
+			return "GLSL(" + std::to_string(index) + ") at " + std::filesystem::path(path).filename().string() + ", line " + std::to_string(macro_line) + "\n" + path + "\n" + "#version " + std::to_string(version) + "\n#line " + std::to_string(source_line) + "\n" + src;
 		}
 
 		inlineGLSL(const std::string& path, const int line, const int counter, const int version, std::string_view given_source, bool printSrc):
@@ -155,7 +155,3 @@ namespace detail {
 
 #define GLSL(version, ...) detail::inlineGLSL(__FILE__, __LINE__, __COUNTER__, version, #__VA_ARGS__, false)
 #define GLSL_debug_print(version, ...) detail::inlineGLSL(__FILE__, __LINE__, __COUNTER__, version, #__VA_ARGS__, true)
-
-inline void dummyCompile(const std::string& str) {
-	std::cout << str << std::endl;
-}

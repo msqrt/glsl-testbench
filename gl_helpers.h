@@ -11,6 +11,10 @@
 GLuint createProgram(const std::string& computePath);
 GLuint createProgram(const std::string& vertexPath, const std::string& controlPath, const std::string& evaluationPath, const std::string& geometryPath, const std::string& fragmentPath);
 
+bool reloadRequired(GLuint program);
+template<typename T>
+inline void set_if_ok(T& old, const GLuint&& replacement) { if (replacement) old = replacement; }
+
 void bindBuffer(const std::string& name, GLuint buffer);
 void bindTexture(const std::string& name, GLuint texture);
 // todo: can perhaps get the access, format by reflection?
@@ -68,6 +72,7 @@ using Framebuffer = detail::GLObject <detail::createFramebuffer, detail::destroy
 using Buffer = detail::GLObject < detail::createBuffer, detail::destroyBuffer>;
 template<GLenum target> using Texture = detail::GLObject < detail::createTexture<target>, detail::destroyTexture>;
 template<GLenum target> using Renderbuffer = detail::GLObject < detail::createRenderbuffer<target>, detail::destroyRenderbuffer>;
+
 
 Texture<GL_TEXTURE_2D> loadImage(const std::string& path);
 Texture<GL_TEXTURE_2D> loadImage(const std::wstring& path);
