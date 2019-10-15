@@ -303,7 +303,7 @@ void Font::drawText(const std::wstring& text, float x, float y, float size, std:
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 		if (reloadRequired(program))
-			set_if_ok(program, createProgram("shaders/textVert.glsl", "", "", "", "shaders/textFrag.glsl"));
+			program = createProgram("shaders/textVert.glsl", "", "", "", "shaders/textFrag.glsl");
 
 		glUseProgram(program);
 

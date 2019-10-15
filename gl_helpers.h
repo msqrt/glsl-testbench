@@ -12,8 +12,6 @@ GLuint createProgram(const std::string& computePath);
 GLuint createProgram(const std::string& vertexPath, const std::string& controlPath, const std::string& evaluationPath, const std::string& geometryPath, const std::string& fragmentPath);
 
 bool reloadRequired(GLuint program);
-template<typename T>
-inline void set_if_ok(T& old, const GLuint&& replacement) { if (replacement) old = replacement; }
 
 void bindBuffer(const std::string& name, GLuint buffer);
 void bindTexture(const std::string& name, GLuint texture);
@@ -32,17 +30,18 @@ namespace detail {
 
 	// Generic RAII lifetime handler for GLuint-based objects; in principle, very close to unique pointers (with GLuint playing the role of a raw pointer).
 	// todo: make this CRTP instead? could be prettier, allow add special constructors more easily
-	template<GLuint(create)(void), void(destroy)(GLuint)>
+	template<GLuint(create)(void), void(destroy)(GLuint), bool disable_zero_assign = false>
 	struct GLObject {
 	public:
-		inline GLObject() { object = create(); }
-		inline ~GLObject() { if(object!=0) destroy(object); }
-		inline GLObject(const GLuint other) { object = other; }
-		inline GLObject& operator=(const GLuint other) { if (object != 0) destroy(object); object = other; return *this; }
-		inline GLObject(GLObject && other) { std::swap(object, other.object); }
-		inline GLObject& operator=(GLObject && other) { std::swap(object, other.object); return *this; }
-		inline operator GLuint() const { return object; }
-		inline operator bool() const { return object != 0; }
+		GLObject() { object = create(); }
+		~GLObject() { if(object!=0) destroy(object); }
+		GLObject(const GLuint other) { object = other; }
+		GLObject& operator=(const GLuint other) { if (disable_zero_assign && other == 0) return *this; if (object != 0) destroy(object); object = other; return *this; }
+		GLObject(GLObject && other) { std::swap(object, other.object); }
+		GLObject& operator=(GLObject && other) { if (disable_zero_assign && other.object == 0) return *this; std::swap(object, other.object); return *this; }
+		operator GLuint() const { return object; }
+		operator bool() const { return object != 0; }
+		void reset() { if (object != 0) destroy(object); object = 0; }
 	protected:
 		GLuint object = 0;
 	};
@@ -67,7 +66,7 @@ namespace detail {
 }
 
 // GLObject should be used via these aliases:
-using Program = detail::GLObject<detail::createProgram, detail::destroyProgram>;
+using Program = detail::GLObject<detail::createProgram, detail::destroyProgram, true>; // can't set program to 0
 using Framebuffer = detail::GLObject <detail::createFramebuffer, detail::destroyFramebuffer>;
 using Buffer = detail::GLObject < detail::createBuffer, detail::destroyBuffer>;
 template<GLenum target> using Texture = detail::GLObject < detail::createTexture<target>, detail::destroyTexture>;

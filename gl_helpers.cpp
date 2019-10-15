@@ -121,7 +121,6 @@ GLuint createProgram(const std::string& computePath) {
 	const GLuint program = glCreateProgram();
 	shaderReloadState state;
 	const GLuint computeShader = createShader(computePath, GL_COMPUTE_SHADER, state);
-	shaderMap[program] = state;
 	glAttachShader(program, computeShader);
 	glLinkProgram(program);
 	glDeleteShader(computeShader);
@@ -136,6 +135,8 @@ GLuint createProgram(const std::string& computePath) {
 		glDeleteProgram(program);
 		return 0;
 	}
+
+	shaderMap[program] = state;
 
 	glUseProgram(program);
 	assignUnits(program, samplerTypes, sizeof(samplerTypes) / sizeof(GLenum));
@@ -175,7 +176,6 @@ GLuint createProgram(const std::string& vertexPath, const std::string& controlPa
 		glDeleteShader(shader); // deleting here is okay; the shader object is reference-counted with the programs it's attached to
 	}
 	glLinkProgram(program);
-	shaderMap[program] = state;
 
 	// print error log if failed to link
 	int success; glGetProgramiv(program, GL_LINK_STATUS, &success);
@@ -193,6 +193,8 @@ GLuint createProgram(const std::string& vertexPath, const std::string& controlPa
 		glDeleteProgram(program);
 		return 0;
 	}
+
+	shaderMap[program] = state;
 
 	glUseProgram(program);
 	assignUnits(program, samplerTypes, sizeof(samplerTypes) / sizeof(GLenum));

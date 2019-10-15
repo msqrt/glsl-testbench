@@ -73,8 +73,7 @@ int main() {
 		TimeStamp start;
 
 		if (reloadRequired(objRender))
-			set_if_ok(objRender,
-				createProgram(
+			objRender =	createProgram(
 		GLSL(460,
 			layout(std430) buffer; // set as default
 
@@ -150,7 +149,7 @@ int main() {
 				color *= albedo;
 				normal = normal_varying;
 			}
-		)));
+		));
 
 		glUseProgram(objRender);
 
@@ -183,9 +182,7 @@ int main() {
 		glViewport(0, 0, screenw, screenh); // viewport has to be set by hand :/
 
 		if (reloadRequired(blit))
-			set_if_ok(
-				blit,
-				createProgram(
+			blit = createProgram(
 				GLSL(460,
 					out vec2 uv;
 					void main() {
@@ -241,7 +238,7 @@ int main() {
 						//color = mix(color, vec3(.7, .7, .9), abs(-.005 / abs(texture(depth, coord).x - 1.)));
 					}
 					)
-				));
+				);
 		glUseProgram(blit);
 		bindTexture("albedo", albedo);
 		bindTexture("normal", normal);
