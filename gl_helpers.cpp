@@ -24,6 +24,22 @@ struct shaderReloadState {
 	int count = 0;
 	std::filesystem::file_time_type lastLoad;
 	std::array<std::string, 5> paths;
+
+	void addPath(const std::string& path) {
+		if (path.length() > 0)
+			for (int i = 0; i < count + 1; ++i)
+				if (i == count) {
+					paths[i] = path;
+					std::error_code ec;
+					auto fileModify = std::filesystem::last_write_time(std::filesystem::path(path), ec);
+					if (!ec && fileModify > lastLoad)
+						lastLoad = fileModify;
+					count++;
+					return;
+				}
+				else if (paths[i] == path)
+					break;
+	}
 };
 
 std::map<GLuint, shaderReloadState> shaderMap;
@@ -35,21 +51,19 @@ void pruneShaderReloadMap() {
 }
 
 bool reloadRequired(GLuint program) {
-	if (program > 0) {
-		if (auto i = shaderMap.find(program); i != shaderMap.end()) {
-			auto& state = i->second;
-			for (int j = 0; j < state.count; ++j) {
-				std::error_code ec;
-				auto fileModify = std::filesystem::last_write_time(std::filesystem::path(state.paths[j]), ec);
-				if (!ec && fileModify > state.lastLoad) {
-					state.lastLoad = fileModify;
-					return true;
-				}
+	if (program == 0) return true;
+	if (auto i = shaderMap.find(program); i != shaderMap.end()) {
+		auto& state = i->second;
+		for (int j = 0; j < state.count; ++j) {
+			std::error_code ec;
+			auto fileModify = std::filesystem::last_write_time(std::filesystem::path(state.paths[j]), ec);
+			if (!ec && fileModify > state.lastLoad) {
+				state.lastLoad = fileModify;
+				return true;
 			}
 		}
-		return false;
 	}
-	return true;
+	return false;
 }
 
 const GLenum typeProperty = GL_TYPE;
@@ -68,26 +82,7 @@ void assignUnits(const GLuint program, const GLenum* types, const GLint typeCoun
 	}
 }
 
-std::string getFirstLine(const std::string& path) {
-	return path.substr(0, path.find('\n'));
-}
-
-#include <iostream>
-void addPath(const std::string& path, shaderReloadState& state) {
-	if (path.length()>0)
-		for (int i = 0; i < state.count + 1; ++i)
-			if (i == state.count) {
-				state.paths[i] = path;
-				std::error_code ec;
-				auto fileModify = std::filesystem::last_write_time(std::filesystem::path(path), ec);
-				if (!ec && fileModify > state.lastLoad)
-					state.lastLoad = fileModify;
-				state.count++;
-				return;
-			}
-			else if (state.paths[i] == path)
-				break;
-}
+std::string getFirstLine(const std::string& path) { return path.substr(0, path.find('\n')); }
 
 // create a single shader object
 GLuint createShader(const std::string& path, const GLenum shaderType, shaderReloadState& state) {
@@ -96,7 +91,7 @@ GLuint createShader(const std::string& path, const GLenum shaderType, shaderRelo
 	// if there are line breaks, this is an inline shader instead of a file. if so, we skip the first line (it contains a name) and compile the rest. otherwise read file as source.
 	const size_t search = path.find('\n');
 	const string source = search != string::npos ? path.substr(path.find('\n', search+1)+1) : string(istreambuf_iterator<char>(ifstream(path).rdbuf()), istreambuf_iterator<char>());
-	addPath(search != string::npos ? path.substr(search + 1, path.find('\n', search + 1)-search-1) : path, state);
+	state.addPath(search != string::npos ? path.substr(search + 1, path.find('\n', search + 1)-search-1) : path);
 
 	const GLuint shader = glCreateShader(shaderType);
 	auto source_ptr = (const GLchar*)source.c_str();
@@ -119,8 +114,8 @@ GLuint createShader(const std::string& path, const GLenum shaderType, shaderRelo
 GLuint createProgram(const std::string& computePath) {
 	using namespace std;
 	const GLuint program = glCreateProgram();
-	shaderReloadState state;
-	const GLuint computeShader = createShader(computePath, GL_COMPUTE_SHADER, state);
+
+	const GLuint computeShader = createShader(computePath, GL_COMPUTE_SHADER, shaderMap[program]);
 	glAttachShader(program, computeShader);
 	glLinkProgram(program);
 	glDeleteShader(computeShader);
@@ -135,8 +130,6 @@ GLuint createProgram(const std::string& computePath) {
 		glDeleteProgram(program);
 		return 0;
 	}
-
-	shaderMap[program] = state;
 
 	glUseProgram(program);
 	assignUnits(program, samplerTypes, sizeof(samplerTypes) / sizeof(GLenum));
@@ -168,7 +161,7 @@ GLuint createProgram(const std::string& vertexPath, const std::string& controlPa
 	const GLuint program = glCreateProgram();
 	const array<string,5> paths = sortInlineSources({ vertexPath, controlPath, evaluationPath, geometryPath, fragmentPath });
 	const GLenum types[] = { GL_VERTEX_SHADER, GL_TESS_CONTROL_SHADER, GL_TESS_EVALUATION_SHADER, GL_GEOMETRY_SHADER, GL_FRAGMENT_SHADER };
-	shaderReloadState state;
+	auto& state = shaderMap[program];
 	for (int i = 0; i < 5; ++i) {
 		if (!paths[i].length()) continue;
 		GLuint shader = createShader(paths[i], types[i], state);
@@ -193,8 +186,6 @@ GLuint createProgram(const std::string& vertexPath, const std::string& controlPa
 		glDeleteProgram(program);
 		return 0;
 	}
-
-	shaderMap[program] = state;
 
 	glUseProgram(program);
 	assignUnits(program, samplerTypes, sizeof(samplerTypes) / sizeof(GLenum));
