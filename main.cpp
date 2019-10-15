@@ -65,10 +65,11 @@ int main() {
 
 		TimeStamp start;
 
-		if (reloadRequired(objRender))
-			objRender =	createProgram(
-		GLSL(460,
-			layout(std430) buffer; // set as default
+		if (!objRender) {
+			std::cout << "only beginning?" << std::endl;
+			objRender = createProgram(
+				GLSL(460,
+					layout(std430) buffer; // set as default
 
 			buffer positionBuffer{ vec4 position[]; };
 
@@ -90,9 +91,9 @@ int main() {
 
 				gl_Position = camToClip * p;
 			}
-		), "", "",
-		GLSL(460,
-			layout(std430) buffer;
+			), "", "",
+				GLSL(460,
+					layout(std430) buffer;
 
 			buffer materialIndexBuffer{ uint materialIndex[]; };
 			buffer materialAlbedoBuffer{ vec4 materialAlbedo[]; };
@@ -120,7 +121,7 @@ int main() {
 				camera_location.xz = mat2(c, -s, s, c) * camera_location.xz;
 				camera_location += vec3(.4, .0, -.12);
 
-				if (dot(camera_location-world_position[0], normal) < .0) normal = -normal;
+				if (dot(camera_location - world_position[0], normal) < .0) normal = -normal;
 
 				for (int i = 0; i < 3; ++i) {
 					normal_varying = normal;
@@ -130,22 +131,22 @@ int main() {
 				}
 				EndPrimitive();
 			}
-		),
-		GLSL(460,
-			in vec3 albedo, position, normal_varying;
+			),
+				GLSL(460,
+					in vec3 albedo, position, normal_varying;
 			out vec3 color, normal;
 
 			uniform sampler2D logo;
 
 			void main() {
-				color = vec3(1.) - texture(logo, vec2(.0, 1.) + vec2(1., -1.)*clamp(position.xy*vec2(-2., 2.) - vec2(-1.0, .1), vec2(.0), vec2(1.))).xyz;
+				color = vec3(1.) - texture(logo, vec2(.0, 1.0) + vec2(1., -1.)*clamp(position.xy*vec2(-2., 2.) - vec2(-1.0, .1), vec2(.0), vec2(1.))).xyz;
 				if (position.z < .46) color = vec3(1.);
 				color *= albedo;
 				normal = normal_varying;
 			}
-		)
-		);
-
+			)
+				);
+		}
 		glUseProgram(objRender);
 
 		// object binds
@@ -176,7 +177,7 @@ int main() {
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glViewport(0, 0, screenw, screenh); // viewport has to be set by hand :/
 
-		if (reloadRequired(blit))
+		if (!blit)
 			blit = createProgram(
 			GLSL(460,
 				out vec2 uv;
