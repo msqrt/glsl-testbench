@@ -63,13 +63,6 @@ int main() {
 		QueryPerformanceCounter(&now);
 		float t = float(double(now.QuadPart-start.QuadPart) / double(frequency.QuadPart));
 
-		std::error_code ec;
-		auto fileModify = std::filesystem::last_write_time(std::filesystem::path(__FILE__), ec);
-		const bool reloadShaders = !ec && fileModify > previous;
-		if (ec) {
-			std::cout << ec.message() << std::endl;
-		}
-		if (reloadShaders) previous = fileModify;
 		TimeStamp start;
 
 		if (reloadRequired(objRender))
