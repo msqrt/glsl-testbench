@@ -65,8 +65,7 @@ int main() {
 
 		TimeStamp start;
 
-		if (!objRender) {
-			std::cout << "only beginning?" << std::endl;
+		if (!objRender)
 			objRender = createProgram(
 				GLSL(460,
 					layout(std430) buffer; // set as default
@@ -146,7 +145,7 @@ int main() {
 			}
 			)
 				);
-		}
+
 		glUseProgram(objRender);
 
 		// object binds

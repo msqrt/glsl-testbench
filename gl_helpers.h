@@ -81,6 +81,8 @@ template<GLenum target> using Renderbuffer = detail::GLObject < detail::createRe
 
 bool isOfType(const GLenum type, const GLenum* types, const GLint typeCount);
 
+#include "inline_glsl.h"
+
 // program: handles reloads
 struct Program {
 public:
@@ -109,23 +111,24 @@ public:
 	}
 	Program(Program && other) { *this = std::move(other); }
 
-	std::string getFirstLine(const std::string& path) {
+	std::string_view getFirstLine(std::string_view path) {
 		return path.substr(0, path.find('\n'));
 	}
 
 	// create a single shader object
-	GLuint createShader(const std::string& path, const GLenum shaderType) {
+	GLuint createShader(std::string_view path, const GLenum shaderType) {
 		using namespace std;
 
 		// if there are line breaks, this is an inline shader instead of a file. if so, we skip the first line (it contains a name) and compile the rest. otherwise read file as source.
 		const size_t search = path.find('\n');
-		const string source = search != string::npos ? path.substr(path.find('\n', search + 1) + 1) : string(istreambuf_iterator<char>(ifstream(path).rdbuf()), istreambuf_iterator<char>());
+		const string source = search != string::npos ? string(path.substr(path.find('\n', search + 1) + 1)) : string(istreambuf_iterator<char>(ifstream(path).rdbuf()), istreambuf_iterator<char>());
 		addPath(search != string::npos ? path.substr(search + 1, path.find('\n', search + 1) - search - 1) : path);
 
 		const GLuint shader = glCreateShader(shaderType);
-		auto source_ptr = (const GLchar*)source.c_str();
+		auto source_ptr = (const GLchar*)source.data();
+		const GLint source_len = GLint(source.length());
 
-		glShaderSourcePrint(shader, 1, &source_ptr, nullptr);
+		glShaderSourcePrint(shader, 1, &source_ptr, &source_len);
 		glCompileShader(shader);
 
 		// print error log if failed to compile
@@ -134,7 +137,9 @@ public:
 			int length; glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &length);
 			string log(length + 1, '\0');
 			glGetShaderInfoLog(shader, length + 1, &length, &log[0]);
-			printf("log of compiling %s:\n%s\n", getFirstLine(path).c_str(), log.c_str());
+			cout << "log of compiling " << getFirstLine(path) << ":\n" << log << "\n";
+			glDeleteShader(shader);
+			return 0;
 		}
 		return shader;
 	}
@@ -154,11 +159,13 @@ public:
 	// creates a compute program based on a single file
 	Program(const std::string& computePath) {
 		using namespace std;
-		program = glCreateProgram();
 
 		args = { computePath };
 
-		const GLuint computeShader = createShader(computePath, GL_COMPUTE_SHADER);
+		const GLuint computeShader = createShader(detail::getGLSLcode(computePath), GL_COMPUTE_SHADER);
+		if (!computeShader) return;
+
+		program = glCreateProgram();
 		glAttachShader(program, computeShader);
 		glLinkProgram(program);
 		glDeleteShader(computeShader);
@@ -169,8 +176,9 @@ public:
 			int length; glGetProgramiv(program, GL_INFO_LOG_LENGTH, &length);
 			string log(length + 1, '\0');
 			glGetProgramInfoLog(program, length + 1, &length, &log[0]);
-			printf("log of linking %s:\n%s\n", getFirstLine(computePath).c_str(), log.c_str());
+			cout << "log of linking " << getFirstLine(computePath) << ":\n" << log << "\n";
 			glDeleteProgram(program);
+			program = 0;
 			return;
 		}
 
@@ -180,7 +188,7 @@ public:
 	}
 
 	// sort all inline glsl sources; they're evaluated in an undefined order (since they're arguments) but the first differing character will be the index of the GLSL macro in the source code
-	std::array<std::string, 5> sortInlineSources(std::array<std::string, 5>&& paths) {
+	std::array<std::string_view, 5> sortInlineSources(std::array<std::string_view, 5>&& paths) {
 		std::array<int, 5> inds;
 		for (int i = 0; i < 5; ++i)
 			inds[i] = (paths[i].length() > 0 && paths[i].find('\n') != std::string::npos) ? i : -1;
@@ -196,19 +204,31 @@ public:
 	}
 
 	// creates a graphics program based on shaders for potentially all 5 programmable pipeline stages
-	Program(const std::string& vertexPath, const std::string& controlPath, const std::string& evaluationPath, const std::string& geometryPath, const std::string& fragmentPath) {
+	Program(std::string_view vertexPath, std::string_view controlPath, std::string_view evaluationPath, std::string_view geometryPath, std::string_view fragmentPath) {
 		using namespace std;
 
-		args = { vertexPath, controlPath, evaluationPath, geometryPath, fragmentPath };
+		args = { string(vertexPath), string(controlPath), string(evaluationPath), string(geometryPath), string(fragmentPath) };
 
 		program = glCreateProgram();
-		const array<string, 5> paths = sortInlineSources({ vertexPath, controlPath, evaluationPath, geometryPath, fragmentPath });
+		const array<string_view, 5> paths = sortInlineSources({ vertexPath, controlPath, evaluationPath, geometryPath, fragmentPath });
 		const GLenum types[] = { GL_VERTEX_SHADER, GL_TESS_CONTROL_SHADER, GL_TESS_EVALUATION_SHADER, GL_GEOMETRY_SHADER, GL_FRAGMENT_SHADER };
+		bool compileOk = true;
+		array<string, 5> path_or_source;
+		for (int i = 0; i < 5; ++i)
+			path_or_source[i] = detail::getGLSLcode(paths[i]);
 		for (int i = 0; i < 5; ++i) {
 			if (!paths[i].length()) continue;
-			GLuint shader = createShader(paths[i], types[i]);
+			GLuint shader = createShader(path_or_source[i], types[i]);
+			if (!shader) {
+				compileOk = false;
+				continue;
+			}
 			glAttachShader(program, shader);
 			glDeleteShader(shader); // deleting here is okay; the shader object is reference-counted with the programs it's attached to
+		}
+		if (!compileOk) {
+			glDeleteProgram(program);
+			return;
 		}
 		glLinkProgram(program);
 
@@ -218,13 +238,12 @@ public:
 			int length; glGetProgramiv(program, GL_INFO_LOG_LENGTH, &length);
 			string log(length + 1, '\0');
 			glGetProgramInfoLog(program, length + 1, &length, &log[0]);
-			printf("log of linking (%s,%s,%s,%s,%s):\n%s\n",
-				getFirstLine(vertexPath).c_str(),
-				getFirstLine(controlPath).c_str(),
-				getFirstLine(evaluationPath).c_str(),
-				getFirstLine(geometryPath).c_str(),
-				getFirstLine(fragmentPath).c_str(),
-				log.c_str());
+			cout << "log of linking "
+				<< getFirstLine(path_or_source[0])
+				<< getFirstLine(path_or_source[1])
+				<< getFirstLine(path_or_source[2])
+				<< getFirstLine(path_or_source[3])
+				<< getFirstLine(path_or_source[4]) << ":\n" << log << "\n";
 			glDeleteProgram(program);
 			return;
 		}
@@ -261,10 +280,10 @@ public:
 	operator bool() const { return program != 0; }
 
 	void reset() { if (program != 0) destroy(); program = 0; filePaths.clear(); lastLoad = {}; }
-	void addPath(const std::string& path) {
+	void addPath(std::string_view path) {
 		if (path.length() > 0 && std::find(filePaths.begin(), filePaths.end(), path)!=filePaths.end()) return;
 
-		filePaths.push_back(path);
+		filePaths.push_back(std::string(path));
 		std::error_code ec;
 		auto fileModify = std::filesystem::last_write_time(std::filesystem::path(path), ec);
 		if (!ec && fileModify > lastLoad)
