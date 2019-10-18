@@ -68,5 +68,5 @@ struct Font {
 private:
 	std::wstring fontName;
 	TextRenderer renderer;
-	Program program;
+	const Program program;
 };

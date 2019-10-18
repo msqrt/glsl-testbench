@@ -2,84 +2,12 @@
 #include "gl_helpers.h"
 #include "shaderprintf.h"
 
-#include <fstream>
-#include <sstream>
-#include <algorithm>
-#include <array>
-#include <map>
-#include <filesystem>
-
-// whenever a shader is created, we go through all of its uniforms and assign unit indices for textures and images.
-const GLenum samplerTypes[] = { GL_SAMPLER_1D, GL_SAMPLER_2D, GL_SAMPLER_3D, GL_SAMPLER_CUBE, GL_SAMPLER_1D_SHADOW, GL_SAMPLER_2D_SHADOW, GL_SAMPLER_1D_ARRAY, GL_SAMPLER_2D_ARRAY, GL_SAMPLER_CUBE_MAP_ARRAY, GL_SAMPLER_1D_ARRAY_SHADOW,GL_SAMPLER_2D_ARRAY_SHADOW, GL_SAMPLER_2D_MULTISAMPLE,GL_SAMPLER_2D_MULTISAMPLE_ARRAY, GL_SAMPLER_CUBE_SHADOW, GL_SAMPLER_CUBE_MAP_ARRAY_SHADOW, GL_SAMPLER_BUFFER, GL_SAMPLER_2D_RECT, GL_SAMPLER_2D_RECT_SHADOW, GL_INT_SAMPLER_1D, GL_INT_SAMPLER_2D, GL_INT_SAMPLER_3D, GL_INT_SAMPLER_CUBE, GL_INT_SAMPLER_1D_ARRAY, GL_INT_SAMPLER_2D_ARRAY, GL_INT_SAMPLER_CUBE_MAP_ARRAY, GL_INT_SAMPLER_2D_MULTISAMPLE, GL_INT_SAMPLER_2D_MULTISAMPLE_ARRAY, GL_INT_SAMPLER_BUFFER, GL_INT_SAMPLER_2D_RECT, GL_UNSIGNED_INT_SAMPLER_1D, GL_UNSIGNED_INT_SAMPLER_2D, GL_UNSIGNED_INT_SAMPLER_3D, GL_UNSIGNED_INT_SAMPLER_CUBE, GL_UNSIGNED_INT_SAMPLER_1D_ARRAY, GL_UNSIGNED_INT_SAMPLER_2D_ARRAY, GL_UNSIGNED_INT_SAMPLER_CUBE_MAP_ARRAY, GL_UNSIGNED_INT_SAMPLER_2D_MULTISAMPLE, GL_UNSIGNED_INT_SAMPLER_2D_MULTISAMPLE_ARRAY,GL_UNSIGNED_INT_SAMPLER_BUFFER, GL_UNSIGNED_INT_SAMPLER_2D_RECT };
-const GLenum imageTypes[] = { GL_IMAGE_1D, GL_IMAGE_2D, GL_IMAGE_3D, GL_IMAGE_2D_RECT, GL_IMAGE_CUBE, GL_IMAGE_BUFFER, GL_IMAGE_1D_ARRAY, GL_IMAGE_2D_ARRAY, GL_IMAGE_CUBE_MAP_ARRAY, GL_IMAGE_2D_MULTISAMPLE, GL_IMAGE_2D_MULTISAMPLE_ARRAY, GL_INT_IMAGE_1D, GL_INT_IMAGE_2D, GL_INT_IMAGE_3D, GL_INT_IMAGE_2D_RECT, GL_INT_IMAGE_CUBE, GL_INT_IMAGE_BUFFER, GL_INT_IMAGE_1D_ARRAY, GL_INT_IMAGE_2D_ARRAY, GL_INT_IMAGE_CUBE_MAP_ARRAY, GL_INT_IMAGE_2D_MULTISAMPLE, GL_INT_IMAGE_2D_MULTISAMPLE_ARRAY, GL_UNSIGNED_INT_IMAGE_1D, GL_UNSIGNED_INT_IMAGE_2D, GL_UNSIGNED_INT_IMAGE_3D, GL_UNSIGNED_INT_IMAGE_CUBE, GL_UNSIGNED_INT_IMAGE_BUFFER, GL_UNSIGNED_INT_IMAGE_1D_ARRAY, GL_UNSIGNED_INT_IMAGE_2D_ARRAY, GL_UNSIGNED_INT_IMAGE_CUBE_MAP_ARRAY, GL_UNSIGNED_INT_IMAGE_2D_MULTISAMPLE, GL_UNSIGNED_INT_IMAGE_2D_MULTISAMPLE_ARRAY };
-
-bool isOfType(const GLenum type, const GLenum* types, const GLint typeCount) {
-	for (int i = 0; i < typeCount; ++i)
-		if (type == types[i])
-			return true;
-	return false;
-}
-
-struct shaderReloadState {
-	int count = 0;
-	std::filesystem::file_time_type lastLoad;
-	std::array<std::string, 5> paths;
-
-	void addPath(const std::string& path) {
-		if (path.length() > 0)
-			for (int i = 0; i < count + 1; ++i)
-				if (i == count) {
-					paths[i] = path;
-					std::error_code ec;
-					auto fileModify = std::filesystem::last_write_time(std::filesystem::path(path), ec);
-					if (!ec && fileModify > lastLoad)
-						lastLoad = fileModify;
-					count++;
-					return;
-				}
-				else if (paths[i] == path)
-					break;
-	}
-};
-
-std::map<GLuint, shaderReloadState> shaderMap;
-
-void pruneShaderReloadMap() {
-	for (auto i = shaderMap.begin(); i != shaderMap.end(); ++i)
-		if (!glIsProgram(i->first))
-			i = shaderMap.erase(i);
-}
-
-Program createProgram(const std::string& computePath) {
+Program createProgram(const std::string_view computePath) {
 	return Program(computePath);
 }
-Program createProgram(const std::string& vertexPath, const std::string& controlPath, const std::string& evaluationPath, const std::string& geometryPath, const std::string& fragmentPath) {
+Program createProgram(const std::string_view vertexPath, const std::string_view controlPath, const std::string_view evaluationPath, const std::string_view geometryPath, const std::string_view fragmentPath) {
 	return Program(vertexPath, controlPath, evaluationPath, geometryPath, fragmentPath);
 }
-
-bool reloadRequired(GLuint program) {
-	if (program > 0) {
-		if (auto i = shaderMap.find(program); i != shaderMap.end()) {
-			auto& state = i->second;
-			for (int j = 0; j < state.count; ++j) {
-				std::error_code ec;
-				auto fileModify = std::filesystem::last_write_time(std::filesystem::path(state.paths[j]), ec);
-				if (!ec && fileModify > state.lastLoad) {
-					state.lastLoad = fileModify;
-					return true;
-				}
-			}
-		}
-		return false;
-	}
-	return true;
-}
-
-const GLenum typeProperty = GL_TYPE;
-const GLenum locationProperty = GL_LOCATION;
-// counts the amount of objects of the same type before this one in the arbitrary order the API happens to give them; this gives a unique index for each object that's used for the texture and image unit
-
-
 
 // helper to avoid passing the current program around
 GLuint currentProgram() {

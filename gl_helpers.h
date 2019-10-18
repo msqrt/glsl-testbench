@@ -2,13 +2,9 @@
 
 #include <Windows.h>
 
-#include <fstream>
-#include <array>
 #include <vector>
-#include <iostream>
-
-
 #include <string>
+#include <string_view>
 #include <filesystem>
 
 #include <gl/gl.h>
@@ -19,10 +15,8 @@
 
 struct Program;
 
-Program createProgram(const std::string& computePath);
-Program createProgram(const std::string& vertexPath, const std::string& controlPath, const std::string& evaluationPath, const std::string& geometryPath, const std::string& fragmentPath);
-
-bool reloadRequired(GLuint program);
+Program createProgram(const std::string_view computePath);
+Program createProgram(const std::string_view vertexPath, const std::string_view controlPath, const std::string_view evaluationPath, const std::string_view geometryPath, const std::string_view fragmentPath);
 
 void bindBuffer(const std::string& name, GLuint buffer);
 void bindTexture(const std::string& name, GLuint texture);
@@ -86,21 +80,10 @@ bool isOfType(const GLenum type, const GLenum* types, const GLint typeCount);
 // program: handles reloads
 struct Program {
 public:
-	GLenum samplerTypes[40] = { GL_SAMPLER_1D, GL_SAMPLER_2D, GL_SAMPLER_3D, GL_SAMPLER_CUBE, GL_SAMPLER_1D_SHADOW, GL_SAMPLER_2D_SHADOW, GL_SAMPLER_1D_ARRAY, GL_SAMPLER_2D_ARRAY, GL_SAMPLER_CUBE_MAP_ARRAY, GL_SAMPLER_1D_ARRAY_SHADOW,GL_SAMPLER_2D_ARRAY_SHADOW, GL_SAMPLER_2D_MULTISAMPLE,GL_SAMPLER_2D_MULTISAMPLE_ARRAY, GL_SAMPLER_CUBE_SHADOW, GL_SAMPLER_CUBE_MAP_ARRAY_SHADOW, GL_SAMPLER_BUFFER, GL_SAMPLER_2D_RECT, GL_SAMPLER_2D_RECT_SHADOW, GL_INT_SAMPLER_1D, GL_INT_SAMPLER_2D, GL_INT_SAMPLER_3D, GL_INT_SAMPLER_CUBE, GL_INT_SAMPLER_1D_ARRAY, GL_INT_SAMPLER_2D_ARRAY, GL_INT_SAMPLER_CUBE_MAP_ARRAY, GL_INT_SAMPLER_2D_MULTISAMPLE, GL_INT_SAMPLER_2D_MULTISAMPLE_ARRAY, GL_INT_SAMPLER_BUFFER, GL_INT_SAMPLER_2D_RECT, GL_UNSIGNED_INT_SAMPLER_1D, GL_UNSIGNED_INT_SAMPLER_2D, GL_UNSIGNED_INT_SAMPLER_3D, GL_UNSIGNED_INT_SAMPLER_CUBE, GL_UNSIGNED_INT_SAMPLER_1D_ARRAY, GL_UNSIGNED_INT_SAMPLER_2D_ARRAY, GL_UNSIGNED_INT_SAMPLER_CUBE_MAP_ARRAY, GL_UNSIGNED_INT_SAMPLER_2D_MULTISAMPLE, GL_UNSIGNED_INT_SAMPLER_2D_MULTISAMPLE_ARRAY,GL_UNSIGNED_INT_SAMPLER_BUFFER, GL_UNSIGNED_INT_SAMPLER_2D_RECT };
-	GLenum imageTypes[32] = { GL_IMAGE_1D, GL_IMAGE_2D, GL_IMAGE_3D, GL_IMAGE_2D_RECT, GL_IMAGE_CUBE, GL_IMAGE_BUFFER, GL_IMAGE_1D_ARRAY, GL_IMAGE_2D_ARRAY, GL_IMAGE_CUBE_MAP_ARRAY, GL_IMAGE_2D_MULTISAMPLE, GL_IMAGE_2D_MULTISAMPLE_ARRAY, GL_INT_IMAGE_1D, GL_INT_IMAGE_2D, GL_INT_IMAGE_3D, GL_INT_IMAGE_2D_RECT, GL_INT_IMAGE_CUBE, GL_INT_IMAGE_BUFFER, GL_INT_IMAGE_1D_ARRAY, GL_INT_IMAGE_2D_ARRAY, GL_INT_IMAGE_CUBE_MAP_ARRAY, GL_INT_IMAGE_2D_MULTISAMPLE, GL_INT_IMAGE_2D_MULTISAMPLE_ARRAY, GL_UNSIGNED_INT_IMAGE_1D, GL_UNSIGNED_INT_IMAGE_2D, GL_UNSIGNED_INT_IMAGE_3D, GL_UNSIGNED_INT_IMAGE_CUBE, GL_UNSIGNED_INT_IMAGE_BUFFER, GL_UNSIGNED_INT_IMAGE_1D_ARRAY, GL_UNSIGNED_INT_IMAGE_2D_ARRAY, GL_UNSIGNED_INT_IMAGE_CUBE_MAP_ARRAY, GL_UNSIGNED_INT_IMAGE_2D_MULTISAMPLE, GL_UNSIGNED_INT_IMAGE_2D_MULTISAMPLE_ARRAY };
-
-	GLenum typeProperty = GL_TYPE;
-	GLenum locationProperty = GL_LOCATION;
-
-	bool isOfType(const GLenum type, const GLenum* types, const GLint typeCount) {
-		for (int i = 0; i < typeCount; ++i)
-			if (type == types[i])
-				return true;
-		return false;
-	}
 
 	Program() {}
 	~Program() { if (program != 0) destroy(); }
+
 	Program& operator=(Program && other) {
 		if (other.program == 0) return *this;
 		std::swap(program, other.program);
@@ -111,164 +94,6 @@ public:
 	}
 	Program(Program && other) { *this = std::move(other); }
 
-	std::string_view getFirstLine(std::string_view path) {
-		return path.substr(0, path.find('\n'));
-	}
-
-	// create a single shader object
-	GLuint createShader(std::string_view path, const GLenum shaderType) {
-		using namespace std;
-
-		// if there are line breaks, this is an inline shader instead of a file. if so, we skip the first line (it contains a name) and compile the rest. otherwise read file as source.
-		const size_t search = path.find('\n');
-		const string source = search != string::npos ? string(path.substr(path.find('\n', search + 1) + 1)) : string(istreambuf_iterator<char>(ifstream(path).rdbuf()), istreambuf_iterator<char>());
-		addPath(search != string::npos ? path.substr(search + 1, path.find('\n', search + 1) - search - 1) : path);
-
-		const GLuint shader = glCreateShader(shaderType);
-		auto source_ptr = (const GLchar*)source.data();
-		const GLint source_len = GLint(source.length());
-
-		glShaderSourcePrint(shader, 1, &source_ptr, &source_len);
-		glCompileShader(shader);
-
-		// print error log if failed to compile
-		int success; glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
-		if (!success) {
-			int length; glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &length);
-			string log(length + 1, '\0');
-			glGetShaderInfoLog(shader, length + 1, &length, &log[0]);
-			cout << "log of compiling " << getFirstLine(path) << ":\n" << log << "\n";
-			glDeleteShader(shader);
-			return 0;
-		}
-		return shader;
-	}
-	void assignUnits(const GLuint program, const GLenum* types, const GLint typeCount) {
-		GLint unit = 0, location, type, count;
-		glGetProgramInterfaceiv(program, GL_UNIFORM, GL_ACTIVE_RESOURCES, &count);
-		for (int i = 0; i < count; ++i) {
-			glGetProgramResourceiv(program, GL_UNIFORM, i, 1, &typeProperty, sizeof(type), nullptr, &type);
-			if (isOfType((GLenum)type, types, typeCount)) {
-				glGetProgramResourceiv(program, GL_UNIFORM, i, 1, &locationProperty, sizeof(location), nullptr, &location);
-				glUniform1i(location, unit);
-				unit++;
-			}
-		}
-	}
-
-	// creates a compute program based on a single file
-	Program(const std::string& computePath) {
-		using namespace std;
-
-		args = { computePath };
-
-		const GLuint computeShader = createShader(detail::getGLSLcode(computePath), GL_COMPUTE_SHADER);
-		if (!computeShader) return;
-
-		program = glCreateProgram();
-		glAttachShader(program, computeShader);
-		glLinkProgram(program);
-		glDeleteShader(computeShader);
-
-		// print error log if failed to link
-		int success; glGetProgramiv(program, GL_LINK_STATUS, &success);
-		if (!success) {
-			int length; glGetProgramiv(program, GL_INFO_LOG_LENGTH, &length);
-			string log(length + 1, '\0');
-			glGetProgramInfoLog(program, length + 1, &length, &log[0]);
-			cout << "log of linking " << getFirstLine(computePath) << ":\n" << log << "\n";
-			glDeleteProgram(program);
-			program = 0;
-			return;
-		}
-
-		glUseProgram(program);
-		assignUnits(program, samplerTypes, sizeof(samplerTypes) / sizeof(GLenum));
-		assignUnits(program, imageTypes, sizeof(imageTypes) / sizeof(GLenum));
-	}
-
-	// sort all inline glsl sources; they're evaluated in an undefined order (since they're arguments) but the first differing character will be the index of the GLSL macro in the source code
-	std::array<std::string_view, 5> sortInlineSources(std::array<std::string_view, 5>&& paths) {
-		std::array<int, 5> inds;
-		for (int i = 0; i < 5; ++i)
-			inds[i] = (paths[i].length() > 0 && paths[i].find('\n') != std::string::npos) ? i : -1;
-
-		std::sort(inds.begin(), inds.end(), [&](int a, int b) {if (a == -1) return false; if (b == -1) return true; return paths[a] < paths[b]; });
-
-		auto result = paths;
-		int index = 0;
-		for (auto& path : result)
-			if (path.length() > 0 && path.find('\n') != std::string::npos)
-				path = paths[inds[index++]];
-		return result;
-	}
-
-	// creates a graphics program based on shaders for potentially all 5 programmable pipeline stages
-	Program(std::string_view vertexPath, std::string_view controlPath, std::string_view evaluationPath, std::string_view geometryPath, std::string_view fragmentPath) {
-		using namespace std;
-
-		args = { string(vertexPath), string(controlPath), string(evaluationPath), string(geometryPath), string(fragmentPath) };
-
-		program = glCreateProgram();
-		const array<string_view, 5> paths = sortInlineSources({ vertexPath, controlPath, evaluationPath, geometryPath, fragmentPath });
-		const GLenum types[] = { GL_VERTEX_SHADER, GL_TESS_CONTROL_SHADER, GL_TESS_EVALUATION_SHADER, GL_GEOMETRY_SHADER, GL_FRAGMENT_SHADER };
-		bool compileOk = true;
-		array<string, 5> path_or_source;
-		for (int i = 0; i < 5; ++i)
-			path_or_source[i] = detail::getGLSLcode(paths[i]);
-		for (int i = 0; i < 5; ++i) {
-			if (!paths[i].length()) continue;
-			GLuint shader = createShader(path_or_source[i], types[i]);
-			if (!shader) {
-				compileOk = false;
-				continue;
-			}
-			glAttachShader(program, shader);
-			glDeleteShader(shader); // deleting here is okay; the shader object is reference-counted with the programs it's attached to
-		}
-		if (!compileOk) {
-			glDeleteProgram(program);
-			return;
-		}
-		glLinkProgram(program);
-
-		// print error log if failed to link
-		int success; glGetProgramiv(program, GL_LINK_STATUS, &success);
-		if (!success) {
-			int length; glGetProgramiv(program, GL_INFO_LOG_LENGTH, &length);
-			string log(length + 1, '\0');
-			glGetProgramInfoLog(program, length + 1, &length, &log[0]);
-			cout << "log of linking "
-				<< getFirstLine(path_or_source[0])
-				<< getFirstLine(path_or_source[1])
-				<< getFirstLine(path_or_source[2])
-				<< getFirstLine(path_or_source[3])
-				<< getFirstLine(path_or_source[4]) << ":\n" << log << "\n";
-			glDeleteProgram(program);
-			return;
-		}
-
-		glUseProgram(program);
-		assignUnits(program, samplerTypes, sizeof(samplerTypes) / sizeof(GLenum));
-		assignUnits(program, imageTypes, sizeof(imageTypes) / sizeof(GLenum));
-	}
-
-	void reloadIfRequired() {
-		for (int j = 0; j < filePaths.size(); ++j) {
-			std::error_code ec;
-			auto fileModify = std::filesystem::last_write_time(std::filesystem::path(filePaths[j]), ec);
-			if (!ec && fileModify > lastLoad) {
-				lastLoad = fileModify;
-				std::cout << "before" << program << std::endl;
-				if (args.size() == 1)
-					*this = std::move(Program(args[0]));
-				else
-					*this = std::move(Program(args[0], args[1], args[2], args[3], args[4]));
-				std::cout << "after" << program << std::endl;
-				return;
-			}
-		}
-	}
 	operator GLuint() {
 		reloadIfRequired();
 		return program;
@@ -276,20 +101,33 @@ public:
 	operator GLuint() const {
 		return program;
 	}
+	
+	// use these to create programs
+	friend Program createProgram(const std::string_view computePath);
+	friend Program createProgram(const std::string_view vertexPath, const std::string_view controlPath, const std::string_view evaluationPath, const std::string_view geometryPath, const std::string_view fragmentPath);
+
+protected:
+
+
+	// create a single shader object
+	GLuint createShader(std::string_view path, const GLenum shaderType);
+
+	// creates a compute program based on a single file
+	Program(const std::string_view computePath);
+
+	// creates a graphics program based on shaders for potentially all 5 programmable pipeline stages
+	Program(
+		const std::string_view vertexPath,
+		const std::string_view controlPath,
+		const std::string_view evaluationPath,
+		const std::string_view geometryPath,
+		const std::string_view fragmentPath);
+
+	void reloadIfRequired();
 
 	operator bool() const { return program != 0; }
 
-	void reset() { if (program != 0) destroy(); program = 0; filePaths.clear(); lastLoad = {}; }
-	void addPath(std::string_view path) {
-		if (path.length() > 0 && std::find(filePaths.begin(), filePaths.end(), path)!=filePaths.end()) return;
-
-		filePaths.push_back(std::string(path));
-		std::error_code ec;
-		auto fileModify = std::filesystem::last_write_time(std::filesystem::path(path), ec);
-		if (!ec && fileModify > lastLoad)
-			lastLoad = fileModify;
-	}
-protected:
+	void addPath(std::string_view path);
 	void destroy() {glDeleteProgram(program);}
 	GLuint program = 0;
 	std::vector<std::string> filePaths;
