@@ -142,6 +142,7 @@ Texture<GL_TEXTURE_2D> loadImage(const std::wstring& path) {
 	// new scope so RAII objects are released before gdi+ shutdown
 	{
 		Image image(path.c_str());
+		image.RotateFlip(RotateNoneFlipY);
 		const Rect r(0, 0, image.GetWidth(), image.GetHeight());
 		BitmapData data;
 		((Bitmap*)&image)->LockBits(&r, ImageLockModeRead, PixelFormat24bppRGB, &data);

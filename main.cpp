@@ -21,47 +21,79 @@
 const int screenw = 1280, screenh = 720;
 
 void loadObject();
-std::vector<float> positions;
-std::vector<uint32_t> indices;
-std::vector<uint32_t> material_indices;
-std::vector<float> material_albedo;
+std::vector<float> positions, normals, texcoords, material_albedo;
+std::vector<uint32_t> position_indices, normal_indices, texcoord_indices, material_indices;
 
 int main() {
 
 	OpenGL context(screenw, screenh, "example");
 	Font font(L"Consolas");
 
-	Program objRender, blit;
+	Program objRender, subSurface, aTrous, blit;
 
 	loadObject();
 
-	Buffer positionBuffer, indexBuffer, materialIndexBuffer, materialAlbedoBuffer;
-	glNamedBufferStorage(positionBuffer, sizeof(float)*positions.size(), positions.data(), 0);
-	glNamedBufferStorage(indexBuffer, sizeof(float)*indices.size(), indices.data(), 0);
-	glNamedBufferStorage(materialIndexBuffer, sizeof(float)*material_indices.size(), material_indices.data(), 0);
-	glNamedBufferStorage(materialAlbedoBuffer, sizeof(float)*material_albedo.size(), material_albedo.data(), 0);
+	auto makeBuffer = [](auto data) { Buffer b; glNamedBufferStorage(b, data.size() * 4, data.data(), 0); return b; };
 
-	Texture<GL_TEXTURE_2D> albedo, normal, depth;
-	glTextureStorage2D(albedo, 1, GL_RGB16F, screenw, screenh);
-	glTextureStorage2D(normal, 1, GL_RGB16F, screenw, screenh);
-	glTextureStorage2D(depth, 1, GL_DEPTH_COMPONENT32F, screenw, screenh);
+	Buffer positionBuffer = makeBuffer(positions);
+	Buffer normalBuffer = makeBuffer(normals);
+	Buffer texcoordBuffer = makeBuffer(texcoords);
 	
-	auto logo = loadImage("assets/aalto.png");
+	Buffer posIndexBuffer = makeBuffer(position_indices);
+	Buffer norIndexBuffer = makeBuffer(normal_indices);
+	Buffer tcIndexBuffer = makeBuffer(texcoord_indices);
+	
+	Buffer materialIndexBuffer = makeBuffer(material_indices);
+	Buffer materialAlbedoBuffer = makeBuffer(material_albedo);
 
-	std::array<float, 16> camToClip;
-	setupProjection(camToClip.data(), 1.f, screenw / float(screenh), .1f, 4.f);
+	Texture<GL_TEXTURE_2D> screenAlbedo, screenNormal, screenDepth;
+	Texture<GL_TEXTURE_2D_ARRAY> screenColor;
+	glTextureStorage2D(screenAlbedo, 1, GL_RGB16F, screenw, screenh);
+	glTextureStorage2D(screenNormal, 1, GL_RGB16F, screenw, screenh);
+	glTextureStorage3D(screenColor, 1, GL_RGBA16F, screenw, screenh, 2);
+	glTextureStorage2D(screenDepth, 1, GL_DEPTH_COMPONENT32F, screenw, screenh);
+	
+	Texture<GL_TEXTURE_2D_ARRAY> lightAlbedo, lightNormal, lightDepth;
+	constexpr int views = 3, shadowRes = 2048;
+	glTextureStorage3D(lightAlbedo, 1, GL_RGB16F, shadowRes, shadowRes, views);
+	glTextureStorage3D(lightNormal, 1, GL_RGB16F, shadowRes, shadowRes, views);
+	glTextureStorage3D(lightDepth, 1, GL_DEPTH_COMPONENT32F, shadowRes, shadowRes, views);
+
+	auto loadWithFilters = [](auto path) {
+		auto tex = loadImage(path);
+		glTextureParameteri(tex, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+		glTextureParameteri(tex, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTextureParameterf(tex, GL_TEXTURE_MAX_ANISOTROPY, 1024.f);
+		return tex;
+	};
+
+	auto albedo = loadWithFilters("D:/3d/lambertian.png");
+	auto normals = loadWithFilters("D:/3d/normal.png");
+
+	std::array<float, 16*(1+views)> camToClip;
+	setupProjection(camToClip.data(), .5f, screenw / float(screenh), .01f, 4.f);
+	for (int i = 0; i < views; ++i)
+		setupOrtho(&camToClip[16 * (i + 1)], 1.f, .35f, .01f, 4.f);
+
+	Buffer camToClips = makeBuffer(camToClip), camToWorlds;
 
 	LARGE_INTEGER start, frequency;
 	QueryPerformanceCounter(&start);
 	QueryPerformanceFrequency(&frequency);
-
-	auto previous = std::filesystem::last_write_time(std::filesystem::path(__FILE__));
 
 	while (loop()) // stops if esc pressed or window closed
 	{
 		LARGE_INTEGER now;
 		QueryPerformanceCounter(&now);
 		float t = float(double(now.QuadPart-start.QuadPart) / double(frequency.QuadPart));
+
+		std::array<float, 16 * (1 + views)> camToWorld;
+		lookAt(camToWorld.data(), cos(t*.2f), -.3f, sin(t*.2f)-.1f, .0f, -.1f, -.1f);
+		for (int i = 0; i < views; ++i) {
+			const float y = 1.f;// i % 2 ? 1.f : -1.f;
+			lookAt(&camToWorld[16 * (i + 1)], .8f*cos(float(i)*3.141592f*.5f-t*.3f), .4f*y, .8f*sin(float(i)*3.141592f*.5f-t*.3f) - .1f, .0f, -.2f*y, -.1f);
+		}
+		glNamedBufferData(camToWorlds, sizeof(float)*camToWorld.size(), camToWorld.data(), GL_STREAM_DRAW);
 
 		TimeStamp start;
 
@@ -72,28 +104,28 @@ int main() {
 
 			buffer positionBuffer{ vec4 position[]; };
 
-			uniform mat4 camToClip;
+			uniform camToWorldBuffer{ mat4 camToWorld[4]; };
+			uniform camToClipBuffer{ mat4 camToClip[4]; };
 			uniform float t;
+			uniform int matrixOffset;
 
 			out vec3 world_position;
+			out int instanceID;
 
 			void main() {
 				vec4 p = position[gl_VertexID];
-				p.xyz *= .0008;
 				world_position = p.xyz;
-				p.z += .12;
-				p.x -= .4;
-				const float c = cos(t*.5), s = sin(t*.5);
-				p.xz = mat2(c, s, -s, c) * p.xz;
-				p.y -= .3;
-				p.z -= .5;
-
-				gl_Position = camToClip * p;
+				instanceID = gl_InstanceID;
+				gl_Position = camToClip[instanceID+matrixOffset] * inverse(camToWorld[instanceID+matrixOffset]) * p;
 			}
 			), "", "",
 				GLSL(460,
 					layout(std430) buffer;
 
+			buffer normalBuffer{ vec4 normal[]; };
+			buffer texcoordBuffer{ vec2 texcoord[]; };
+			buffer normalIndexBuffer{ uint normalIndex[]; };
+			buffer texcoordIndexBuffer{ uint texcoordIndex[]; };
 			buffer materialIndexBuffer{ uint materialIndex[]; };
 			buffer materialAlbedoBuffer{ vec4 materialAlbedo[]; };
 
@@ -101,10 +133,14 @@ int main() {
 			layout(triangle_strip, max_vertices = 3) out;
 
 			in vec3 world_position[];
+			in int instanceID[];
 			out vec3 albedo, position, normal_varying;
+			out vec2 texcoord_varying;
 
-			uniform int res;
+			uniform camToWorldBuffer{ mat4 camToWorld[4]; };
+
 			uniform float t;
+			uniform int matrixOffset;
 
 			void main() {
 				vec4 pos[3];
@@ -113,17 +149,13 @@ int main() {
 
 				albedo = materialAlbedo[materialIndex[gl_PrimitiveIDIn]].xyz; // fetch albedo for triangle
 
-				vec3 normal = normalize(cross(world_position[1].xyz - world_position[0].xyz, world_position[2].xyz - world_position[0].xyz));
-
-				vec3 camera_location = vec3(.0, .3, .5);
-				const float c = cos(t*.5), s = sin(t*.5);
-				camera_location.xz = mat2(c, -s, s, c) * camera_location.xz;
-				camera_location += vec3(.4, .0, -.12);
-
-				if (dot(camera_location - world_position[0], normal) < .0) normal = -normal;
+				vec3 camera_location = camToWorld[instanceID[0]+matrixOffset][0].xyz;
+				gl_Layer = instanceID[0];
 
 				for (int i = 0; i < 3; ++i) {
-					normal_varying = normal;
+					normal_varying = normal[normalIndex[gl_PrimitiveIDIn * 3 + i]].xyz;
+					//if (dot(camera_location - world_position[0], normal_varying) < .0) normal_varying = -normal_varying;
+					texcoord_varying = texcoord[texcoordIndex[gl_PrimitiveIDIn * 3 + i]].xy;
 					position = world_position[i];
 					gl_Position = pos[i];
 					EmitVertex();
@@ -132,16 +164,15 @@ int main() {
 			}
 			),
 				GLSL(460,
-					in vec3 albedo, position, normal_varying;
+			in vec3 albedo, position, normal_varying;
+			in vec2 texcoord_varying;
 			out vec3 color, normal;
 
-			uniform sampler2D logo;
+			uniform sampler2D albedomap, normalmap;
 
 			void main() {
-				color = vec3(1.) - texture(logo, vec2(.0, 1.0) + vec2(1., -1.)*clamp(position.xy*vec2(-2., 2.) - vec2(-1.0, .1), vec2(.0), vec2(1.))).xyz;
-				if (position.z < .46) color = vec3(1.);
-				color *= albedo;
-				normal = normal_varying;
+				color = texture(albedomap, texcoord_varying).xyz;
+				normal = normalize(texture(normalmap, texcoord_varying).xyz-vec3(.5));
 			}
 			)
 				);
@@ -150,25 +181,50 @@ int main() {
 
 		// object binds
 		bindBuffer("positionBuffer", positionBuffer);
+		bindBuffer("normalBuffer", normalBuffer);
+		bindBuffer("texcoordBuffer", texcoordBuffer);
+		bindBuffer("normalIndexBuffer", norIndexBuffer);
+		bindBuffer("texcoordIndexBuffer", tcIndexBuffer);
 		bindBuffer("materialIndexBuffer", materialIndexBuffer);
 		bindBuffer("materialAlbedoBuffer", materialAlbedoBuffer);
-		bindTexture("logo", logo);
-		glUniformMatrix4fv("camToClip", 1, false, camToClip.data());
+
+		bindTexture("albedomap", albedo);
+		bindTexture("normalmap", normals);
+		bindBuffer("camToClipBuffer", camToClips);
+		bindBuffer("camToWorldBuffer", camToWorlds);
+		glUniform1i("matrixOffset", 0);
 		glUniform1f("t", t);
 		
 		// multiple rendertargets
 		Framebuffer fbo;
 		glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-		bindOutputTexture("color", albedo);
-		bindOutputTexture("normal", normal);
-		bindOutputDepthTexture(depth);
+		bindOutputTexture("color", screenAlbedo);
+		bindOutputTexture("normal", screenNormal);
+		bindOutputDepthTexture(screenDepth);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		// state changes (classic opengl)
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, posIndexBuffer);
 		glEnable(GL_DEPTH_TEST);
 
-		glDrawElements(GL_TRIANGLES, (GLsizei)indices.size(), GL_UNSIGNED_INT, nullptr);
+		glDrawElements(GL_TRIANGLES, (GLsizei)position_indices.size(), GL_UNSIGNED_INT, nullptr);
+
+		float one = 1.f;
+		float zeros[] = { .0f, .0f, .0f };
+		glClearTexSubImage(lightAlbedo, 0, 0, 0, 0, shadowRes, shadowRes, views, GL_RGB, GL_FLOAT, zeros);
+		glClearTexSubImage(lightNormal, 0, 0, 0, 0, shadowRes, shadowRes, views, GL_RGB, GL_FLOAT, zeros);
+		glClearTexSubImage(lightDepth, 0, 0, 0, 0, shadowRes, shadowRes, views, GL_DEPTH_COMPONENT, GL_FLOAT, &one);
+
+		Framebuffer lightFbo;
+		glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+		bindOutputTexture("color", lightAlbedo);
+		bindOutputTexture("normal", lightNormal);
+		bindOutputDepthTexture(lightDepth);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		
+		glUniform1i("matrixOffset", 1);
+
+		glDrawElementsInstanced(GL_TRIANGLES, (GLsizei)position_indices.size(), GL_UNSIGNED_INT, nullptr, views);
 
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 		glDisable(GL_DEPTH_TEST);
@@ -176,18 +232,11 @@ int main() {
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glViewport(0, 0, screenw, screenh); // viewport has to be set by hand :/
 
-		if (!blit)
-			blit = createProgram(
-			GLSL(460,
-				out vec2 uv;
-				void main() {
-					uv = vec2(gl_VertexID == 1 ? 4. : -1., gl_VertexID == 2 ? 4. : -1.);
-					gl_Position = vec4(uv, -.5, 1.);
-				}
-			)
-			, "", "", "",
+		if (!subSurface)
+			subSurface = createProgram(
 			GLSL(460,
 
+				layout(local_size_x = 16, local_size_y = 16) in;
 				uvec4 rndseed;
 				void jenkins_mix()
 				{
@@ -201,7 +250,7 @@ int main() {
 					rndseed.y -= rndseed.z; rndseed.y -= rndseed.x; rndseed.y ^= rndseed.x << 10;
 					rndseed.z -= rndseed.x; rndseed.z -= rndseed.y; rndseed.z ^= rndseed.y >> 15;
 				}
-				void srand(uint A, uint B, uint C) { rndseed = uvec4(A, B, C, 0); jenkins_mix(); }
+				void srand(uint A, uint B, uint C) { rndseed = uvec4(A, B, C, 0); jenkins_mix(); jenkins_mix(); }
 
 				float rand()
 				{
@@ -209,36 +258,141 @@ int main() {
 					rndseed.xyz = rndseed.yzx;
 					return float(rndseed.x) / pow(2., 32.);
 				}
+				uniform camToWorldBuffer{ mat4 camToWorld[4]; };
+				uniform camToClipBuffer{ mat4 camToClip[4]; };
 
 				uniform sampler2D albedo, normal, depth;
+				uniform sampler2DArray lightAlbedo, lightNormal, lightDepth;
 				uniform float t;
-				in vec2 uv;
-				out vec3 color;
+				layout(rgba16f) uniform writeonly image2DArray result;
 
 				void main() {
-					srand(floatBitsToUint(t), uint(gl_FragCoord.x)+1u, uint(gl_FragCoord.y)+1u);
-					vec2 coord = uv * .5 + vec2(.5);
-					vec3 n = texture(normal, coord).xyz;
-					color = texture(albedo,coord).xyz*max(.1, dot(n, normalize(vec3(1.))));
-					float curDepth = texture(depth, coord).x;
-					float ang = rand()*2.*3.141592;
-					float off = (1. + sqrt(5.)) * 3.1415926535;
-					int count = 0;
-					for (int i = 0; i < 16; ++i) {
-						ang += off;
-						vec2 offset = .05*float(i) / 15.*vec2(cos(ang), sin(ang));
-						if (texture(depth, coord + offset).x > curDepth-.001) count++;
+					srand(floatBitsToUint(t), uint(gl_GlobalInvocationID.x) + 1u, uint(gl_GlobalInvocationID.y) + 1u);
+					const ivec3 resolution = imageSize(result);
+					if (gl_GlobalInvocationID.x < resolution.x && gl_GlobalInvocationID.y < resolution.y) {
+						const vec2 uv = vec2(gl_GlobalInvocationID.xy) / vec2(resolution)*2.-vec2(1.);
+						const vec2 coord = uv * .5 + vec2(.5);
+						const vec3 n = texture(normal, coord).xyz;
+						vec4 p = camToWorld[0] * inverse(camToClip[0])* vec4(uv, texture(depth, coord).x*2. - 1., 1.);
+						p /= p.w;
+						vec3 color = vec3(.0);
+						const float phi = (1. + sqrt(5.)) * 3.141952;
+						vec3 view = normalize(camToWorld[0][3].xyz - p.xyz);
+						for (int i = 0; i < 3; i++) {
+							vec4 p_shadow = camToClip[i + 1] * inverse(camToWorld[i + 1]) * p;
+							p_shadow.xyz /= p_shadow.w;
+							const vec2 shadow_coord = p_shadow.xy*.5 + vec2(.5);
+							float ang = rand()*2.*3.141592;
+							const float off = rand();
+							const int N = 8;
+							vec3 lcol = .8*vec3(1., 1., 1.);
+							if (i == 0) lcol = .01*vec3(.5, .5, .6);
+							else if (i == 2) lcol = .01*vec3(.7, .8, .7);
+							//if (dot(n, camToWorld[i + 1][2].xyz) > .0 && texture(lightDepth, vec3(p_shadow.xy*.5 + vec2(.5), float(i))).x > p_shadow.z*.5 + .495)
+							//	color += lcol * vec3(4.)*pow(max(.0, dot(n, normalize(view + camToWorld[i + 1][2].xyz))), 80.);
+							if(false)
+								color += lcol * vec3(1.,.5,.5)*max(.0, dot(n, camToWorld[i + 1][2].xyz));
+							else
+							for (int j = 0; j < N; ++j) {
+								ang += phi;
+								vec2 p_pt = p_shadow.xy + .01*vec2(cos(ang), sin(ang))*sqrt((float(j) + off) / float(N));
+								vec4 p_new = camToWorld[i + 1] * inverse(camToClip[i + 1])* vec4(p_pt, texture(lightDepth, vec3(p_pt*.5 + vec2(.5), float(i))).x*2. - 1., 1.);
+								p_new.xyz /= p_new.w;
+								vec3 n_new = texture(lightNormal, vec3(p_pt*.5 + vec2(.5), float(i))).xyz;
+								const vec3 diff = p.xyz - p_new.xyz;
+								vec3 diffusion = exp(-2.*vec3(250., 350., 370.)*length(diff));
+								float input_lambert = max(.0, dot(camToWorld[i + 1][2].xyz, n_new));
+								float output_cone = max(.0, dot(-normalize(diff) + .5*camToWorld[i + 1][2].xyz, camToWorld[i + 1][2].xyz));
+
+								color += 10. * lcol *input_lambert*diffusion*output_cone / float(N);
+							}
+						}
+						imageStore(result, ivec3(gl_GlobalInvocationID.xy, 0), vec4(color, 1.));
 					}
-					color *= float(count) / 15.;
-					//color = mix(color, vec3(.7, .7, .9), abs(-.005 / abs(texture(depth, coord).x - 1.)));
 				}
 			)
 		);
-		glUseProgram(blit);
-		bindTexture("albedo", albedo);
-		bindTexture("normal", normal);
-		bindTexture("depth", depth);
+		glUseProgram(subSurface);
+		bindTexture("albedo", screenAlbedo);
+		bindTexture("normal", screenNormal);
+		bindTexture("depth", screenDepth);
+		bindTexture("lightAlbedo", lightAlbedo);
+		bindTexture("lightNormal", lightNormal);
+		bindTexture("lightDepth", lightDepth);
+		bindBuffer("camToClipBuffer", camToClips);
+		bindBuffer("camToWorldBuffer", camToWorlds);
 		glUniform1f("t", t);
+		bindImage("result", 0, screenColor, GL_WRITE_ONLY, GL_RGBA16F);
+		glDispatchCompute((screenw+15)/16, (screenh+15)/16, 1);
+
+		glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
+
+		if (!aTrous)
+			aTrous = createProgram(GLSL(460,
+				uniform sampler2D normal, depth;
+				layout(local_size_x = 16, local_size_y = 16) in;
+				layout(rgba16f) uniform image2DArray result;
+				uniform int iter;
+				void main() {
+					const ivec3 resolution = imageSize(result);
+					if (gl_GlobalInvocationID.x < resolution.x && gl_GlobalInvocationID.y < resolution.y) {
+						const int in_layer = iter & 1;
+						const int out_layer = 1 - in_layer;
+
+						const float p_depth = texelFetch(depth, ivec2(gl_GlobalInvocationID.xy), 0).x;
+						const vec3 p_n = texelFetch(normal, ivec2(gl_GlobalInvocationID.xy), 0).xyz;
+						const vec3 p_rt = imageLoad(result, ivec3(gl_GlobalInvocationID.xy, in_layer)).xyz;
+						const int off = 1 << iter;
+
+						vec4 res = vec4(p_rt, 1.);
+						for(int i = int(gl_GlobalInvocationID.x)-2*off; i<= int(gl_GlobalInvocationID.x) + 2*off; i += off)
+						for(int j = int(gl_GlobalInvocationID.y)-2*off; j<= int(gl_GlobalInvocationID.y) + 2*off; j += off)
+							if (i >= 0 && j >= 0 && i < resolution.x && j < resolution.y) {
+								if (ivec2(i, j) == ivec2(gl_GlobalInvocationID.xy))
+									continue;
+
+								const float c_depth = texelFetch(depth, ivec2(i, j), 0).x;
+								const vec3 c_n = texelFetch(normal, ivec2(i, j), 0).xyz;
+								const vec3 c_rt = imageLoad(result, ivec3(i, j, in_layer)).xyz;
+								const vec3 diff = c_rt - p_rt;
+								const float w = exp(-.3*length(vec2(i,j)-vec2(gl_GlobalInvocationID.xy)))
+									*max(.0, dot(c_n, p_n))
+									* exp(-2.e4*abs(c_depth-p_depth))
+									* exp(-.05*length(diff));
+								if(!isnan(w))
+									res += w*vec4(c_rt, 1.);
+							}
+						
+
+						imageStore(result, ivec3(gl_GlobalInvocationID.xy, out_layer), vec4(res.xyz / res.w, 1.));
+					}
+				}
+				));
+
+		glUseProgram(aTrous);
+		constexpr int iters = 2;
+		for (int i = 0; i < iters; ++i) {
+			bindTexture("normal", screenNormal);
+			bindTexture("depth", screenDepth);
+
+			bindImage("result", 0, screenColor, GL_READ_WRITE, GL_RGBA16F);
+			glUniform1i("iter", i);
+
+			glDispatchCompute((screenw + 15) / 16, (screenh + 15) / 16, 1);
+
+			glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
+		}
+
+		if (!blit)
+			blit = createProgram(
+				GLSL(460, out vec2 uv; void main() { uv = vec2((gl_VertexID == 1) ? 4. : -1., (gl_VertexID == 2) ? 4. : -1.); gl_Position = vec4(uv, -.5, 1.); }), "", "", "",
+				GLSL(460, in vec2 uv; uniform sampler2DArray result; uniform sampler2D albedo; uniform int layer; out vec3 color; void main() { color = texture(result, vec3(uv*.5 + vec2(.5), float(layer))).xyz*texture(albedo, uv*.5+vec2(.5)).xyz; color /= .2 + length(color); }));
+		glUseProgram(blit);
+		
+		bindTexture("result", screenColor);
+		bindTexture("albedo", screenAlbedo);
+		glUniform1i("layer", iters & 1);
+
 		glDrawArrays(GL_TRIANGLES, 0, 3);
 
 		TimeStamp end;
@@ -266,7 +420,7 @@ void loadObject()
 		return value;
 	};
 	vector<string> mtlNames;
-	string mtlfile(istreambuf_iterator<char>(ifstream("assets/conference.mtl").rdbuf()), istreambuf_iterator<char>());
+	string mtlfile(istreambuf_iterator<char>(ifstream("D:/3d/head.mtl").rdbuf()), istreambuf_iterator<char>());
 	string_view mtl_view = mtlfile;
 	float r, g, b;
 	while (mtl_view.length() > 0)
@@ -296,7 +450,7 @@ void loadObject()
 	material_albedo.push_back(b);
 	material_albedo.push_back(1.);
 
-	string file(istreambuf_iterator<char>(ifstream("assets/conference.obj").rdbuf()), istreambuf_iterator<char>());
+	string file(istreambuf_iterator<char>(ifstream("D:/3d/head.OBJ").rdbuf()), istreambuf_iterator<char>());
 	string_view file_view = file;
 	uint32_t use_mtl_index = 0;
 	while (file_view.length() > 0)
@@ -309,24 +463,39 @@ void loadObject()
 				positions.push_back(convert(extract(line, ' '), .0f));
 			positions.push_back(1.0f);
 		}
+		else if (identifier == "vn")
+		{
+			for (int i = 0; i < 3; ++i)
+				normals.push_back(convert(extract(line, ' '), .0f));
+			normals.push_back(.0f);
+		}
+		else if (identifier == "vt")
+		{
+			for (int i = 0; i < 2; ++i)
+				texcoords.push_back(convert(extract(line, ' '), .0f));
+		}
 		else if (identifier == "f")
 		{
-			uint32_t sweep_inds[3];
+			uint32_t sweep_inds[3][3];
 			for (int i = 0; line != ""; ++i)
 			{
 				auto face_indices = extract(line, ' ');
 				if (face_indices != "")
 				{
-					sweep_inds[i==0?0:2] = convert(extract(face_indices, '/'), uint32_t(0)) - 1;
+					for(int j = 0; j<3; ++j)
+						sweep_inds[j][i==0?0:2] = convert(extract(face_indices, '/'), uint32_t(0)) - 1;
 					
 					if(i>=2)
 					{
-						indices.push_back(sweep_inds[0]);
-						indices.push_back(sweep_inds[1]);
-						indices.push_back(sweep_inds[2]);
+						for (int j = 0; j < 3; ++j) {
+							position_indices.push_back(sweep_inds[0][j]);
+							normal_indices.push_back(sweep_inds[1][j]);
+							texcoord_indices.push_back(sweep_inds[2][j]);
+						}
 						material_indices.push_back(use_mtl_index);
 					}
-					sweep_inds[1] = sweep_inds[2];
+					for(int j = 0; j<3; ++j)
+						sweep_inds[j][1] = sweep_inds[j][2];
 				}
 			}
 		}

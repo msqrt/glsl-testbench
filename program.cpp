@@ -1,6 +1,7 @@
 
 #include "gl_helpers.h"
 
+#include <iostream>
 #include <fstream>
 #include <array>
 #include <charconv>
@@ -39,9 +40,9 @@ void Program::addPath(std::string_view path) {
 
 // check if any of the files has changed; reload if so
 void Program::reloadIfRequired() {
-	for (int j = 0; j < filePaths.size(); ++j) {
+	for (auto& path : filePaths) {
 		std::error_code ec;
-		auto fileModify = std::filesystem::last_write_time(std::filesystem::path(filePaths[j]), ec);
+		auto fileModify = std::filesystem::last_write_time(std::filesystem::path(path), ec);
 		if (!ec && fileModify > lastLoad) {
 			if (args.size() == 1)
 				*this = std::move(Program(args[0]));
@@ -178,7 +179,7 @@ inline std::string getGLSLcode(std::string_view path_or_source) {
 		return parsed;
 	};
 
-	auto findGlsl = [](string_view path, string_view fileString, int index) {
+	auto findMarker = [](string_view path, string_view fileString, int index) {
 		size_t findIndex = 0;
 		while (true) {
 			findIndex = fileString.find("GLSL", findIndex);
@@ -186,8 +187,8 @@ inline std::string getGLSLcode(std::string_view path_or_source) {
 				cout << "couldn't locate GLSL string " << index << " in file " << path << "\n";
 				return std::make_pair(string::npos, string::npos);
 			}
-			else if (findIndex > 0 && !isnamechar(fileString[findIndex - 1]) && // not "somethingGLSL"
-				findIndex + 4 < fileString.size() && !isnamechar(fileString[findIndex + 4]) && // not "GLSLsomething"
+			else if ((findIndex <= 0 || !isnamechar(fileString[findIndex - 1])) && // not "somethingGLSL"
+				(findIndex + 4 >= fileString.size() || !isnamechar(fileString[findIndex + 4])) && // not "GLSLsomething"
 				--index < 0) // the correct index
 				for (size_t i = findIndex + 4; i < fileString.size(); i++)
 					if (fileString[i] == ',')
@@ -199,7 +200,7 @@ inline std::string getGLSLcode(std::string_view path_or_source) {
 	auto file = string(istreambuf_iterator<char>(ifstream(path).rdbuf()), istreambuf_iterator<char>());
 	string parsed = simplifySourceFile(file, true);
 
-	auto searchResult = findGlsl(path, parsed, index);
+	auto searchResult = findMarker(path, parsed, index);
 	size_t glslIndex = searchResult.first;
 	size_t macroLocation = searchResult.second;
 	int parens = 1;
@@ -234,7 +235,10 @@ Program::Program(const std::string_view computePath) {
 	args = { string(computePath) };
 
 	const GLuint computeShader = createShader(getGLSLcode(computePath), GL_COMPUTE_SHADER);
-	if (!computeShader) return;
+	if (!computeShader) {
+		destroy();
+		return;
+	}
 
 	program = glCreateProgram();
 	glAttachShader(program, computeShader);
@@ -249,7 +253,7 @@ Program::Program(const std::string_view computePath) {
 		glGetProgramInfoLog(program, length + 1, &length, &log[0]);
 		cout << "log of linking " << getFirstLine(computePath) << ":\n" << log << "\n";
 		glDeleteProgram(program);
-		program = 0;
+		destroy();
 		return;
 	}
 
@@ -282,10 +286,12 @@ Program::Program(const std::string_view vertexPath, const std::string_view contr
 	program = glCreateProgram();
 	const array<string_view, 5> paths = sortInlineSources({ vertexPath, controlPath, evaluationPath, geometryPath, fragmentPath });
 	const GLenum types[] = { GL_VERTEX_SHADER, GL_TESS_CONTROL_SHADER, GL_TESS_EVALUATION_SHADER, GL_GEOMETRY_SHADER, GL_FRAGMENT_SHADER };
-	bool compileOk = true;
+
 	array<string, 5> path_or_source;
 	for (int i = 0; i < 5; ++i)
 		path_or_source[i] = getGLSLcode(paths[i]);
+
+	bool compileOk = true;
 	for (int i = 0; i < 5; ++i) {
 		if (!paths[i].length()) continue;
 		GLuint shader = createShader(path_or_source[i], types[i]);
@@ -297,7 +303,7 @@ Program::Program(const std::string_view vertexPath, const std::string_view contr
 		glDeleteShader(shader); // deleting here is okay; the shader object is reference-counted with the programs it's attached to
 	}
 	if (!compileOk) {
-		glDeleteProgram(program);
+		destroy();
 		return;
 	}
 	glLinkProgram(program);
@@ -314,7 +320,7 @@ Program::Program(const std::string_view vertexPath, const std::string_view contr
 			<< getFirstLine(path_or_source[2])
 			<< getFirstLine(path_or_source[3])
 			<< getFirstLine(path_or_source[4]) << ":\n" << log << "\n";
-		glDeleteProgram(program);
+		destroy();
 		return;
 	}
 

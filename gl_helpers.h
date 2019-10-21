@@ -75,21 +75,24 @@ template<GLenum target> using Renderbuffer = detail::GLObject < detail::createRe
 
 bool isOfType(const GLenum type, const GLenum* types, const GLint typeCount);
 
-#include "inline_glsl.h"
-
 // program: handles reloads
 struct Program {
 public:
+
+	// use these to create programs
+	friend Program createProgram(const std::string_view computePath);
+	friend Program createProgram(const std::string_view vertexPath, const std::string_view controlPath, const std::string_view evaluationPath, const std::string_view geometryPath, const std::string_view fragmentPath);
 
 	Program() {}
 	~Program() { if (program != 0) destroy(); }
 
 	Program& operator=(Program && other) {
 		if (other.program == 0) return *this;
-		std::swap(program, other.program);
-		std::swap(filePaths, other.filePaths);
-		std::swap(args, other.args);
-		std::swap(lastLoad, other.lastLoad);
+		if (program != 0) destroy();
+		std::swap(program,other.program);
+		std::swap(filePaths,other.filePaths);
+		std::swap(args,other.args);
+		std::swap(lastLoad,other.lastLoad);
 		return *this;
 	}
 	Program(Program && other) { *this = std::move(other); }
@@ -98,16 +101,15 @@ public:
 		reloadIfRequired();
 		return program;
 	}
-	operator GLuint() const {
-		return program;
-	}
-	
-	// use these to create programs
-	friend Program createProgram(const std::string_view computePath);
-	friend Program createProgram(const std::string_view vertexPath, const std::string_view controlPath, const std::string_view evaluationPath, const std::string_view geometryPath, const std::string_view fragmentPath);
 
+	operator bool() const { return program != 0; }
+	
 protected:
 
+	GLuint program = 0;
+	std::vector<std::string> filePaths;
+	std::vector<std::string> args;
+	std::filesystem::file_time_type lastLoad;
 
 	// create a single shader object
 	GLuint createShader(std::string_view path, const GLenum shaderType);
@@ -125,14 +127,8 @@ protected:
 
 	void reloadIfRequired();
 
-	operator bool() const { return program != 0; }
-
 	void addPath(std::string_view path);
-	void destroy() {glDeleteProgram(program);}
-	GLuint program = 0;
-	std::vector<std::string> filePaths;
-	std::vector<std::string> args;
-	std::filesystem::file_time_type lastLoad;
+	void destroy() { glDeleteProgram(program); program = 0; }
 };
 
 Texture<GL_TEXTURE_2D> loadImage(const std::string& path);
