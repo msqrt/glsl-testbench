@@ -63,7 +63,7 @@ namespace detail {
 	inline void destroyTexture(GLuint o) { glDeleteTextures(1, &o); }
 
 	template<GLenum target>
-	inline GLuint createRenderbuffer() { GLuint o; glCreateRenderbuffers(target, 1, &o); return o; }
+	inline GLuint createRenderbuffer() { GLuint o; glCreateRenderbuffers(target, &o); return o; }
 	inline void destroyRenderbuffer(GLuint o) { glDeleteRenderbuffers(1, &o); }
 }
 
