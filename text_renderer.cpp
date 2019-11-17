@@ -91,7 +91,8 @@ HRESULT TextRenderer::DrawGlyphRun(void*, FLOAT baseX, FLOAT baseY, DWRITE_MEASU
 	HRESULT result = DWRITE_E_NOCOLOR;
 	if (factory) {
 		IDWriteColorGlyphRunEnumerator1* enumerator = nullptr;
-		result = factory->TranslateColorGlyphRun(D2D1_POINT_2F{ baseX, baseY }, run, runDesc, DWRITE_GLYPH_IMAGE_FORMATS_TRUETYPE | DWRITE_GLYPH_IMAGE_FORMATS_COLR | DWRITE_GLYPH_IMAGE_FORMATS_CFF, mode, nullptr, 0, &enumerator);
+		DWRITE_MATRIX transf = {.1f, .0f, .0f, .1f, .0f, .0f};
+		result = factory->TranslateColorGlyphRun(D2D1_POINT_2F{ baseX, baseY }, run, runDesc, DWRITE_GLYPH_IMAGE_FORMATS_TRUETYPE | DWRITE_GLYPH_IMAGE_FORMATS_COLR | DWRITE_GLYPH_IMAGE_FORMATS_CFF, mode, &transf, 0, &enumerator);
 		if (enumerator)
 			enumerator->Release();
 	}
@@ -227,13 +228,13 @@ HRESULT TextRenderer::GetCurrentTransform(void*, DWRITE_MATRIX *m) {
 	m->m12 = m->m21 = m->dx = m->dy = .0f;
 	return S_OK;
 }
+
+extern HWND wnd;
 HRESULT TextRenderer::GetPixelsPerDip(void*, float* pixelsPerDip) {
 	ID2D1Factory* d2dfactory;
 	D2D1CreateFactory(D2D1_FACTORY_TYPE_SINGLE_THREADED, &d2dfactory);
 	d2dfactory->ReloadSystemMetrics();
-	float y;
-	d2dfactory->GetDesktopDpi(nullptr, &y);
-	*pixelsPerDip = y / 96.f;
+	*pixelsPerDip = float(GetDpiForWindow(wnd)) / 96.f;
 	d2dfactory->Release();
 	return S_OK;
 }
@@ -301,6 +302,7 @@ void Font::drawText(const std::wstring& text, float x, float y, float size, std:
 		glDisable(GL_DEPTH_TEST);
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
 		glUseProgram(program);
 
 		GLint viewport[4];

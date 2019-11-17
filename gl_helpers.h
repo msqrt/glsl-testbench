@@ -2,14 +2,21 @@
 
 #include <Windows.h>
 
+#include <vector>
 #include <string>
+#include <string_view>
+#include <filesystem>
 
 #include <gl/gl.h>
 #include "loadgl/glext.h"
 #include "loadgl/loadgl46.h"
 
-GLuint createProgram(const std::string& computePath);
-GLuint createProgram(const std::string& vertexPath, const std::string& controlPath, const std::string& evaluationPath, const std::string& geometryPath, const std::string& fragmentPath);
+#include "shaderprintf.h"
+
+struct Program;
+
+Program createProgram(const std::string_view computePath);
+Program createProgram(const std::string_view vertexPath, const std::string_view controlPath, const std::string_view evaluationPath, const std::string_view geometryPath, const std::string_view fragmentPath);
 
 void bindBuffer(const std::string& name, GLuint buffer);
 void bindTexture(const std::string& name, GLuint texture);
@@ -31,22 +38,20 @@ namespace detail {
 	template<GLuint(create)(void), void(destroy)(GLuint)>
 	struct GLObject {
 	public:
-		inline GLObject() { object = create(); }
-		inline ~GLObject() { if(object!=0) destroy(object); }
-		inline GLObject(const GLuint other) { object = other; }
-		inline GLObject& operator=(const GLuint other) { if (object != 0) destroy(object); object = other; return *this; }
-		inline GLObject(GLObject && other) { std::swap(object, other.object); }
-		inline GLObject& operator=(GLObject && other) { std::swap(object, other.object); return *this; }
-		inline operator GLuint() const { return object; }
-		inline operator bool() const { return object != 0; }
+		GLObject() { object = create(); }
+		~GLObject() { if(object!=0) destroy(object); }
+		GLObject(const GLuint other) { object = other; }
+		GLObject& operator=(const GLuint other) { if (object != 0) destroy(object); object = other; return *this; }
+		GLObject(GLObject && other) { std::swap(object, other.object); }
+		GLObject& operator=(GLObject && other) { std::swap(object, other.object); return *this; }
+		operator GLuint() const { return object; }
+		operator bool() const { return object != 0; }
 	protected:
 		GLuint object = 0;
 	};
 
 	// create/destroy functions for each type
-	inline GLuint createProgram() { return GLuint(0); }
-	inline void destroyProgram(GLuint o) { glDeleteProgram(o); }
-	
+
 	inline GLuint createFramebuffer() { GLuint o; glCreateFramebuffers(1, &o); return o; }
 	inline void destroyFramebuffer(GLuint o) { glDeleteFramebuffers(1, &o); }
 
@@ -58,16 +63,73 @@ namespace detail {
 	inline void destroyTexture(GLuint o) { glDeleteTextures(1, &o); }
 
 	template<GLenum target>
-	inline GLuint createRenderbuffer() { GLuint o; glCreateRenderbuffers(target, 1, &o); return o; }
+	inline GLuint createRenderbuffer() { GLuint o; glCreateRenderbuffers(target, &o); return o; }
 	inline void destroyRenderbuffer(GLuint o) { glDeleteRenderbuffers(1, &o); }
 }
 
 // GLObject should be used via these aliases:
-using Program = detail::GLObject<detail::createProgram, detail::destroyProgram>;
 using Framebuffer = detail::GLObject <detail::createFramebuffer, detail::destroyFramebuffer>;
 using Buffer = detail::GLObject < detail::createBuffer, detail::destroyBuffer>;
 template<GLenum target> using Texture = detail::GLObject < detail::createTexture<target>, detail::destroyTexture>;
 template<GLenum target> using Renderbuffer = detail::GLObject < detail::createRenderbuffer<target>, detail::destroyRenderbuffer>;
+
+bool isOfType(const GLenum type, const GLenum* types, const GLint typeCount);
+
+// program: handles reloads
+struct Program {
+public:
+
+	// use these to create programs
+	friend Program createProgram(const std::string_view computePath);
+	friend Program createProgram(const std::string_view vertexPath, const std::string_view controlPath, const std::string_view evaluationPath, const std::string_view geometryPath, const std::string_view fragmentPath);
+
+	Program() {}
+	~Program() { if (program != 0) destroy(); }
+
+	Program& operator=(Program && other) {
+		if (other.program == 0) return *this;
+		if (program != 0) destroy();
+		std::swap(program,other.program);
+		std::swap(filePaths,other.filePaths);
+		std::swap(args,other.args);
+		std::swap(lastLoad,other.lastLoad);
+		return *this;
+	}
+	Program(Program && other) { *this = std::move(other); }
+
+	operator GLuint() {
+		reloadIfRequired();
+		return program;
+	}
+
+	operator bool() const { return program != 0; }
+	
+protected:
+
+	GLuint program = 0;
+	std::vector<std::string> filePaths;
+	std::vector<std::string> args;
+	std::filesystem::file_time_type lastLoad;
+
+	// create a single shader object
+	GLuint createShader(std::string_view path, const GLenum shaderType);
+
+	// creates a compute program based on a single file
+	Program(const std::string_view computePath);
+
+	// creates a graphics program based on shaders for potentially all 5 programmable pipeline stages
+	Program(
+		const std::string_view vertexPath,
+		const std::string_view controlPath,
+		const std::string_view evaluationPath,
+		const std::string_view geometryPath,
+		const std::string_view fragmentPath);
+
+	void reloadIfRequired();
+
+	void addPath(std::string_view path);
+	void destroy() { glDeleteProgram(program); program = 0; }
+};
 
 Texture<GL_TEXTURE_2D> loadImage(const std::string& path);
 Texture<GL_TEXTURE_2D> loadImage(const std::wstring& path);

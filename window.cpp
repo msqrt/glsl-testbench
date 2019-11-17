@@ -27,6 +27,8 @@ HWND wnd = nullptr;
 HDC dc;
 HGLRC rc;
 
+//HHOOK globalKeyHook;
+
 // update the frame onto screen
 void swapBuffers() {
 	SwapBuffers(dc);
@@ -97,7 +99,7 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 	case WM_KEYDOWN:
 		wParam = mapExtended(wParam, lParam);
 		if (!keyDown((UINT)wParam))
-			down[downptr++] = hit[hitptr++] = wParam;
+			down[downptr++] = hit[hitptr++] = wParam; // todo: if mapNarrowed(wParam)!=wParam: also add mapNarrowed()
 		if (wParam == 'V' && (keyDown(VK_LCONTROL) || keyDown(VK_RCONTROL))) {
 			if (OpenClipboard(nullptr)) {
 				HANDLE data = GetClipboardData(CF_UNICODETEXT);
@@ -118,7 +120,7 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 	case WM_SYSKEYUP:
 	case WM_KEYUP:
 		wParam = mapExtended(wParam, lParam);
-		for (int i = 0; i < downptr - 1; ++i)
+		for (int i = 0; i < downptr - 1; ++i) // todo: if mapNarrowed(wParam)!=wParam: also remove mapNarrowed()
 			if (wParam == down[i]) {
 				down[i] = down[downptr-1];
 				break;
@@ -132,9 +134,26 @@ LRESULT CALLBACK wndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 	return DefWindowProc(hwnd, uMsg, wParam, lParam);
 }
 
+/*LRESULT CALLBACK CallWndProc(
+	_In_ int    nCode,
+	_In_ WPARAM wParam,
+	_In_ LPARAM lParam )
+{
+	if(nCode>=0){
+		auto* p = (CWPSTRUCT*)lParam;
+		switch (p->message) {
+		case WM_SYSKEYDOWN: case WM_KEYDOWN: case WM_SYSKEYUP: case WM_KEYUP:
+			wndProc(p->hwnd, p->message, p->wParam, p->lParam);
+		}
+	}
+	return CallNextHookEx(nullptr, nCode, wParam, lParam);
+}*/
+
+
 bool loop() {
-	bool result = true;
+	hitptr = 0;
 	MSG msg;
+	bool result = true;
 	while (PeekMessage(&msg, 0, 0, 0, PM_REMOVE)) {
 		TranslateMessage(&msg);
 		DispatchMessage(&msg);
@@ -280,10 +299,14 @@ void setupGL(int width, int height, const std::string& title, bool fullscreen, b
 	glBindVertexArray(vertexArray);
 
 	glEnable(GL_FRAMEBUFFER_SRGB);
+
+	//globalKeyHook = SetWindowsHookExA(WH_CALLWNDPROC, CallWndProc, nullptr, 0);
 }
 
 void closeGL() {
 	if (!glOpen()) return;
+
+	//UnhookWindowsHookEx(globalKeyHook);
 
 	glBindVertexArray(0);
 	glDeleteVertexArrays(1, &vertexArray);

@@ -16,12 +16,6 @@ isoja:
 	blogi/sivu:
 		tarkotushan ois innostaa tyyppej‰ koodailee """oikeeta""" gl‰‰, pit‰s kirjottaa muutamasta hauskasta keissist‰ hekumallinen case study
 		esmes shadertoyn k‰ytˆksen uudelleenkirjottaminen vois olla passeli esimerkki, ei veis paljoa koodia ja vois n‰ytt‰‰ ett‰ laajentelu k‰y helposti
-	glsl-makro 2.0:
-		on ainakin periaatteessa teht‰viss‰ fiksu systeemi jolla voi kirjottaa glsl:t suoraan cpp-filun sis‰‰n ilman ett‰ rivinumerot hukkuu;
-		makro tekee obun jossa on rivi ja filun nimi sit ku shaderia alustetaan ni stringi heitet‰‰n m‰keen ja k‰yd‰‰n lukemassa cpp-filusta kyseinen paikka.
-		valitettavasti pient‰ parsinnan vaivaa t‰m‰ teett‰‰. jos k‰ytt‰‰ laskuria eik‰ rivinumeroa, voi kans uudelleenladata lennosta.
-		(viel‰ hauska laajennus: virheilmot kommentteina rivien loppuun)
-		t‰ll‰ sais sellasen pieni-cpp-filu-vastaa-pient‰-ohjelmaa -jutun jonka kanssa ei tarttis tapella ihan hulluna ymp‰ristˆn kanssa jos haluu jakaa jonkun pienen kokeilun
 
 pienempi‰:
 	gl-objektiluokasta CRTP:
@@ -36,5 +30,3 @@ pienempi‰:
 		tosi kiva n‰iss‰ olis se, ett‰ irtois erilleen shaderin alustus ja tekstuuribindi (nyt shaderia perustaessa pit‰‰ asetella uniformit valmiiks)
 	namespace:
 		vois olla hyv‰ ehk‰ m‰‰ritell‰
-	warningit:
-		n‰it‰ on aika tˆrkee kasa, pit‰‰ siivoilla pois ennen pitk‰‰

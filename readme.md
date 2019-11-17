@@ -13,4 +13,6 @@ Finally, the extension handling and windowing code is mostly what happened to be
 
 As general other things included in the repo, there's a text rendering system (that requires some clean-up and potential cross-platform support), a shader printf implementation (https://github.com/msqrt/shader-printf) and some math helpers. These are there just to smooth things out and will likely slowly change.
 
+For the GLSL inline system (WIP) to work nicely, please enable automatic reloading of files by checking the boxes Tools > Options > Environment > Documents > Detect when file is changed outside the environment and Reload modified files unless there are unsaved changes.
+
 The system is not publicly released yet, and thus the asset folder contains objects that are almost certainly copyrighted.

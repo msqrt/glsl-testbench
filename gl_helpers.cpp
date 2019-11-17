@@ -2,115 +2,11 @@
 #include "gl_helpers.h"
 #include "shaderprintf.h"
 
-#include <fstream>
-#include <sstream>
-
-// whenever a shader is created, we go through all of its uniforms and assign unit indices for textures and images.
-const GLenum samplerTypes[] = { GL_SAMPLER_1D, GL_SAMPLER_2D, GL_SAMPLER_3D, GL_SAMPLER_CUBE, GL_SAMPLER_1D_SHADOW, GL_SAMPLER_2D_SHADOW, GL_SAMPLER_1D_ARRAY, GL_SAMPLER_2D_ARRAY, GL_SAMPLER_CUBE_MAP_ARRAY, GL_SAMPLER_1D_ARRAY_SHADOW,GL_SAMPLER_2D_ARRAY_SHADOW, GL_SAMPLER_2D_MULTISAMPLE,GL_SAMPLER_2D_MULTISAMPLE_ARRAY, GL_SAMPLER_CUBE_SHADOW, GL_SAMPLER_CUBE_MAP_ARRAY_SHADOW, GL_SAMPLER_BUFFER, GL_SAMPLER_2D_RECT, GL_SAMPLER_2D_RECT_SHADOW, GL_INT_SAMPLER_1D, GL_INT_SAMPLER_2D, GL_INT_SAMPLER_3D, GL_INT_SAMPLER_CUBE, GL_INT_SAMPLER_1D_ARRAY, GL_INT_SAMPLER_2D_ARRAY, GL_INT_SAMPLER_CUBE_MAP_ARRAY, GL_INT_SAMPLER_2D_MULTISAMPLE, GL_INT_SAMPLER_2D_MULTISAMPLE_ARRAY, GL_INT_SAMPLER_BUFFER, GL_INT_SAMPLER_2D_RECT, GL_UNSIGNED_INT_SAMPLER_1D, GL_UNSIGNED_INT_SAMPLER_2D, GL_UNSIGNED_INT_SAMPLER_3D, GL_UNSIGNED_INT_SAMPLER_CUBE, GL_UNSIGNED_INT_SAMPLER_1D_ARRAY, GL_UNSIGNED_INT_SAMPLER_2D_ARRAY, GL_UNSIGNED_INT_SAMPLER_CUBE_MAP_ARRAY, GL_UNSIGNED_INT_SAMPLER_2D_MULTISAMPLE, GL_UNSIGNED_INT_SAMPLER_2D_MULTISAMPLE_ARRAY,GL_UNSIGNED_INT_SAMPLER_BUFFER, GL_UNSIGNED_INT_SAMPLER_2D_RECT };
-const GLenum imageTypes[] = { GL_IMAGE_1D, GL_IMAGE_2D, GL_IMAGE_3D, GL_IMAGE_2D_RECT, GL_IMAGE_CUBE, GL_IMAGE_BUFFER, GL_IMAGE_1D_ARRAY, GL_IMAGE_2D_ARRAY, GL_IMAGE_CUBE_MAP_ARRAY, GL_IMAGE_2D_MULTISAMPLE, GL_IMAGE_2D_MULTISAMPLE_ARRAY, GL_INT_IMAGE_1D, GL_INT_IMAGE_2D, GL_INT_IMAGE_3D, GL_INT_IMAGE_2D_RECT, GL_INT_IMAGE_CUBE, GL_INT_IMAGE_BUFFER, GL_INT_IMAGE_1D_ARRAY, GL_INT_IMAGE_2D_ARRAY, GL_INT_IMAGE_CUBE_MAP_ARRAY, GL_INT_IMAGE_2D_MULTISAMPLE, GL_INT_IMAGE_2D_MULTISAMPLE_ARRAY, GL_UNSIGNED_INT_IMAGE_1D, GL_UNSIGNED_INT_IMAGE_2D, GL_UNSIGNED_INT_IMAGE_3D, GL_UNSIGNED_INT_IMAGE_CUBE, GL_UNSIGNED_INT_IMAGE_BUFFER, GL_UNSIGNED_INT_IMAGE_1D_ARRAY, GL_UNSIGNED_INT_IMAGE_2D_ARRAY, GL_UNSIGNED_INT_IMAGE_CUBE_MAP_ARRAY, GL_UNSIGNED_INT_IMAGE_2D_MULTISAMPLE, GL_UNSIGNED_INT_IMAGE_2D_MULTISAMPLE_ARRAY };
-
-bool isOfType(const GLenum type, const GLenum* types, const GLint typeCount) {
-	for (int i = 0; i < typeCount; ++i)
-		if (type == types[i])
-			return true;
-	return false;
+Program createProgram(const std::string_view computePath) {
+	return Program(computePath);
 }
-
-const GLenum typeProperty = GL_TYPE;
-const GLenum locationProperty = GL_LOCATION;
-// counts the amount of objects of the same type before this one in the arbitrary order the API happens to give them; this gives a unique index for each object that's used for the texture and image unit
-void assignUnits(const GLuint program, const GLenum* types, const GLint typeCount) {
-	GLint unit = 0, location, type, count;
-	glGetProgramInterfaceiv(program, GL_UNIFORM, GL_ACTIVE_RESOURCES, &count);
-	for (int i = 0; i < count; ++i) {
-		glGetProgramResourceiv(program, GL_UNIFORM, i, 1, &typeProperty, sizeof(type), nullptr, &type);
-		if (isOfType((GLenum)type, types, typeCount)) {
-			glGetProgramResourceiv(program, GL_UNIFORM, i, 1, &locationProperty, sizeof(location), nullptr, &location);
-			glUniform1i(location, unit);
-			unit++;
-		}
-	}
-}
-
-// create a single shader object
-GLuint createShader(const std::string& path, const GLenum shaderType) {
-	using namespace std;
-	// read file, set as source
-	const string source = string(istreambuf_iterator<char>(ifstream(path).rdbuf()), istreambuf_iterator<char>());
-	const GLuint shader = glCreateShader(shaderType);
-	auto source_ptr = (const GLchar*)source.c_str();
-
-	glShaderSourcePrint(shader, 1, &source_ptr, nullptr);
-	glCompileShader(shader);
-
-	// print error log if failed to compile
-	int success; glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
-	if (!success) {
-		int length; glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &length);
-		string log(length + 1, '\0');
-		glGetShaderInfoLog(shader, length + 1, &length, &log[0]);
-		printf("log of compiling %s:\n%s\n", path.c_str(), log.c_str());
-	}
-	return shader;
-}
-
-// creates a compute program based on a single file
-GLuint createProgram(const std::string& computePath) {
-	using namespace std;
-	const GLuint program = glCreateProgram();
-	const GLuint computeShader = createShader(computePath, GL_COMPUTE_SHADER);
-	glAttachShader(program, computeShader);
-	glLinkProgram(program);
-	glDeleteShader(computeShader);
-
-	// print error log if failed to link
-	int success; glGetProgramiv(program, GL_LINK_STATUS, &success);
-	if (!success) {
-		int length; glGetProgramiv(program, GL_INFO_LOG_LENGTH, &length);
-		string log(length + 1, '\0');
-		glGetProgramInfoLog(program, length + 1, &length, &log[0]);
-		printf("log of linking %s:\n%s\n", computePath.c_str(), log.c_str());
-		glDeleteProgram(program);
-		return 0;
-	}
-
-	glUseProgram(program);
-	assignUnits(program, samplerTypes, sizeof(samplerTypes) / sizeof(GLenum));
-	assignUnits(program, imageTypes, sizeof(imageTypes) / sizeof(GLenum));
-
-	return program;
-}
-
-// creates a graphics program based on shaders for potentially all 5 programmable pipeline stages
-GLuint createProgram(const std::string& vertexPath, const std::string& controlPath, const std::string& evaluationPath, const std::string& geometryPath, const std::string& fragmentPath) {
-	using namespace std;
-	const GLuint program = glCreateProgram();
-	const std::string paths[] = { vertexPath, controlPath, evaluationPath, geometryPath, fragmentPath };
-	const GLenum types[] = { GL_VERTEX_SHADER, GL_TESS_CONTROL_SHADER, GL_TESS_EVALUATION_SHADER, GL_GEOMETRY_SHADER, GL_FRAGMENT_SHADER };
-	for (int i = 0; i < 5; ++i) {
-		if (!paths[i].length()) continue;
-		GLuint shader = createShader(paths[i], types[i]);
-		glAttachShader(program, shader);
-		glDeleteShader(shader); // deleting here is okay; the shader object is reference-counted with the programs it's attached to
-	}
-	glLinkProgram(program);
-
-	// print error log if failed to link
-	int success; glGetProgramiv(program, GL_LINK_STATUS, &success);
-	if (!success) {
-		int length; glGetProgramiv(program, GL_INFO_LOG_LENGTH, &length);
-		string log(length + 1, '\0');
-		glGetProgramInfoLog(program, length + 1, &length, &log[0]);
-		printf("log of linking (%s,%s,%s,%s,%s):\n%s\n", vertexPath.c_str(), controlPath.c_str(), evaluationPath.c_str(), geometryPath.c_str(), fragmentPath.c_str(), log.c_str());
-		glDeleteProgram(program);
-		return 0;
-	}
-
-	glUseProgram(program);
-	assignUnits(program, samplerTypes, sizeof(samplerTypes) / sizeof(GLenum));
-	assignUnits(program, imageTypes, sizeof(imageTypes) / sizeof(GLenum));
-
-	return program;
+Program createProgram(const std::string_view vertexPath, const std::string_view controlPath, const std::string_view evaluationPath, const std::string_view geometryPath, const std::string_view fragmentPath) {
+	return Program(vertexPath, controlPath, evaluationPath, geometryPath, fragmentPath);
 }
 
 // helper to avoid passing the current program around
@@ -246,6 +142,7 @@ Texture<GL_TEXTURE_2D> loadImage(const std::wstring& path) {
 	// new scope so RAII objects are released before gdi+ shutdown
 	{
 		Image image(path.c_str());
+		image.RotateFlip(RotateNoneFlipY);
 		const Rect r(0, 0, image.GetWidth(), image.GetHeight());
 		BitmapData data;
 		((Bitmap*)&image)->LockBits(&r, ImageLockModeRead, PixelFormat24bppRGB, &data);
