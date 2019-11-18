@@ -32,6 +32,8 @@ int main() {
 
 	int source = 0;
 
+	int frame = 0;
+
 	while (loop()) // stops if esc pressed or window closed
 	{
 		LARGE_INTEGER now;
@@ -43,6 +45,7 @@ int main() {
 		if (!simulate)
 			simulate = createProgram(
 				GLSL(460,
+				layout(local_size_x = 16, local_size_y = 16) in;
 				uvec4 rndseed;
 				void jenkins_mix()
 				{
@@ -64,41 +67,52 @@ int main() {
 					rndseed.xyz = rndseed.yzx;
 					return float(rndseed.x) / pow(2., 32.);
 				}
-				layout(local_size_x = 16, local_size_y = 16) in;
 				uniform int source;
+				uniform int frame;
 				uniform float t;
 				layout(rg32f) uniform image2DArray state;
 				void main() {
-					srand(uint(t*10.)+1u, uint(gl_GlobalInvocationID.x/4) + 1u, uint(gl_GlobalInvocationID.y/4) + 1u);
+					srand(uint(t * 0.) + 1u, uint(gl_GlobalInvocationID.x / 4) + 1u, uint(gl_GlobalInvocationID.y / 4) + 1u);
+					//srand(uint((t+ rand())) + 1u, uint(gl_GlobalInvocationID.x / 4) + 1u, uint(gl_GlobalInvocationID.y / 4) + 1u);
 					vec2 prev = imageLoad(state, ivec3(gl_GlobalInvocationID.xy, source)).xy;
 					vec2 diff = -prev*4.;
 					if (gl_GlobalInvocationID.x < 1023)
-						diff += imageLoad(state, ivec3(gl_GlobalInvocationID.xy+ivec2(1,0), source)).xy;
+						diff += imageLoad(state, ivec3(gl_GlobalInvocationID.xy + ivec2(1, 0), source)).xy;
+					else diff += 4.;
 					if (gl_GlobalInvocationID.x >0)
 						diff += imageLoad(state, ivec3(gl_GlobalInvocationID.xy+ivec2(-1,0), source)).xy;
+					else diff += 4.;
 					if (gl_GlobalInvocationID.y < 1023)
 						diff += imageLoad(state, ivec3(gl_GlobalInvocationID.xy+ivec2(0,1), source)).xy;
+					else diff += 4.;
 					if (gl_GlobalInvocationID.y > 0)
 						diff += imageLoad(state, ivec3(gl_GlobalInvocationID.xy+ivec2(0,-1), source)).xy;
+					else diff += 4.;
 
-					float ext = .005+.15*sin(float(gl_GlobalInvocationID.x) / 1023.*8.+t*.5)*cos(float(gl_GlobalInvocationID.y)*.01);
-
-					vec2 val = max(vec2(.0), prev + .01 *
-						vec2(diff.x*.5+prev.x - pow(prev.x, 3.) - prev.y*.6 + ext,
-							(diff.y*2.+prev.x - prev.y)*.1));
+					float ext = 1.+.12*cos(10. * sin(float(gl_GlobalInvocationID.x) / 1023. * 3.141592 * 3.) * sin(float(gl_GlobalInvocationID.y) / 1024. * 3.141592 * 3.) + t);
+					//ext += .01*sin(float(gl_GlobalInvocationID.x)*.1+ float(gl_GlobalInvocationID.y) * .1) * sin(float(gl_GlobalInvocationID.x) * .1-float(gl_GlobalInvocationID.y)*.1);
+					const float s = 1./128.;
+					float alpha = 11.9 * (.98 + .04 * rand()), beta = ext*15.4 * (.98 + .04 * rand()); //mix(11., 12., float(gl_GlobalInvocationID.x)/1023.), mix(15., 16., float(gl_GlobalInvocationID.y) / 1023.)
+					vec2 val = max(vec2(.0), prev + .5 *
+						vec2(diff.x/32.+(prev.x*(prev.y-1.)-alpha)*s,
+							diff.y/8.+(beta-prev.x*prev.y)*s));
 					//val *= .99;
+					if (frame == 0) val = vec2(8.);
 					imageStore(state, ivec3(gl_GlobalInvocationID.xy, 1-source), vec4(val, .0, .0));
 				}
 				));
 
 		glUseProgram(simulate);
-		glUniform1f("t", t);
-		glUniform1i("source", source);
-		bindImage("state", 0, state, GL_READ_WRITE, GL_RG32F);
-		glDispatchCompute(64, 64, 1);
-		glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
-		
-		source = 1 - source;
+		for (int i = 0; i < 40; ++i) {
+			glUniform1f("t", t);
+			glUniform1i("frame", frame);
+			glUniform1i("source", source);
+			bindImage("state", 0, state, GL_READ_WRITE, GL_RG32F);
+			glDispatchCompute(64, 64, 1);
+			glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
+
+			source = 1 - source;
+		}
 
 		if (!draw)
 			draw = createProgram(
@@ -113,7 +127,7 @@ int main() {
 				out vec4 col;
 				uniform int layer;
 				void main() {
-					col = texelFetch(state, ivec3(gl_FragCoord.xy, layer), 0).xxxx*.4;
+					col = vec4(1.-smoothstep(-8., 8., texelFetch(state, ivec3(gl_FragCoord.xy, layer), 0).x));// pow(texelFetch(state, ivec3(gl_FragCoord.xy, layer), 0).xyyx * vec3(.01, .0015, .0005).zxyx, vec4(.8)) - vec4(.02);
 				}
 			));
 
@@ -126,7 +140,7 @@ int main() {
 
 		font.drawText(L"⏱: " + std::to_wstring(end-start), 10.f, 10.f, 15.f); // wstring, x, y, font size
 		swapBuffers();
-
+		frame++;
 	}
 	return 0;
 }
