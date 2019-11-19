@@ -24,7 +24,7 @@ int main() {
 	Program simulate, draw;
 
 	Texture<GL_TEXTURE_2D_ARRAY> state;
-	glTextureStorage3D(state, 1, GL_RG32F, screenw, screenh, 2);
+	glTextureStorage3D(state, 1, GL_RG32F, screenw, screenh, 3);
 
 	LARGE_INTEGER start, frequency;
 	QueryPerformanceFrequency(&frequency);
@@ -73,32 +73,37 @@ int main() {
 				layout(rg32f) uniform image2DArray state;
 				void main() {
 					srand(uint(t * 0.) + 1u, uint(gl_GlobalInvocationID.x / 4) + 1u, uint(gl_GlobalInvocationID.y / 4) + 1u);
-					//srand(uint((t+ rand())) + 1u, uint(gl_GlobalInvocationID.x / 4) + 1u, uint(gl_GlobalInvocationID.y / 4) + 1u);
+					srand(uint((t+ rand())) + 1u, uint(gl_GlobalInvocationID.x / 4) + 1u, uint(gl_GlobalInvocationID.y / 4) + 1u);
 					vec2 prev = imageLoad(state, ivec3(gl_GlobalInvocationID.xy, source)).xy;
 					vec2 diff = -prev*4.;
 					if (gl_GlobalInvocationID.x < 1023)
 						diff += imageLoad(state, ivec3(gl_GlobalInvocationID.xy + ivec2(1, 0), source)).xy;
-					else diff += 4.;
+					else diff += vec2(4.);
 					if (gl_GlobalInvocationID.x >0)
 						diff += imageLoad(state, ivec3(gl_GlobalInvocationID.xy+ivec2(-1,0), source)).xy;
-					else diff += 4.;
+					else diff += vec2(4.);
 					if (gl_GlobalInvocationID.y < 1023)
 						diff += imageLoad(state, ivec3(gl_GlobalInvocationID.xy+ivec2(0,1), source)).xy;
-					else diff += 4.;
+					else diff += vec2(4.);
 					if (gl_GlobalInvocationID.y > 0)
 						diff += imageLoad(state, ivec3(gl_GlobalInvocationID.xy+ivec2(0,-1), source)).xy;
-					else diff += 4.;
+					else diff += vec2(4.);
 
-					float ext = 1.+.12*cos(10. * sin(float(gl_GlobalInvocationID.x) / 1023. * 3.141592 * 3.) * sin(float(gl_GlobalInvocationID.y) / 1024. * 3.141592 * 3.) + t);
+					float ext = 1.+.12*cos(10. * sin(float(gl_GlobalInvocationID.x) / 1023. * 3.141592 * 3.) * sin(float(gl_GlobalInvocationID.y) / 1024. * 3.141592 * 3.) + t*2.);
 					//ext += .01*sin(float(gl_GlobalInvocationID.x)*.1+ float(gl_GlobalInvocationID.y) * .1) * sin(float(gl_GlobalInvocationID.x) * .1-float(gl_GlobalInvocationID.y)*.1);
 					const float s = 1./128.;
 					float alpha = 11.9 * (.98 + .04 * rand()), beta = ext*15.4 * (.98 + .04 * rand()); //mix(11., 12., float(gl_GlobalInvocationID.x)/1023.), mix(15., 16., float(gl_GlobalInvocationID.y) / 1023.)
-					vec2 val = max(vec2(.0), prev + .5 *
-						vec2(diff.x/32.+(prev.x*(prev.y-1.)-alpha)*s,
-							diff.y/8.+(beta-prev.x*prev.y)*s));
+					vec2 vel = 
+						vec2(diff.x / 32. + (prev.x * (prev.y - 1.) - alpha) * s,
+							diff.y / 8. + (beta - prev.x * prev.y) * s);
+					vec2 val = max(vec2(.0), prev + .5*vel + .5*imageLoad(state, ivec3(gl_GlobalInvocationID.xy, 2)).xy);
 					//val *= .99;
-					if (frame == 0) val = vec2(8.);
+					if (frame == 0) {
+						val = vec2(4.);
+						vel = vec2(.0);
+					}
 					imageStore(state, ivec3(gl_GlobalInvocationID.xy, 1-source), vec4(val, .0, .0));
+					imageStore(state, ivec3(gl_GlobalInvocationID.xy, 2), vec4(vel, .0, .0));
 				}
 				));
 
@@ -127,7 +132,7 @@ int main() {
 				out vec4 col;
 				uniform int layer;
 				void main() {
-					col = vec4(1.-smoothstep(-8., 8., texelFetch(state, ivec3(gl_FragCoord.xy, layer), 0).x));// pow(texelFetch(state, ivec3(gl_FragCoord.xy, layer), 0).xyyx * vec3(.01, .0015, .0005).zxyx, vec4(.8)) - vec4(.02);
+					col = vec4(1.-smoothstep(8., 3.7, texelFetch(state, ivec3(gl_FragCoord.xy, layer), 0).y));// pow(texelFetch(state, ivec3(gl_FragCoord.xy, layer), 0).xyyx * vec3(.01, .0015, .0005).zxyx, vec4(.8)) - vec4(.02);
 				}
 			));
 
