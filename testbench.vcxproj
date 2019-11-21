@@ -141,6 +141,7 @@
     <ClInclude Include="loadgl\loadgl46.h" />
     <ClInclude Include="math_helpers.h" />
     <ClInclude Include="shaderprintf.h" />
+    <ClInclude Include="testbench.h" />
     <ClInclude Include="text_renderer.h" />
     <ClInclude Include="window.h" />
   </ItemGroup>
