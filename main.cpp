@@ -7,7 +7,8 @@
 
 // the two key features of the testbench are easy binding (everything is bound with the shader name)
 // and a GLSL source macro 2.0 that allows you to edit the shader code while the executable is running
-// try running the code and commenting out some of the different color schemes in the second shader around line 150!
+// try running the code and commenting out some of the different color schemes in the second shader
+// around line 170! when you save this file, the output of the executable should change correspondingly.
 // (no magic; it just stores the location of the shader source in the cpp file and re-reads it on file update)
 
 // there's also a bunch of other convenience features, and pretty much everything is modular so that you can
@@ -47,6 +48,8 @@ int main() {
 		TimeStamp start;
 
 		if (!simulate)
+			// single-argument createProgram() makes a compute shader.
+			// the argument can be either a filepath or the source directly as given by the GLSL macro:
 			simulate = createProgram(
 				GLSL(460,
 				// the local thread block size; the program will be ran in sets of 16 by 16 threads.
@@ -82,7 +85,7 @@ int main() {
 				void main() {
 					// seed with seeds that change at different time offsets (not crucial to the algorithm but yields nicer results)
 					srand(1u, uint(gl_GlobalInvocationID.x / 4) + 1u, uint(gl_GlobalInvocationID.y / 4) + 1u);
-					//srand(uint((rand())) + uint(frame/100), uint(gl_GlobalInvocationID.x / 4) + 1u, uint(gl_GlobalInvocationID.y / 4) + 1u); // try commenting this line out!
+					srand(uint((rand())) + uint(frame/100), uint(gl_GlobalInvocationID.x / 4) + 1u, uint(gl_GlobalInvocationID.y / 4) + 1u);
 
 					// apply laplacian stencil for diffusion; this is effectively a blur on the input images
 					vec2 prev = imageLoad(state, ivec3(gl_GlobalInvocationID.xy, source)).xy;
@@ -107,13 +110,14 @@ int main() {
 					const float s = 1./128.;
 					float alpha = 11.9 * (.98 + .04 * rand()), beta = ext*15.4 * (.98 + .04 * rand());
 					// try uncommenting these to (pretty much) recreate figure 2 from https://www.researchgate.net/publication/220494187_Advanced_Reaction-Diffusion_Models_for_Texture_Synthesis
+					// also see the related color scheme in the draw shader!
 					//alpha = mix(8., 20., float(gl_GlobalInvocationID.x) / 1023.) * (.99 + .02 * rand()); beta = mix(8., 20., float(gl_GlobalInvocationID.y) / 1023.) * (.99 + .02 * rand());
 					// compute reaction velocity; how the concentrations of the components change
 					vec2 vel = 
 						vec2(diff.x / 32. + (prev.x * (prev.y - 1.) - alpha) * s,
 							diff.y / 8. + (beta - prev.x * prev.y) * s);
 					// leapfrog integration step improves stability; we move half of the timestep with the old velocity and half with the new one
-					vec2 val = max(vec2(.0), prev + .25*vel + .25*imageLoad(state, ivec3(gl_GlobalInvocationID.xy, 2)).xy);
+					vec2 val = max(vec2(.0), prev + .5*vel + .5*imageLoad(state, ivec3(gl_GlobalInvocationID.xy, 2)).xy);
 					
 					// on first frame we simply init to some values
 					if (frame == 0) {
@@ -149,6 +153,7 @@ int main() {
 		}
 
 		if (!draw)
+			// the graphics program version of createProgram() takes 5 sources; vertex, control, evaluation, geometry, fragment
 			draw = createProgram(
 				GLSL(460,
 					void main() {
@@ -184,6 +189,8 @@ int main() {
 
 		// print the timing (word of warning; this forces a cpu-gpu synchronization)
 		font.drawText(L"⏱: " + std::to_wstring(end-start), 10.f, 10.f, 15.f); // text, x, y, font size
+
+		// this actually displays the rendered image
 		swapBuffers();
 		frame++;
 	}
