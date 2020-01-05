@@ -14,21 +14,21 @@ void lookAt(float* cameraToWorld, float camx, float camy, float camz, float atx,
 	cameraToWorld[12] = camx; cameraToWorld[13] = camy; cameraToWorld[14] = camz; cameraToWorld[15] = 1.f;
 }
 
-void setupProjection(float* projection, float fov, float w_over_h, float nearPlane, float farPlane) {
-	for (int i = 0; i < 16; ++i) projection[i] = .0f;
+void setupProjection(float* cameraToClip, float fov, float w_over_h, float nearPlane, float farPlane) {
+	for (int i = 0; i < 16; ++i) cameraToClip[i] = .0f;
 	const float right = nearPlane * w_over_h * tan(fov / 2.0f), bottom = nearPlane * tan(fov / 2.0f);
-	projection[0] = nearPlane / right;
-	projection[5] = nearPlane / bottom;
-	projection[10] = -(farPlane + nearPlane) / (farPlane - nearPlane);
-	projection[11] = -1.0f;
-	projection[14] = -2.0f * farPlane * nearPlane / (farPlane - nearPlane);
+	cameraToClip[0] = nearPlane / right;
+	cameraToClip[5] = nearPlane / bottom;
+	cameraToClip[10] = -(farPlane + nearPlane) / (farPlane - nearPlane);
+	cameraToClip[11] = -1.0f;
+	cameraToClip[14] = -2.0f * farPlane * nearPlane / (farPlane - nearPlane);
 }
 
-void setupOrtho(float* ortho, float w_over_h, float size, float nearPlane, float farPlane) {
-	for (int i = 0; i < 16; ++i) ortho[i] = .0f;
-	ortho[0] = 1.f / size / w_over_h;
-	ortho[5] = 1.f / size;
-	ortho[10] = -2.f / (farPlane - nearPlane);
-	ortho[14] = -1.f - 2.f*nearPlane / (farPlane - nearPlane);
-	ortho[15] = 1.f;
+void setupOrtho(float* cameraToClip, float w_over_h, float size, float nearPlane, float farPlane) {
+	for (int i = 0; i < 16; ++i) cameraToClip[i] = .0f;
+	cameraToClip[0] = 1.f / size / w_over_h;
+	cameraToClip[5] = 1.f / size;
+	cameraToClip[10] = -2.f / (farPlane - nearPlane);
+	cameraToClip[14] = -1.f - 2.f*nearPlane / (farPlane - nearPlane);
+	cameraToClip[15] = 1.f;
 }
