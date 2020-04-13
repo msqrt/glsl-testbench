@@ -2,7 +2,14 @@
 #pragma once
 
 #include <string>
+
+#if !__has_include(<dwrite_3.h>)
+#define OLD_DWRITE
+#include <dwrite.h>
+#else
 #include <dwrite_3.h>
+#endif
+
 #include <d2d1_3.h>
 #include <vector>
 #include <map>
@@ -12,7 +19,28 @@
 // too bad GDI doesn't support emoji 😂 gotta deal with DW
 struct TextRenderer : public IDWriteTextRenderer {
 
+#ifndef OLD_DWRITE
 	IDWriteFactory7* factory = nullptr;
+#else
+	typedef struct {
+		union {
+			FLOAT r;
+			FLOAT dvR;
+		};
+		union {
+			FLOAT g;
+			FLOAT dvG;
+		};
+		union {
+			FLOAT b;
+			FLOAT dvB;
+		};
+		union {
+			FLOAT a;
+			FLOAT dvA;
+		};
+	} DWRITE_COLOR_F;
+#endif
 	IDWriteFactory* backupFactory = nullptr;
 	std::vector<D2D1_POINT_2F> points;
 
@@ -57,11 +85,15 @@ struct TextRenderer : public IDWriteTextRenderer {
 
 struct Font {
 	Font(const std::wstring& name) : fontName(name), program(createProgram("shaders/textVert.glsl", "", "", "", "shaders/textFrag.glsl")) {
-		if(S_OK != DWriteCreateFactory(DWRITE_FACTORY_TYPE_SHARED, __uuidof(IDWriteFactory7), reinterpret_cast<IUnknown**>(&renderer.factory)))
+#ifndef OLD_DWRITE
+		if(S_OK != DWriteCreateFactory(DWRITE_FACTORY_TYPE_SHARED, __uuidof(IDWriteFactory7), reinterpret_cast<IUnknown**>(&renderer.factory))) // try to get new features
+#endif
 			DWriteCreateFactory(DWRITE_FACTORY_TYPE_SHARED, __uuidof(IDWriteFactory), reinterpret_cast<IUnknown**>(&renderer.backupFactory));
 	}
 	~Font() {
+#ifndef OLD_DWRITE
 		if(renderer.factory) renderer.factory->Release();
+#endif
 		if (renderer.backupFactory) renderer.backupFactory->Release();
 	}
 	void drawText(const std::wstring& text, float x, float y, float size, std::array<float, 3> color = {1.f, 1.f, 1.f}, float maxwidth = 1e8f, float maxheight = 1e8f);

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -129,7 +129,6 @@
     <ClCompile Include="loadgl\loadgl46.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="math_helpers.cpp" />
-    <ClCompile Include="playground\playground.cpp" />
     <ClCompile Include="program.cpp" />
     <ClCompile Include="text_renderer.cpp" />
     <ClCompile Include="window.cpp" />
@@ -151,7 +150,6 @@
     <None Include="shaders\objFrag.glsl" />
     <None Include="shaders\objGeom.glsl" />
     <None Include="shaders\objVert.glsl" />
-    <None Include="shaders\sort.glsl" />
     <None Include="shaders\textFrag.glsl" />
     <None Include="shaders\textVert.glsl" />
   </ItemGroup>

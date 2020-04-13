@@ -89,6 +89,8 @@ size_t TextRenderer::updateBuffers() {
 HRESULT TextRenderer::DrawGlyphRun(void*, FLOAT baseX, FLOAT baseY, DWRITE_MEASURING_MODE mode, DWRITE_GLYPH_RUN const* run, DWRITE_GLYPH_RUN_DESCRIPTION const* runDesc, IUnknown*) {
 	
 	HRESULT result = DWRITE_E_NOCOLOR;
+
+#ifndef OLD_DWRITE
 	if (factory) {
 		IDWriteColorGlyphRunEnumerator1* enumerator = nullptr;
 		DWRITE_MATRIX transf = {.1f, .0f, .0f, .1f, .0f, .0f};
@@ -96,6 +98,7 @@ HRESULT TextRenderer::DrawGlyphRun(void*, FLOAT baseX, FLOAT baseY, DWRITE_MEASU
 		if (enumerator)
 			enumerator->Release();
 	}
+#endif
 	for (UINT32 i = 0; i < run->glyphCount; ++i) {
 		UINT16 glyph = run->glyphIndices[i];
 		auto glyphIterator = glyphToOffset.find(glyph);
@@ -128,17 +131,18 @@ HRESULT TextRenderer::DrawGlyphRun(void*, FLOAT baseX, FLOAT baseY, DWRITE_MEASU
 						points[j].y -= low.y;
 					}
 					pointIndices.push_back(inds);
+
 					colors.push_back(DWRITE_COLOR_F{ -1.0f, .0f, .0f, .0f });
-					std::pair<unsigned, unsigned> range = std::make_pair(uint32_t(colors.size() - 1), uint32_t(colors.size()));
+					colorRanges.push_back(std::make_pair(uint32_t(colors.size() - 1), uint32_t(colors.size())));
 
 					boundingBoxes.push_back(std::make_pair(low, high));
-					colorRanges.push_back(range);
 				}
 				else {
 					boundingBoxes.push_back(std::make_pair(D2D1_POINT_2F{}, D2D1_POINT_2F{}));
 					colorRanges.push_back(std::make_pair(0, 0));
 				}
 			}
+#ifndef OLD_DWRITE
 			else {
 
 				std::pair<unsigned, unsigned> range;
@@ -191,6 +195,7 @@ HRESULT TextRenderer::DrawGlyphRun(void*, FLOAT baseX, FLOAT baseY, DWRITE_MEASU
 				boundingBoxes.push_back(std::make_pair(low, high));
 				colorRanges.push_back(range);
 			}
+#endif
 		}
 
 		unsigned offset = glyphIterator->second;
@@ -234,7 +239,11 @@ HRESULT TextRenderer::GetPixelsPerDip(void*, float* pixelsPerDip) {
 	ID2D1Factory* d2dfactory;
 	D2D1CreateFactory(D2D1_FACTORY_TYPE_SINGLE_THREADED, &d2dfactory);
 	d2dfactory->ReloadSystemMetrics();
+	#if 1
+	*pixelsPerDip = 1;
+	#else
 	*pixelsPerDip = float(GetDpiForWindow(wnd)) / 96.f;
+	#endif
 	d2dfactory->Release();
 	return S_OK;
 }
@@ -263,6 +272,7 @@ ULONG STDMETHODCALLTYPE TextRenderer::Release(void) {
 
 void Font::drawText(const std::wstring& text, float x, float y, float size, std::array<float,3> color, float maxwidth, float maxheight) {
 
+#ifndef OLD_DWRITE
 	if (renderer.factory) {
 		IDWriteTextFormat3* format;
 		renderer.factory->CreateTextFormat(fontName.c_str(), nullptr, nullptr, 0, size, L"", &format);
@@ -275,7 +285,9 @@ void Font::drawText(const std::wstring& text, float x, float y, float size, std:
 		format->Release();
 		layout->Release();
 	}
-	else {
+	else
+#endif
+	{
 		IDWriteTextFormat* format;
 		renderer.backupFactory->CreateTextFormat(fontName.c_str(), nullptr, DWRITE_FONT_WEIGHT_NORMAL, DWRITE_FONT_STYLE_NORMAL, DWRITE_FONT_STRETCH_NORMAL, size, L"", &format);
 		IDWriteTextLayout* layout;
