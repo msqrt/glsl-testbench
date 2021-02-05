@@ -262,13 +262,30 @@ Program::Program(const std::string_view computePath) {
 	assignUnits(program, imageTypes, sizeof(imageTypes) / sizeof(GLenum));
 }
 
-// sort all inline glsl sources; they're evaluated in an undefined order (since they're arguments) but the first differing character will be the index of the GLSL macro in the source code
+// sort all inline glsl sources; they're evaluated in an undefined order (since they're arguments)
 std::array<std::string_view, 5> sortInlineSources(std::array<std::string_view, 5>&& paths) {
 	std::array<int, 5> inds;
 	for (int i = 0; i < 5; ++i)
 		inds[i] = (paths[i].length() > 0 && paths[i].find('\n') != std::string::npos) ? i : -1;
 
-	std::sort(inds.begin(), inds.end(), [&](int a, int b) {if (a == -1) return false; if (b == -1) return true; return paths[a] < paths[b]; });
+	std::array<int, 5> glslIndices;
+	for (size_t i = 0; i < glslIndices.size(); i++)
+	{
+		glslIndices[i] = -1;
+		std::string_view p = paths[i];
+		extract(p, ',');
+		glslIndices[i] = charconv(extract(p, ','), glslIndices[i]);
+	}
+
+	auto predicate = [&](int a, int b) {
+		if (a == -1) return false;
+		if (b == -1) return true;
+		if (glslIndices[a] == -1) return false;
+		if (glslIndices[b] == -1) return true;
+		return glslIndices[a] < glslIndices[b];
+	};
+
+	std::sort(inds.begin(), inds.end(), predicate);
 
 	auto result = paths;
 	int index = 0;
