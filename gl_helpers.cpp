@@ -26,13 +26,19 @@ void bindBuffer(const std::string& name, GLuint buffer) {
 		glShaderStorageBlockBinding(program, index, index);
 		glBindBufferBase(GL_SHADER_STORAGE_BUFFER, index, buffer);
 		//printf("storage buffer %s bound to slot %d!\n", name.c_str(), index);
+		return;
 	}
-	else {
-		index = glGetProgramResourceIndex(program, GL_UNIFORM_BLOCK, name.c_str());
+
+	index = glGetProgramResourceIndex(program, GL_UNIFORM_BLOCK, name.c_str());
+
+	if (index != GL_INVALID_INDEX) {
 		glUniformBlockBinding(program, index, index);
 		glBindBufferBase(GL_UNIFORM_BUFFER, index, buffer);
 		//printf("uniform buffer %s bound to slot %d!\n", name.c_str(), index);
+		return;
 	}
+
+	// apparently this buffer was unused in the shader and optimized away
 }
 
 void bindTexture(const std::string& name, GLuint texture) {
