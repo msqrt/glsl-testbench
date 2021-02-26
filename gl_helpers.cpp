@@ -142,7 +142,8 @@ void bindOutputDepthRenderbuffer(GLuint renderbuffer) {
 Texture<GL_TEXTURE_2D> loadImage(const std::wstring& path) {
 	using namespace Gdiplus;
 	ULONG_PTR token;
-	GdiplusStartup(&token, &GdiplusStartupInput(), nullptr);
+	GdiplusStartupInput startupInput;
+	GdiplusStartup(&token, &startupInput, nullptr);
 
 	Texture<GL_TEXTURE_2D> result;
 	// new scope so RAII objects are released before gdi+ shutdown
